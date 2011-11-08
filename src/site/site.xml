@@ -14,7 +14,7 @@
     </skin>
 
     <body>
-      <menu name="rSmart Liquibase Extensions">
+      <menu name="Rice Liquibase Extensions">
         <item name="Overview" href="index.html"/>
         <item name="Usage" href="usage.html"/>
         <item name="API" href="apidocs/"/>

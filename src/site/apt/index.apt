@@ -1,29 +1,9 @@
-  Welcome to the lbcopy Project, we hope you enjoy your time
+  Welcome to the rice-lb-extensions Project, we hope you enjoy your time
 on this project site.  We've tried to assemble some
 great user documentation and developer information, and
 we're really excited that you've taken the time to visit
 this site.
 
-What is lb-maven-plugin
+What is rice-lb-extensions
 
-  lb-maven-plugin is another {{{http://www.liquibase.org}Liquibase}}
-maven plugin with an emphasis on development migration and environment
-upgrades. It adheres to a strict convention policy to simplify
-configuration. There isn't very much that can be done about the
-convention, so if you don't agree with it, you probably don't want to
-use this plugin. For information about the convention, read the
-{{{usage.html}Usage}} page.
-
-* Migrations for developers
-
-  Normal liquibase plugins do not consider that developers need to be
-able to easily bring their databases to the correct version. This
-plugin will allow developers to easily do that with the migrate
-goal. The plugin connects with Maven SCM configuration to retrieve
-missing changelogs from SCM and play them back.
-
-* Environment upgrades
-
-  Much the same way that migrations work for developers, environments
-can easily be upgrade in part by the convention that ensures where
-changelogs can be found, and how they are structured to work together.
+ 
