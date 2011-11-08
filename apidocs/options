@@ -1,0 +1,24 @@
+-classpath
+'/Users/leo/projects/git/rice-lb-ext/target/classes:/Users/leo/.m2/repository/org/liquibase/liquibase-core/2.0.2/liquibase-core-2.0.2.jar:/Users/leo/.m2/repository/com/rsmart/kuali/tools/liquibase/rsmart-lb-extensions/1.0.0/rsmart-lb-extensions-1.0.0.jar'
+-encoding
+'MacRoman'
+-protected
+-sourcepath
+'/Users/leo/projects/git/rice-lb-ext/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2011 <a href="http://kualigan.blogspot.com">Leo Przybylski</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/leo/projects/git/rice-lb-ext/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'rice-lb-extensions 0.0.1 API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'rice-lb-extensions 0.0.1 API'
