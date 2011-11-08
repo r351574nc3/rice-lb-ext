@@ -20,6 +20,7 @@ KIM Refactorings
 *-----------*---------*----------------------------------------------------------*----------*
 
 ** Example
+
 +-------------------------------------------------------------------+
 <customChange class="org.liquibase.change.ext.CreateResponsibility">
     <param name="template"  value="Review" />
@@ -40,6 +41,7 @@ KIM Refactorings
 ** Parameters
 
 ** Example
+
 +-------------------------------------------------------------------+
 <customChange class="org.liquibase.change.ext.CreateResponsiblityAttribute">
     <param name="value"          value="TA" />
