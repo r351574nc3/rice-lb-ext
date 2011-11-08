@@ -15,7 +15,11 @@
  */
 package org.kuali.rice.liquibase.change.ext;
 
+import liquibase.change.AbstractChange;
+import liquibase.change.Change;
 import liquibase.database.Database;
+import liquibase.exception.ValidationErrors;
+import liquibase.statement.SqlStatement;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -26,8 +30,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 public class KimCreateRoleChange extends AbstractChange {
     
 
-    public KimAddRoleChange() {
-        super("KimAddRoleChange", "Adding a Role to KIM", EXTENSION_PRIORITY);
+    public KimCreateRoleChange() {
+        super("KimCreateRoleChange", "Adding a Role to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -53,7 +57,7 @@ public class KimCreateRoleChange extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        
+        return null;
     }
 
 
@@ -64,6 +68,13 @@ public class KimCreateRoleChange extends AbstractChange {
      */
     protected Change[] createInverses() {
         return null;
+    }
+
+      /**
+     * @return Confirmation message to be displayed after the change is executed
+     */
+    public String getConfirmationMessage() {
+        return "";
     }
 
 }
