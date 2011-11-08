@@ -1,7 +1,8 @@
 Usage
 
-* Migrations
 
-Conventions
+Available Refactorings
 
-* Project Structure and Location of Changelogs
+* {{{kns_refactorings}KNS Refactorings}}
+
+* {{{kim_refactorings}KIM Refactorings}}

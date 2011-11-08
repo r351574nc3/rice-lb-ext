@@ -1,0 +1,25 @@
+KNS Refactorings
+
+* Add System Parameter
+
+** org.liquibase.change.ext.AddSystemParameter
+
+** Description
+
+  Creates a new system parameter in KRNS_PARM_T
+
+** Parameters
+
+** Example
++---------------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.AddSystemParameter">
+    <param name="application"    value="Y" />
+    <param name="namespace"      value="KFS-TEM" />
+    <param name="name"           value="ENABLE_PER_DIEM_LOOKUP_LINKS_IND" />
+    <param name="detailTypeCode" value="TravelAuthorization" />
+    <param name="typeCode"       value="CONFG" />
+    <param name="description"    value="Y" />
+    <param name="value"          value="Y" />
+    <param name="constraintCode" value="Y" />
+</customChange>
++---------------------------------------------------------------------------+

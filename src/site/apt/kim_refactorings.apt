@@ -1,0 +1,160 @@
+KIM Refactorings
+
+* Create a Resposibility
+
+** org.liquibase.change.ext.CreateResponsibility
+
+** Description
+
+  Creates a new responsibility
+
+** Parameters
+
+*-----------*---------*----------------------------------------------------------*----------*
+| Name      | Type    | Description                                              | Required |
+| value	    | String  |	Value of the attribute                                   | Yes      |
+| template  | String  |	Name of responsibility template to use                   | Yes      |
+| name	    | String  |	Name of the attribute to add                             | Yes      |
+| namespace | String  |	Namespace for responsibility, types, and everything else | Yes      |
+| active    | Boolean | Make it active?	                                         | Yes      |
+*-----------*---------*----------------------------------------------------------*----------*
+
+** Example
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.CreateResponsibility">
+    <param name="template"  value="Review" />
+    <param name="namespace" value="KFS-TEM" />
+    <param name="name"      value="Review" />
+    <param name="active"    value="Y" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Add an Attribute to Resposibility
+
+** org.liquibase.change.ext.CreateResponsibilityAttribute
+
+** Description
+
+ Adds an attribute to a responsibility. Responsibility must already exist.
+
+** Parameters
+
+** Example
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.CreateResponsiblityAttribute">
+    <param name="value"          value="TA" />
+    <param name="attributeDef"   value="documentTypeName" />
+    <param name="responsibility" value="Review" />
+    <param name="namespace"      value="KFS-TEM" />
+    <param name="type"           value="Document Type, Routing Node & Action Information" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Create a Role
+
+** org.liquibase.change.ext.CreateRole
+
+** Description
+
+ Creates a new role
+
+** Parameters
+
+** Example
+
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.CreateResponsibility">
+    <param name="lastUpdated" />
+    <param name="namespace" value="KFS-TEM" />
+    <param name="type"      value="Default" />
+    <param name="active"    value="Y" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Create a Role Responsibility Action
+
+** org.liquibase.change.ext.CreateRoleResponsibilityAction
+
+** Description
+
+  Creates a new Role/Responsibility Action. Adds an action to a role/responsibility assignment.
+
+** Parameters
+
+** Example
+
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.CreateRoleResponsibilityAction">
+    <param name="actionTypeCode"   value="A" />
+    <param name="role"             value="International Travel Reviewer" />
+    <param name="responsibility"   value="Review" />
+    <param name="priority"         value="1" />
+    <param name="actionpolicyCode" value="F" />
+    <param name="force"            value="N" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Create a Permission
+
+** org.liquibase.change.ext.CreatePermission
+
+** Description
+
+  Creates a new Permission.
+
+** Parameters
+
+** Example
+
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.CreatePermission">
+    <param name="template"    value="Default" />
+    <param name="namespace"   value="KFS-TEM" />
+    <param name="name"        value="Amend TA" />
+    <param name="description" value="Allows access to Amend the TA doc" />
+    <param name="active"      value="Y" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Add Permission Attribute
+
+** org.liquibase.change.ext.AddPermissionAttribute
+
+** Description
+
+  Adds an attribute to a permission.
+
+** Parameters
+
+** Example
+
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.AddPermissionAttribute">
+    <param name="permission"   value="Amend TA" />
+    <param name="namespace"    value="KFS-TEM" />
+    <param name="name"         value="Amend TA" />
+    <param name="type"         value="Document Type, Routing Node & Field(s)" />
+    <param name="attributeDef" value="Button" />
+    <param name="value"        value="TA" />
+</customChange>
++-------------------------------------------------------------------+
+
+* Assign Permission to a Role
+
+** org.liquibase.change.ext.AssignRolePermission
+
+** Description
+
+  Assign role a permission
+
+** Parameters
+
+** Example
+
++-------------------------------------------------------------------+
+<customChange class="org.liquibase.change.ext.AssignRolePermission">
+    <param name="permission"   value="Modify Accounting Lines" />
+    <param name="namespace"    value="KFS-TEM" />
+    <param name="role"         value="Fiscal Officer" />
+</customChange>
++-------------------------------------------------------------------+
