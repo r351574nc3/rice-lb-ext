@@ -34,15 +34,18 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange {
-    private String template;
+public class CreateRoleResponsibilityAction extends AbstractChange {
+    private String role;
+    private String responsibility;
     private String namespace;
-    private String name;
-    private String active;
+    private String priority;
+    private String force;
+    private String actionTypeCode;
+    private String actionPolicyCode;
     
     
-    public KimCreateResponsibility() {
-        super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
+    public CreateRoleResponsibilityAction() {
+        super("CreateRoleResponsibilityAction", "Adding an action to a role with a responsibility to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -68,34 +71,63 @@ public class KimCreateResponsibility extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
+        final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(),
+                                                                         "krim_role_rsp_actn_t");
+        final SqlStatement getActionId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
+                        new UnparsedSql("insert into krim_role_rsp_actn_id_s values(null);"),
+                        new UnparsedSql("select max(id) from krim_role_rsp_actn_id_s;")
+                    };
+                }
+            };
+
+        final SqlStatement getRoleId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select role_id from krim_role_t where role_nm = '%s' and nmspc_cd = '%s'", getRole(), getNamespace()))
                     };
                 }
             };
 
         try {
+            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
+            
+            final SqlStatement getResponsibilityId = new RuntimeStatement() {
+                    public Sql[] generate(Database database) {
+                        return new Sql[] {
+                            new UnparsedSql(String.format("select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s'", getResponsibility(), getNamespace()))
+                        };
+                    }
+                };
             final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
             
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
+            final SqlStatement getRoleRespId = new RuntimeStatement() {
+                    public Sql[] generate(Database database) {
+                        return new Sql[] {
+                            new UnparsedSql(String.format("select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s'", roleId, responsibilityId))
+                        };
+                    }
+                };
+
+            final BigInteger actionId   = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getActionId, BigInteger.class);
+            final BigInteger roleRespId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+            
+            insertAction.addColumnValue("ROLE_RSP_ACTN_ID", actionId);
+            insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
+            insertAction.addColumnValue("actn_plcy_cd", getActionPolicyCode());
+            insertAction.addColumnValue("force", getForce());
+            insertAction.addColumnValue("role_rsp_id", roleRespId);
+            insertAction.addColumnValue("ver_nbr", 1);
+            insertAction.addColumnValue("role_mbr_id", "*");
+            insertAction.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertResponsibility
+            insertAction
         };
     }
 
@@ -117,21 +149,75 @@ public class KimCreateResponsibility extends AbstractChange {
     }
 
     /**
-     * Get the template attribute on this object
+     * Get the responsibility attribute on this object
      *
-     * @return template value
+     * @return responsibility value
      */
-    public String getTemplate() {
-        return this.template;
+    public String getResponsibility() {
+        return this.responsibility;
     }
 
     /**
-     * Set the template attribute on this object
+     * Set the responsibility attribute on this object
      *
-     * @param template value to set
+     * @param responsibility value to set
      */
-    public void setTemplate(final String template) {
-        this.template = template;
+    public void setResponsibility(final String responsibility) {
+        this.responsibility = responsibility;
+    }
+
+    /**
+     * Get the priority attribute on this object
+     *
+     * @return priority value
+     */
+    public String getPriority() {
+        return this.priority;
+    }
+
+    /**
+     * Set the priority attribute on this object
+     *
+     * @param priority value to set
+     */
+    public void setPriority(final String priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * Get the actionPolicyCode attribute on this object
+     *
+     * @return actionPolicyCode value
+     */
+    public String getActionPolicyCode() {
+        return this.actionPolicyCode;
+    }
+
+    /**
+     * Set the actionPolicyCode attribute on this object
+     *
+     * @param actionPolicyCode value to set
+     */
+    public void setActionPolicyCode(final String actionPolicyCode) {
+        this.actionPolicyCode = actionPolicyCode;
+    }
+
+    /**
+     * Get the force attribute on this object
+     *
+     * @return force value
+     */
+    public String getForce() {
+        return this.force;
+    }
+
+    /**
+     * Set the force attribute on this object
+     *
+     * @param force value to set
+     */
+    public void setForce(final String force) {
+        this.force = force;
     }
 
     /**
@@ -153,39 +239,39 @@ public class KimCreateResponsibility extends AbstractChange {
     }
 
     /**
-     * Get the name attribute on this object
+     * Get the role attribute on this object
      *
-     * @return name value
+     * @return role value
      */
-    public String getName() {
-        return this.name;
+    public String getRole() {
+        return this.role;
     }
 
     /**
-     * Set the name attribute on this object
+     * Set the role attribute on this object
      *
-     * @param name value to set
+     * @param role value to set
      */
-    public void setName(final String name) {
-        this.name = name;
+    public void setRole(final String role) {
+        this.role = role;
     }
 
     /**
-     * Get the active attribute on this object
+     * Get the actionTypeCode attribute on this object
      *
-     * @return active value
+     * @return actionTypeCode value
      */
-    public String getActive() {
-        return this.active;
+    public String getActionTypeCode() {
+        return this.actionTypeCode;
     }
 
     /**
-     * Set the active attribute on this object
+     * Set the actionTypeCode attribute on this object
      *
-     * @param active value to set
+     * @param actionTypeCode value to set
      */
-    public void setActive(final String active) {
-        this.active = active;
+    public void setActionTypeCode(final String actionTypeCode) {
+        this.actionTypeCode = actionTypeCode;
     }
 
 }

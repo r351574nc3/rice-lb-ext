@@ -69,7 +69,7 @@ public class KimCreateResponsibility extends AbstractChange {
      */
     public SqlStatement[] generateStatements(Database database) {
         final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
+                                                                         "krim_rsp_t");
         final SqlStatement getResponsibilityId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {

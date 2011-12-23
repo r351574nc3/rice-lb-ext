@@ -34,15 +34,17 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange {
-    private String template;
+public class AddPermissionAttribute extends AbstractChange {
+    private String value;
     private String namespace;
-    private String name;
+    private String attributeDef;
+    private String permission;
+    private String type;
     private String active;
     
     
-    public KimCreateResponsibility() {
-        super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
+    public AddPermissionAttribute() {
+        super("AddPermissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -68,34 +70,62 @@ public class KimCreateResponsibility extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
+        final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(),
+                                                                         "krim_perm_attr_data_t");
+        final SqlStatement getAttributeId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
+                        new UnparsedSql("insert into krim_perm_rqrd_attr_id_s values(null)"),
+                        new UnparsedSql("select max(id) from krim_perm_rqrd_attr_id_s")
+                    };
+                }
+            };
+
+        final SqlStatement getDefinitionId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s'", getAttributeDef()))
+                    };
+                }
+            };
+
+       final SqlStatement getTypeId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select kim_typ_id from krim_typ_t where nm = '%s'", getType()))
+                    };
+                }
+            };
+
+        final SqlStatement getPermissionId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s'", getPermission(), getNamespace()))
                     };
                 }
             };
 
         try {
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+            final BigInteger attributeId      = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getAttributeId, BigInteger.class);
+            final BigInteger permissionId     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
+            final BigInteger typeId           = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
+            final BigInteger definitionId     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getDefinitionId, BigInteger.class);
             
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
+            insertAttribute.addColumnValue("attr_data_id", attributeId);
+            insertAttribute.addColumnValue("perm_id", permissionId);
+            insertAttribute.addColumnValue("kim_typ_id", typeId);
+            insertAttribute.addColumnValue("actv_ind", getActive());
+            insertAttribute.addColumnValue("kim_attr_defn_id", definitionId);
+            insertAttribute.addColumnValue("attr_val", getValue());
+            insertAttribute.addColumnValue("ver_nbr", 1);
+            insertAttribute.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertResponsibility
+            insertAttribute
         };
     }
 
@@ -117,21 +147,39 @@ public class KimCreateResponsibility extends AbstractChange {
     }
 
     /**
-     * Get the template attribute on this object
+     * Get the attributeDef attribute on this object
      *
-     * @return template value
+     * @return attributeDef value
      */
-    public String getTemplate() {
-        return this.template;
+    public String getAttributeDef() {
+        return this.attributeDef;
     }
 
     /**
-     * Set the template attribute on this object
+     * Set the attributeDef attribute on this object
      *
-     * @param template value to set
+     * @param attributeDef value to set
      */
-    public void setTemplate(final String template) {
-        this.template = template;
+    public void setAttributeDef(final String attributeDef) {
+        this.attributeDef = attributeDef;
+    }
+
+    /**
+     * Get the type attribute on this object
+     *
+     * @return type value
+     */
+    public String getType() {
+        return this.type;
+    }
+
+    /**
+     * Set the type attribute on this object
+     *
+     * @param type value to set
+     */
+    public void setType(final String type) {
+        this.type = type;
     }
 
     /**
@@ -153,21 +201,39 @@ public class KimCreateResponsibility extends AbstractChange {
     }
 
     /**
-     * Get the name attribute on this object
+     * Get the permission attribute on this object
      *
-     * @return name value
+     * @return permission value
      */
-    public String getName() {
-        return this.name;
+    public String getPermission() {
+        return this.permission;
     }
 
     /**
-     * Set the name attribute on this object
+     * Set the permission attribute on this object
      *
-     * @param name value to set
+     * @param permission value to set
      */
-    public void setName(final String name) {
-        this.name = name;
+    public void setPermission(final String permission) {
+        this.permission = permission;
+    }
+
+    /**
+     * Get the value attribute on this object
+     *
+     * @return value value
+     */
+    public String getValue() {
+        return this.value;
+    }
+
+    /**
+     * Set the value attribute on this object
+     *
+     * @param value value to set
+     */
+    public void setValue(final String value) {
+        this.value = value;
     }
 
     /**
@@ -187,5 +253,4 @@ public class KimCreateResponsibility extends AbstractChange {
     public void setActive(final String active) {
         this.active = active;
     }
-
 }

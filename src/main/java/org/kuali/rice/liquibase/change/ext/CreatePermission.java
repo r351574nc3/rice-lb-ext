@@ -34,15 +34,16 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange {
+public class CreatePermission extends AbstractChange {
     private String template;
     private String namespace;
     private String name;
+    private String description;
     private String active;
     
     
-    public KimCreateResponsibility() {
-        super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
+    public CreatePermission() {
+        super("CreatePermission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -68,34 +69,34 @@ public class KimCreateResponsibility extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
+        final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
+        final SqlStatement getPermissionId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
+                        new UnparsedSql("insert into krim_perm_id_s values(null);"),
+                        new UnparsedSql("select max(id) from krim_perm_id_s;")
                     };
                 }
             };
 
         try {
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+            final BigInteger permissionId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
             
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
+            insertPermission.addColumnValue("perm_id", permissionId);
+            insertPermission.addColumnValue("nmspc_cd", getNamespace());
+            insertPermission.addColumnValue("nm", getName());
+            insertPermission.addColumnValue("desc_txt", getDescription());
+            insertPermission.addColumnValue("actv_ind", getActive());
+            insertPermission.addColumnValue("perm_tmpl_id", 1);
+            insertPermission.addColumnValue("ver_nbr", 1);
+            insertPermission.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertResponsibility
+            insertPermission
         };
     }
 
@@ -168,6 +169,24 @@ public class KimCreateResponsibility extends AbstractChange {
      */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    /**
+     * Get the description attribute on this object
+     *
+     * @return description value
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Set the description attribute on this object
+     *
+     * @param description value to set
+     */
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     /**

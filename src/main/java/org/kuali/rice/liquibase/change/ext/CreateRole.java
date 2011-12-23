@@ -34,15 +34,18 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange {
+public class CreateRole extends AbstractChange {
     private String template;
     private String namespace;
     private String name;
+    private String description;
+    private String type;
+    private String lastUpdated;
     private String active;
     
     
-    public KimCreateResponsibility() {
-        super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
+    public CreateRole() {
+        super("CreateRole", "Adding a Role to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -68,34 +71,47 @@ public class KimCreateResponsibility extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
+        final InsertStatement insertRole = new InsertStatement(database.getDefaultSchemaName(),
+                                                                         "KRIM_ROLE_T");
+        final SqlStatement getRoleId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
+                        new UnparsedSql("insert into krim_role_id_s values(null);"),
+                        new UnparsedSql("select max(id) from krim_role_id_s;")
+                    };
+                }
+            };
+
+       final SqlStatement getTypeId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select kim_typ_id from krim_typ_t where nm = '%s'", getType()))
                     };
                 }
             };
 
         try {
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
+            final BigInteger typeId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
             
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
+            insertRole.addColumnValue("role_id", roleId);
+            insertRole.addColumnValue("nmspc_cd", getNamespace());
+            insertRole.addColumnValue("role_nm", getName());
+            insertRole.addColumnValue("actv_ind", getActive());
+            insertRole.addColumnValue("kim_typ_id", typeId);
+            insertRole.addColumnValue("ver_nbr", 1);
+            insertRole.addColumnValue("desc_text", getDescription());
+            if (getLastUpdated() != null) {
+                insertRole.addColumnValue("LAST_UPDT_DT", getLastUpdated());
+            }
+            insertRole.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertResponsibility
+            insertRole
         };
     }
 
@@ -168,6 +184,60 @@ public class KimCreateResponsibility extends AbstractChange {
      */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    /**
+     * Get the type attribute on this object
+     *
+     * @return type value
+     */
+    public String getType() {
+        return this.type;
+    }
+
+    /**
+     * Set the type attribute on this object
+     *
+     * @param type value to set
+     */
+    public void setType(final String type) {
+        this.type = type;
+    }
+
+    /**
+     * Get the description attribute on this object
+     *
+     * @return description value
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Set the description attribute on this object
+     *
+     * @param description value to set
+     */
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    /**
+     * Get the lastUpdated attribute on this object
+     *
+     * @return lastUpdated value
+     */
+    public String getLastUpdated() {
+        return this.lastUpdated;
+    }
+
+    /**
+     * Set the lastUpdated attribute on this object
+     *
+     * @param lastUpdated value to set
+     */
+    public void setLastUpdated(final String lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     /**
