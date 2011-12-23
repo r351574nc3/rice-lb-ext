@@ -35,9 +35,9 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class AssignRolePermission extends AbstractChange {
-    private String template;
+    private String permission;
     private String namespace;
-    private String name;
+    private String role;
     private String active;
     
     
@@ -68,34 +68,52 @@ public class AssignRolePermission extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "kim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
+        final InsertStatement assignPermission = new InsertStatement(database.getDefaultSchemaName(),
+                                                                         "krim_role_perm_t");
+        final SqlStatement getId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
+                        new UnparsedSql("insert into krim_role_perm_id_s values(null)"),
+                        new UnparsedSql("select max(id) from krim_role_perm_id_s")
+                    };
+                }
+            };
+
+
+        final SqlStatement getRoleId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s'", getRole(), getNamespace()))
+                    };
+                }
+            };
+
+        final SqlStatement getPermId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s'", getPermission(), getNamespace()))
                     };
                 }
             };
 
         try {
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+            final BigInteger id     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
+            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
+            final BigInteger permId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermId, BigInteger.class);
             
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
+            assignPermission.addColumnValue("role_perm_id", id);
+            assignPermission.addColumnValue("role_id", roleId);
+            assignPermission.addColumnValue("perm_id", permId);
+            assignPermission.addColumnValue("actv_ind", getActive());
+            assignPermission.addColumnValue("ver_nbr", 1);
+            assignPermission.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertResponsibility
+            assignPermission
         };
     }
 
@@ -117,21 +135,21 @@ public class AssignRolePermission extends AbstractChange {
     }
 
     /**
-     * Get the template attribute on this object
+     * Get the permission attribute on this object
      *
-     * @return template value
+     * @return permission value
      */
-    public String getTemplate() {
-        return this.template;
+    public String getPermission() {
+        return this.permission;
     }
 
     /**
-     * Set the template attribute on this object
+     * Set the permission attribute on this object
      *
-     * @param template value to set
+     * @param permission value to set
      */
-    public void setTemplate(final String template) {
-        this.template = template;
+    public void setPermission(final String permission) {
+        this.permission = permission;
     }
 
     /**
@@ -153,21 +171,21 @@ public class AssignRolePermission extends AbstractChange {
     }
 
     /**
-     * Get the name attribute on this object
+     * Get the role attribute on this object
      *
-     * @return name value
+     * @return role value
      */
-    public String getName() {
-        return this.name;
+    public String getRole() {
+        return this.role;
     }
 
     /**
-     * Set the name attribute on this object
+     * Set the role attribute on this object
      *
-     * @param name value to set
+     * @param role value to set
      */
-    public void setName(final String name) {
-        this.name = name;
+    public void setRole(final String role) {
+        this.role = role;
     }
 
     /**
