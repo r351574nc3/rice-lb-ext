@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -138,7 +140,16 @@ public class CreateRoleResponsibilityAction extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange undoAssign = new DeleteDataChange();
+        final String roleId = String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", getRole(), getNamespace());
+        final String respId = String.format("(select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s')", getResponsibility(), getNamespace());
+        final String assignId = String.format("(select role_rsp_id from krim_role_rsp_t where role_id in '%s' and rsp_id in '%s')", roleId, respId);
+        undoAssign.setTableName("krim_role_rsp_actn_t");
+        undoAssign.setWhereClause(String.format("role_rsp_id in %s and mbr_id = '*'", assignId));
+
+        return new Change[] {
+            undoAssign
+        };
     }
     
     /**
