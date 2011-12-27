@@ -82,7 +82,7 @@ public class CreateAttributeDefinition extends AbstractChange {
         try {
             final BigInteger id = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
             
-            insertDefinition.addColumnValue("KIM_ATTR_DEFN_ID", definitionId);
+            insertDefinition.addColumnValue("KIM_ATTR_DEFN_ID", id);
             insertDefinition.addColumnValue("nmspc_cd", getNamespace());
             insertDefinition.addColumnValue("NM", getName());
             insertDefinition.addColumnValue("LBL", getLabel());

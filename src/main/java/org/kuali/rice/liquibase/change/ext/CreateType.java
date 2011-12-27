@@ -28,22 +28,23 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
  *
  * @author Leo Przybylski
  */
-public class CreatePermission extends AbstractChange {
-    private String template;
+public class CreateType extends AbstractChange {
     private String namespace;
     private String name;
-    private String description;
+    private String serviceName;
     private String active;
     
     
-    public CreatePermission() {
-        super("CreatePermission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
+    public CreateType() {
+        super("CreateType", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
     }
     
     /**
@@ -69,34 +70,33 @@ public class CreatePermission extends AbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
-        final SqlStatement getPermissionId = new RuntimeStatement() {
+        final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
+        final SqlStatement getId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
-                        new UnparsedSql("insert into krim_perm_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_perm_id_s;")
+                        new UnparsedSql("insert into krim_typ_id_s values(null);"),
+                        new UnparsedSql("select max(id) from krim_typ_id_s;")
                     };
                 }
             };
 
         try {
-            final BigInteger permissionId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
+            final BigInteger id = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
             
-            insertPermission.addColumnValue("perm_id", permissionId);
-            insertPermission.addColumnValue("nmspc_cd", getNamespace());
-            insertPermission.addColumnValue("nm", getName());
-            insertPermission.addColumnValue("desc_txt", getDescription());
-            insertPermission.addColumnValue("actv_ind", getActive());
-            insertPermission.addColumnValue("perm_tmpl_id", 1);
-            insertPermission.addColumnValue("ver_nbr", 1);
-            insertPermission.addColumnValue("obj_id", "sys_guid()");
+            insertType.addColumnValue("kim_typ_id", id);
+            insertType.addColumnValue("nmspc_cd", getNamespace());
+            insertType.addColumnValue("nm", getName());
+            insertType.addColumnValue("svc_nm", getServiceName());
+            insertType.addColumnValue("actv_ind", getActive());
+            insertType.addColumnValue("ver_nbr", 1);
+            insertType.addColumnValue("obj_id", "sys_guid()");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return new SqlStatement[] {
-            insertPermission
+            insertType
         };
     }
 
@@ -107,7 +107,13 @@ public class CreatePermission extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange removeType = new DeleteDataChange();
+        removeType.setTableName("krim_typ_t");
+        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND svc_nm = '%s'", getNamespace(), getName(), getServiceName()));
+
+        return new Change[] {
+            removeType
+        };
     }
     
     /**
@@ -115,24 +121,6 @@ public class CreatePermission extends AbstractChange {
      */
     public String getConfirmationMessage() {
         return "";
-    }
-
-    /**
-     * Get the template attribute on this object
-     *
-     * @return template value
-     */
-    public String getTemplate() {
-        return this.template;
-    }
-
-    /**
-     * Set the template attribute on this object
-     *
-     * @param template value to set
-     */
-    public void setTemplate(final String template) {
-        this.template = template;
     }
 
     /**
@@ -172,21 +160,21 @@ public class CreatePermission extends AbstractChange {
     }
 
     /**
-     * Get the description attribute on this object
+     * Get the serviceName attribute on this object
      *
-     * @return description value
+     * @return serviceName value
      */
-    public String getDescription() {
-        return this.description;
+    public String getServiceName() {
+        return this.serviceName;
     }
 
     /**
-     * Set the description attribute on this object
+     * Set the serviceName attribute on this object
      *
-     * @param description value to set
+     * @param serviceName value to set
      */
-    public void setDescription(final String description) {
-        this.description = description;
+    public void setServiceName(final String serviceName) {
+        this.serviceName = serviceName;
     }
 
     /**

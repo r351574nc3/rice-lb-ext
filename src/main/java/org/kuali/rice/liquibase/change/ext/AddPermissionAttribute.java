@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -136,7 +138,24 @@ public class AddPermissionAttribute extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange removeAttribute = new DeleteDataChange();
+        removeAttribute.setTableName("krim_perm_attr_data_t");
+
+        try {
+            final String permSql = String.format("(select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s')", getAttributeDef());
+            final String typeSql = String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", getType());
+            final String defnSql = String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s')", getPermission(), getNamespace());
+            
+            removeAttribute.setWhereClause(String.format("perm_id in %s AND kim_typ_id in %s AND kim_attr_defn_id in %s", 
+                                                         permSql, typeSql, defnSql));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+            
+        return new Change[] {
+            removeAttribute
+        };
     }
     
     /**
