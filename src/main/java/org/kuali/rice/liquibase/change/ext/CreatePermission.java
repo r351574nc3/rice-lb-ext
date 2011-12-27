@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -107,7 +109,13 @@ public class CreatePermission extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange removePerm = new DeleteDataChange();
+        removePerm.setTableName("krim_typ_t");
+        removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id = '%s'", getNamespace(), getName(), getTemplate()));
+
+        return new Change[] {
+            removePerm
+        };
     }
     
     /**

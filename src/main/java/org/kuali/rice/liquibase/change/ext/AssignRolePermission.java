@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -69,7 +71,7 @@ public class AssignRolePermission extends AbstractChange {
      */
     public SqlStatement[] generateStatements(Database database) {
         final InsertStatement assignPermission = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "krim_role_perm_t");
+                                                                     "krim_role_perm_t");
         final SqlStatement getId = new RuntimeStatement() {
                 public Sql[] generate(Database database) {
                     return new Sql[] {
@@ -124,7 +126,15 @@ public class AssignRolePermission extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange undoAssign = new DeleteDataChange();
+        final String roleId = String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", getRole(), getNamespace());
+        final String permId = String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s')", getPermission(), getNamespace());
+        undoAssign.setTableName("krim_role_perm_t");
+        undoAssign.setWhereClause(String.format("role_id in %s and perm_id in %s", roleId, permId));
+
+        return new Change[] {
+            undoAssign
+        };
     }
     
     /**

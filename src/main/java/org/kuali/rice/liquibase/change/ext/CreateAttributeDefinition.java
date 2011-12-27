@@ -114,7 +114,7 @@ public class CreateAttributeDefinition extends AbstractChange {
         removeDefinition.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND cmpnt_nm = '%s'", getNamespace(), getName(), getComponent()));
 
         return new Change[] {
-            removeType
+            removeDefinition
         };
     }
     
