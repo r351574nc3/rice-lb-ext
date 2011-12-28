@@ -33,6 +33,7 @@ import liquibase.change.core.DeleteDataChange;
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
+ * Custom refactoring for adding a Role to KIM.
  *
  * @author Leo Przybylski
  */

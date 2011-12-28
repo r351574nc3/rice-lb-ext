@@ -33,6 +33,7 @@ import liquibase.change.core.DeleteDataChange;
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
+ * Custom Liquibase Refactoring for creating a KIM permission.
  *
  * @author Leo Przybylski
  */

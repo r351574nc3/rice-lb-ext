@@ -33,6 +33,17 @@ import liquibase.change.core.DeleteDataChange;
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
+ * Custom Liquibase refactoring for adding an attribute to a permission. Here's an example of the XML used to do this:
+ * <code>
+ * &lt;customChange class="org.liquibase.change.ext.AddPermissionAttribute"&gt;
+ *   &lt;param name="permission"   value="Amend TA" /&gt;
+ *   &lt;param name="namespace"    value="KFS-TEM" /&gt;
+ *   &lt;param name="name"         value="Amend TA" /&gt;
+ *   &lt;param name="type"         value="Document Type, Routing Node &amp; Field(s)" /&gt;
+ *   &lt;param name="attributeDef" value="Button" /&gt;
+ *   &lt;param name="value"        value="TA" /&gt;
+ * &lt;/customChange&gt;
+ * </code>
  *
  * @author Leo Przybylski
  */
