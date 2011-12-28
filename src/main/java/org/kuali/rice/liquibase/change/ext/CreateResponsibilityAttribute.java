@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -135,7 +137,16 @@ public class CreateResponsibilityAttribute extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange undoAssign = new DeleteDataChange();
+        final String respId = String.format("(select rsp_id from krim_rsp_t where nm = '%s')", getResponsibility());
+        final String typeId = String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", getType());
+        final String defnId = String.format("(select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s')", getAttributeDef());
+        undoAssign.setTableName("krim_rsp_attr_data_t");
+        undoAssign.setWhereClause(String.format("rsp_id in %s and kim_typ_id in %s and kim_attr_defn_id in %s", respId, typeId, defnId));
+
+        return new Change[] {
+            undoAssign
+        };
     }
     
     /**

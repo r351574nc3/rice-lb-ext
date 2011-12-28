@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -122,7 +124,14 @@ public class CreateRole extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange removeRole = new DeleteDataChange();
+        final String typeId = String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", getType());
+        removeRole.setTableName("KRIM_ROLE_T");
+        removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id in %s", getName(), typeId));
+
+        return new Change[] {
+            removeRole
+        };
     }
     
     /**

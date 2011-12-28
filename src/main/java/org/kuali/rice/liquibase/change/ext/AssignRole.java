@@ -129,7 +129,7 @@ public class AssignRole extends AbstractChange {
         final DeleteDataChange undoAssign = new DeleteDataChange();
         final String roleId = String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", getRole(), getNamespace());
         final String mbrId  = String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where nm = '%s')", getMember());
-        undoAssign.setTableName("KRIM_ROLE_MBR");
+        undoAssign.setTableName("KRIM_ROLE_MBR_T");
         undoAssign.setWhereClause(String.format("role_id in %s and mbr_id in %s", roleId, mbrId));
 
         return new Change[] {

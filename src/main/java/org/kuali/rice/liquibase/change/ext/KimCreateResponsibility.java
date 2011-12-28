@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import liquibase.statement.core.RuntimeStatement;
 
+import liquibase.change.core.DeleteDataChange;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -79,8 +81,17 @@ public class KimCreateResponsibility extends AbstractChange {
                 }
             };
 
+       final SqlStatement getTemplateId = new RuntimeStatement() {
+                public Sql[] generate(Database database) {
+                    return new Sql[] {
+                        new UnparsedSql(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s' and NMSPC_CD = '%s'", getTemplate(), getNamespace()))
+                    };
+                }
+            };
+
         try {
             final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+            final BigInteger templateId       = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTemplateId, BigInteger.class);
             
             insertResponsibility.addColumnValue("rsp_id", responsibilityId);
             insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
@@ -106,7 +117,14 @@ public class KimCreateResponsibility extends AbstractChange {
      * @return {@link Array} of {@link Change} instances
      */
     protected Change[] createInverses() {
-        return null;
+        final DeleteDataChange removeResponsibility = new DeleteDataChange();
+        final String templateId = String.format("(select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s' and NMSPC_CD = '%s')", getTemplate(), getNamespace());
+        removeResponsibility.setTableName("krim_rsp_t");
+        removeResponsibility.setWhereClause(String.format("nm = '%s' and NMSPC_CD = '%s' and RSP_TMPL_ID in %s", getName(), getNamespace(), templateId));
+
+        return new Change[] {
+            removeResponsibility
+        };
     }
     
     /**
