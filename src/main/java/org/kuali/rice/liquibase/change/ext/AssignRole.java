@@ -19,9 +19,12 @@ import java.math.BigInteger;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
+import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
+import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
@@ -37,12 +40,12 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AssignRole extends AbstractChange {
+public class AssignRole extends AbstractChange implements CustomSqlChange {
     private String namespace;
     private String type;
     private String member;
     private String role;
-    
+	   	        
     
     public AssignRole() {
         super("AssignRole", "Assigning a KIM role", EXTENSION_PRIORITY);
@@ -217,4 +220,10 @@ public class AssignRole extends AbstractChange {
         this.type = type;
     }
 
+    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
+        setResourceAccessor(resourceAccessor);
+    }
+
+    public void setUp() throws SetupException {
+    }
 }

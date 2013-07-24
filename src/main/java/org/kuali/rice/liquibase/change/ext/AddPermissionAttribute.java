@@ -19,9 +19,12 @@ import java.math.BigInteger;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
+import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
+import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
@@ -47,7 +50,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AddPermissionAttribute extends AbstractChange {
+public class AddPermissionAttribute extends AbstractChange implements CustomSqlChange {
     private String value;
     private String namespace;
     private String attributeDef;
@@ -283,4 +286,12 @@ public class AddPermissionAttribute extends AbstractChange {
     public void setActive(final String active) {
         this.active = active;
     }
+
+    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
+        setResourceAccessor(resourceAccessor);
+    }
+    
+    public void setUp() throws SetupException {
+    }
+
 }

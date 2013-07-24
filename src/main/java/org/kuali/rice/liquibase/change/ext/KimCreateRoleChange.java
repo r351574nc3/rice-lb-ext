@@ -17,8 +17,11 @@ package org.kuali.rice.liquibase.change.ext;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
+import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
 import liquibase.statement.SqlStatement;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -27,7 +30,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateRoleChange extends AbstractChange {
+public class KimCreateRoleChange extends AbstractChange implements CustomSqlChange {
     
 
     public KimCreateRoleChange() {
@@ -77,4 +80,10 @@ public class KimCreateRoleChange extends AbstractChange {
         return "";
     }
 
+    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
+        setResourceAccessor(resourceAccessor);
+    }    
+
+    public void setUp() throws SetupException {
+    }
 }

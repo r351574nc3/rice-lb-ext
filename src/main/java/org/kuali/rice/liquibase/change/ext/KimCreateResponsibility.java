@@ -19,9 +19,12 @@ import java.math.BigInteger;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
+import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
+import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
@@ -37,7 +40,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange {
+public class KimCreateResponsibility extends AbstractChange implements CustomSqlChange {
     private String template;
     private String namespace;
     private String name;
@@ -207,4 +210,10 @@ public class KimCreateResponsibility extends AbstractChange {
         this.active = active;
     }
 
+    public void setUp() throws SetupException {
+    }
+
+    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
+        setResourceAccessor(resourceAccessor);
+    }    
 }
