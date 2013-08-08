@@ -16,20 +16,14 @@
 package org.kuali.rice.liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
+import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
@@ -40,12 +34,12 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateRole extends AbstractChange implements CustomSqlChange {
-    private String template;
-    private String namespace;
-    private String name;
-    private String description;
-    private String type;
+public class CreateRole extends RiceAbstractChange implements CustomSqlChange {
+
+	private String name;
+	private String namespace;
+	private String description;
+	private String type;
     private String lastUpdated;
     private String active;
     
@@ -62,106 +56,47 @@ public class CreateRole extends AbstractChange implements CustomSqlChange {
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_role_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertRole = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "KRIM_ROLE_T");
-        final SqlStatement getRoleId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_role_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_role_id_s;")
-                    };
-                }
-            };
+	public SqlStatement[] generateStatements(Database database) {
+		final InsertStatement insertRole = new InsertStatement(database.getDefaultSchemaName(), "KRIM_ROLE_T");
+		final BigInteger roleId = getPrimaryKey(database);
+		final BigInteger typeId = getTypeForeignKey(database, getType());
 
-       final SqlStatement getTypeId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select kim_typ_id from krim_typ_t where nm = '%s'", getType()))
-                    };
-                }
-            };
+		insertRole.addColumnValue("role_id", roleId);
+		insertRole.addColumnValue("nmspc_cd", getNamespace());
+		insertRole.addColumnValue("role_nm", getName());
+		insertRole.addColumnValue("actv_ind", getActive());
+		insertRole.addColumnValue("kim_typ_id", typeId);
+		insertRole.addColumnValue("ver_nbr", 1);
+		insertRole.addColumnValue("desc_txt", getDescription());
+		if (getLastUpdated() != null) {
+			insertRole.addColumnValue("LAST_UPDT_DT", getLastUpdated());
+		}
+		insertRole.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-        try {
-            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
-            final BigInteger typeId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
-            
-            insertRole.addColumnValue("role_id", roleId);
-            insertRole.addColumnValue("nmspc_cd", getNamespace());
-            insertRole.addColumnValue("role_nm", getName());
-            insertRole.addColumnValue("actv_ind", getActive());
-            insertRole.addColumnValue("kim_typ_id", typeId);
-            insertRole.addColumnValue("ver_nbr", 1);
-            insertRole.addColumnValue("desc_text", getDescription());
-            if (getLastUpdated() != null) {
-                insertRole.addColumnValue("LAST_UPDT_DT", getLastUpdated());
-            }
-            insertRole.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		return new SqlStatement[]{
+			insertRole
+		};
+	}
 
-        return new SqlStatement[] {
-            insertRole
-        };
-    }
-
-
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange removeRole = new DeleteDataChange();
-        final String typeId = String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", getType());
-        removeRole.setTableName("KRIM_ROLE_T");
-        removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id in %s", getName(), typeId));
-
-        return new Change[] {
-            removeRole
-        };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
-
-    /**
-     * Get the template attribute on this object
-     *
-     * @return template value
-     */
-    public String getTemplate() {
-        return this.template;
-    }
-
-    /**
-     * Set the template attribute on this object
-     *
-     * @param template value to set
-     */
-    public void setTemplate(final String template) {
-        this.template = template;
-    }
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		final BigInteger typeReference = getTypeForeignKey(database, getType());
+		final DeleteDataChange removeRole = new DeleteDataChange();
+		removeRole.setTableName("KRIM_ROLE_T");
+		removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id = '%s'", getName(), typeReference));
+		return removeRole.generateStatements(database);
+	}
 
     /**
      * Get the namespace attribute on this object
@@ -271,10 +206,4 @@ public class CreateRole extends AbstractChange implements CustomSqlChange {
         this.active = active;
     }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }
-
-    public void setUp() throws SetupException {
-    }
 }
