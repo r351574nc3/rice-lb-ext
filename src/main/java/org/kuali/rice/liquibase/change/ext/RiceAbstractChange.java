@@ -101,22 +101,7 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
-	private void incrementSequence(Database database) {
-		try {
-			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
-				public Sql[] generate(Database database) {
-					return new Sql[]{
-						new UnparsedSql(String.format("insert into %s values(null);",getSequenceName()))
-					};
-				}
-			};
-			ExecutorService.getInstance().getExecutor(database).execute(incrementSequenceStatement);
-		} catch (DatabaseException e) {
-			throw new UnexpectedLiquibaseException(String.format("Unable to increment sequence (%s)",getSequenceName()),e);
-		}
-	}
-
-	protected BigInteger getTypeReference(Database database, final String kimType) {
+	protected BigInteger getTypeForeignKey(Database database, final String kimType) {
 		try {
 			final SqlStatement getTypeId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -131,7 +116,7 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
-	protected BigInteger getPermissionReference(Database database, final String permissionName, final String permissionNameSpace){
+	protected BigInteger getPermissionForeignKey(Database database, final String permissionName, final String permissionNameSpace){
 		try {
 			final SqlStatement getPermissionId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -143,6 +128,21 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retreive foreign key reference for 'Permission' (name: %s, namespace: %s)", permissionName, permissionNameSpace));
+		}
+	}
+
+	private void incrementSequence(Database database) {
+		try {
+			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("insert into %s values(null);",getSequenceName()))
+					};
+				}
+			};
+			ExecutorService.getInstance().getExecutor(database).execute(incrementSequenceStatement);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to increment sequence (%s)",getSequenceName()),e);
 		}
 	}
 }

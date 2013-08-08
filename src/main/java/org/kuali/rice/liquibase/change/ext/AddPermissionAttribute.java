@@ -78,8 +78,8 @@ public class AddPermissionAttribute extends RiceAbstractChange {
         final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_attr_data_t");
         try {
             final BigInteger attributeId = getPrimaryKey(database);
-			final BigInteger permissionId = getPermissionReference(database,getPermission(),getNamespace());
-			final BigInteger typeId = getTypeReference(database, getType());
+			final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+			final BigInteger typeId = getTypeForeignKey(database, getType());
             final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
             insertAttribute.addColumnValue("attr_data_id", attributeId);
@@ -111,8 +111,8 @@ public class AddPermissionAttribute extends RiceAbstractChange {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_perm_attr_data_t");
 
-		final BigInteger permissionId = getPermissionReference(database, getPermission(),getNamespace());
-		final BigInteger typeId = getTypeReference(database,getType());
+		final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		final BigInteger typeId = getTypeForeignKey(database, getType());
 		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
 		removeAttribute.setWhereClause(String.format("perm_id = %s AND kim_typ_id = %s AND kim_attr_defn_id = %s",
