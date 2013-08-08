@@ -15,23 +15,16 @@
  */
 package org.kuali.rice.liquibase.change.ext;
 
-import java.math.BigInteger;
-
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
-import liquibase.change.custom.CustomSqlChange;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
+import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.UnexpectedLiquibaseException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
-import liquibase.change.core.DeleteDataChange;
+import java.math.BigInteger;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -50,33 +43,29 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AddPermissionAttribute extends AbstractChange implements CustomSqlChange {
-    private String value;
+public class AddPermissionAttribute extends RiceAbstractChange {
+
+	private static final String SEQUENCE_NAME = "KRIM_PERM_RQRD_ATTR_ID_S";
+
+	private String name;
+	private String value;
     private String namespace;
     private String attributeDef;
     private String permission;
     private String type;
     private String active;
-    
-    
+
+
     public AddPermissionAttribute() {
         super("AddPermissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
     }
-    
+
     /**
-     * Supports all databases 
+     * Supports all databases
      */
     @Override
     public boolean supports(Database database) {
         return true;
-    }
-
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
     }
 
     /**
@@ -86,58 +75,24 @@ public class AddPermissionAttribute extends AbstractChange implements CustomSqlC
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "krim_perm_attr_data_t");
-        final SqlStatement getAttributeId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_perm_rqrd_attr_id_s values(null)"),
-                        new UnparsedSql("select max(id) from krim_perm_rqrd_attr_id_s")
-                    };
-                }
-            };
-
-        final SqlStatement getDefinitionId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s'", getAttributeDef()))
-                    };
-                }
-            };
-
-       final SqlStatement getTypeId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select kim_typ_id from krim_typ_t where nm = '%s'", getType()))
-                    };
-                }
-            };
-
-        final SqlStatement getPermissionId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s'", getPermission(), getNamespace()))
-                    };
-                }
-            };
-
+        final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_attr_data_t");
         try {
-            final BigInteger attributeId      = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getAttributeId, BigInteger.class);
-            final BigInteger permissionId     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
-            final BigInteger typeId           = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
-            final BigInteger definitionId     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getDefinitionId, BigInteger.class);
-            
+            final BigInteger attributeId = getPrimaryKey(database);
+			final BigInteger permissionId = getPermissionReference(database,getPermission(),getNamespace());
+			final BigInteger typeId = getTypeReference(database, getType());
+            final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+
             insertAttribute.addColumnValue("attr_data_id", attributeId);
             insertAttribute.addColumnValue("perm_id", permissionId);
             insertAttribute.addColumnValue("kim_typ_id", typeId);
-            insertAttribute.addColumnValue("actv_ind", getActive());
             insertAttribute.addColumnValue("kim_attr_defn_id", definitionId);
             insertAttribute.addColumnValue("attr_val", getValue());
             insertAttribute.addColumnValue("ver_nbr", 1);
-            insertAttribute.addColumnValue("obj_id", "sys_guid()");
+            insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Permission Attribute' (perm: %s, name: %s, attr_def: %s)'",getPermission(),
+				getValue(), getAttributeDef()), e);
         }
 
         return new SqlStatement[] {
@@ -145,41 +100,28 @@ public class AddPermissionAttribute extends AbstractChange implements CustomSqlC
         };
     }
 
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
 
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange removeAttribute = new DeleteDataChange();
-        removeAttribute.setTableName("krim_perm_attr_data_t");
 
-        try {
-            final String permSql = String.format("(select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s')", getAttributeDef());
-            final String typeSql = String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", getType());
-            final String defnSql = String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s')", getPermission(), getNamespace());
-            
-            removeAttribute.setWhereClause(String.format("perm_id in %s AND kim_typ_id in %s AND kim_attr_defn_id in %s", 
-                                                         permSql, typeSql, defnSql));
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-            
-        return new Change[] {
-            removeAttribute
-        };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		final DeleteDataChange removeAttribute = new DeleteDataChange();
+		removeAttribute.setTableName("krim_perm_attr_data_t");
 
-    /**
+		final BigInteger permissionId = getPermissionReference(database, getPermission(),getNamespace());
+		final BigInteger typeId = getTypeReference(database,getType());
+		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+
+		removeAttribute.setWhereClause(String.format("perm_id = %s AND kim_typ_id = %s AND kim_attr_defn_id = %s",
+			permissionId, typeId, definitionId));
+		return removeAttribute.generateStatements(database);
+	}
+
+
+	/**
      * Get the attributeDef attribute on this object
      *
      * @return attributeDef value
@@ -287,11 +229,14 @@ public class AddPermissionAttribute extends AbstractChange implements CustomSqlC
         this.active = active;
     }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }
-    
-    public void setUp() throws SetupException {
-    }
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
 
 }
