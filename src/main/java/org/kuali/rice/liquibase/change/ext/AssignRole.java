@@ -16,20 +16,13 @@
 package org.kuali.rice.liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
+import liquibase.exception.*;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
@@ -40,7 +33,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AssignRole extends AbstractChange implements CustomSqlChange {
+public class AssignRole extends RiceAbstractChange implements CustomSqlChange {
+
     private String namespace;
     private String type;
     private String member;
@@ -59,94 +53,45 @@ public class AssignRole extends AbstractChange implements CustomSqlChange {
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "KRIM_ROLE_MBR_ID_S";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement assignPermission = new InsertStatement(database.getDefaultSchemaName(),
-                                                                     "krim_role_mbr_t");
-        final SqlStatement getId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into KRIM_ROLE_MBR_ID_S values(null)"),
-                        new UnparsedSql("select max(id) from KRIM_ROLE_MBR_ID_S")
-                    };
-                }
-            };
+	public SqlStatement[] generateStatements(Database database) {
+		final InsertStatement assignRole = new InsertStatement(database.getDefaultSchemaName(), "krim_role_mbr_t");
+		final BigInteger id = getPrimaryKey(database);
+		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final BigInteger memberId = getPrincipalForeignKey(database, getMember());
+
+		assignRole.addColumnValue("role_mbr_id", id);
+		assignRole.addColumnValue("role_id", roleId);
+		assignRole.addColumnValue("mbr_id", memberId);
+		assignRole.addColumnValue("mbr_typ_cd", getType());
+		assignRole.addColumnValue("ver_nbr", 1);
+		assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+		return new SqlStatement[]{
+			assignRole
+		};
+	}
 
 
-        final SqlStatement getRoleId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s'", getRole(), getNamespace()))
-                    };
-                }
-            };
-
-        final SqlStatement getMemberId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s'", getMember()))
-                    };
-                }
-            };
-
-        try {
-            final BigInteger id     = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
-            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
-            final BigInteger memberId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getMemberId, BigInteger.class);
-            
-            assignPermission.addColumnValue("ROLE_MBR_ID", id);
-            assignPermission.addColumnValue("role_id", roleId);
-            assignPermission.addColumnValue("mbr_id", memberId);
-            assignPermission.addColumnValue("MBR_TYP_CD", getType());
-            assignPermission.addColumnValue("ver_nbr", 1);
-            assignPermission.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return new SqlStatement[] {
-            assignPermission
-        };
-    }
-
-
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange undoAssign = new DeleteDataChange();
-        final String roleId = String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", getRole(), getNamespace());
-        final String mbrId  = String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where nm = '%s')", getMember());
-        undoAssign.setTableName("KRIM_ROLE_MBR_T");
-        undoAssign.setWhereClause(String.format("role_id in %s and mbr_id in %s", roleId, mbrId));
-
-        return new Change[] {
-            undoAssign
-        };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		final DeleteDataChange undoAssign = new DeleteDataChange();
+		final BigInteger roleId = getRoleForeignKey(database, getRole(),getNamespace());
+		final BigInteger mbrId  = getPrincipalForeignKey(database, getMember());
+		undoAssign.setTableName("KRIM_ROLE_MBR_T");
+		undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, mbrId));
+		return undoAssign.generateStatements(database);
+	}
 
     /**
      * Get the member attribute on this object
@@ -218,12 +163,5 @@ public class AssignRole extends AbstractChange implements CustomSqlChange {
      */
     public void setType(final String type) {
         this.type = type;
-    }
-
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }
-
-    public void setUp() throws SetupException {
     }
 }

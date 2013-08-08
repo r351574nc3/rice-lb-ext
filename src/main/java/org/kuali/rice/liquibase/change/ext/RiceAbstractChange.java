@@ -131,6 +131,37 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
+
+	protected BigInteger getRoleForeignKey(Database database, final String roleName, final String namespaceCode) {
+		try {
+			final SqlStatement getRoleId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[] {
+						new UnparsedSql(String.format("select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s'", roleName, namespaceCode))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role' (role: %s, namespace: %s)", roleName, namespaceCode), e);
+		}
+	}
+
+	protected BigInteger getPrincipalForeignKey(Database database, final String memberName) {
+		try {
+			final SqlStatement getMemberId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[] {
+						new UnparsedSql(String.format("select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s'", memberName))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getMemberId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Principal' (%s)", memberName), e);
+		}
+	}
+
 	private void incrementSequence(Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
@@ -145,4 +176,5 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 			throw new UnexpectedLiquibaseException(String.format("Unable to increment sequence (%s)",getSequenceName()),e);
 		}
 	}
+
 }
