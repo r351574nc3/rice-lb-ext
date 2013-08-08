@@ -16,6 +16,7 @@
 package org.kuali.rice.liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
@@ -40,7 +41,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateType extends AbstractChange implements CustomSqlChange {
+public class CreateType extends RiceAbstractChange{
     private String namespace;
     private String name;
     private String serviceName;
@@ -59,15 +60,12 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_typ_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
@@ -75,30 +73,13 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
      */
     public SqlStatement[] generateStatements(Database database) {
         final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
-        final SqlStatement getId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_typ_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_typ_id_s;")
-                    };
-                }
-            };
-
-        try {
-            final BigInteger id = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
-            
-            insertType.addColumnValue("kim_typ_id", id);
+            insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
             insertType.addColumnValue("nmspc_cd", getNamespace());
             insertType.addColumnValue("nm", getName());
-            insertType.addColumnValue("svc_nm", getServiceName());
+            insertType.addColumnValue("srvc_nm", getServiceName());
             insertType.addColumnValue("actv_ind", getActive());
             insertType.addColumnValue("ver_nbr", 1);
-            insertType.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+            insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
         return new SqlStatement[] {
             insertType
         };
@@ -113,18 +94,11 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
     protected Change[] createInverses() {
         final DeleteDataChange removeType = new DeleteDataChange();
         removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND svc_nm = '%s'", getNamespace(), getName(), getServiceName()));
+        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getServiceName()));
 
         return new Change[] {
             removeType
         };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
     }
 
     /**
@@ -199,10 +173,5 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
         this.active = active;
     }
 
-    public void setUp() throws SetupException {
-    }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }    
 }
