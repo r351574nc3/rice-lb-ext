@@ -86,6 +86,21 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
+	protected BigInteger getResponsibilityTemplateForeignKey(Database database, final String templateName, final String nameSpaceCode) {
+		try {
+			final RuntimeStatement templateIdStatement = new RuntimeStatement() {
+				public Sql[] generate(Database database1) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s'", templateName))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility Template' (nm: %s, nmSpace: %s)", templateName, nameSpaceCode), e);
+		}
+	}
+
 	protected BigInteger getAttributeDefinitionForeignKey(Database database, final String attributeDef){
 		try {
 			final SqlStatement getDefinitionId = new RuntimeStatement() {

@@ -15,23 +15,16 @@
  */
 package org.kuali.rice.liquibase.change.ext;
 
-import java.math.BigInteger;
-
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
+import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
-import liquibase.change.core.DeleteDataChange;
+import java.math.BigInteger;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -40,11 +33,12 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends AbstractChange implements CustomSqlChange {
+public class KimCreateResponsibility extends RiceAbstractChange implements CustomSqlChange {
     private String template;
     private String namespace;
     private String name;
     private String active;
+	private String description;
     
     
     public KimCreateResponsibility() {
@@ -59,55 +53,32 @@ public class KimCreateResponsibility extends AbstractChange implements CustomSql
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_rsp_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "krim_rsp_t");
-        final SqlStatement getResponsibilityId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_rsp_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_rsp_id_s;")
-                    };
-                }
-            };
-
-       final SqlStatement getTemplateId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s' and NMSPC_CD = '%s'", getTemplate(), getNamespace()))
-                    };
-                }
-            };
-
-        try {
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
-            final BigInteger templateId       = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTemplateId, BigInteger.class);
-            
-            insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-            insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-            insertResponsibility.addColumnValue("nm", getName());
-            insertResponsibility.addColumnValue("actv_ind", getActive());
-            insertResponsibility.addColumnValue("rsp_tmpl_id", 1);
-            insertResponsibility.addColumnValue("ver_nbr", 1);
-            insertResponsibility.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(), "krim_rsp_t");
+		final BigInteger responsibilityId = getPrimaryKey(database);
+		BigInteger responsibilityTemplateId = null;
+		if (getTemplate() != null){
+			responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace());
+		}
+		insertResponsibility.addColumnValue("rsp_id", responsibilityId);
+		insertResponsibility.addColumnValue("rsp_tmpl_id", responsibilityTemplateId);
+		insertResponsibility.addColumnValue("nm", getName());
+		insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
+		insertResponsibility.addColumnValue("desc_txt", getDescription());
+		insertResponsibility.addColumnValue("actv_ind", getActive());
+		insertResponsibility.addColumnValue("ver_nbr", 1);
+		insertResponsibility.addColumnValue("obj_id", UUID.randomUUID().toString());
 
         return new SqlStatement[] {
             insertResponsibility
@@ -115,28 +86,18 @@ public class KimCreateResponsibility extends AbstractChange implements CustomSql
     }
 
 
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange removeResponsibility = new DeleteDataChange();
-        final String templateId = String.format("(select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s' and NMSPC_CD = '%s')", getTemplate(), getNamespace());
-        removeResponsibility.setTableName("krim_rsp_t");
-        removeResponsibility.setWhereClause(String.format("nm = '%s' and NMSPC_CD = '%s' and RSP_TMPL_ID in %s", getName(), getNamespace(), templateId));
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		String responsibilityTemplateId = "null";
+		if (getTemplate() != null){
+			responsibilityTemplateId = new String("'" + getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace()) + "'");
+		}
+		final DeleteDataChange removeResponsibility = new DeleteDataChange();
+		removeResponsibility.setTableName("krim_rsp_t");
+		removeResponsibility.setWhereClause(String.format("nm = '%s' and NMSPC_CD = '%s' and RSP_TMPL_ID = %s", getName(), getNamespace(), responsibilityTemplateId));
 
-        return new Change[] {
-            removeResponsibility
-        };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
+		return removeResponsibility.generateStatements(database);
+	}
 
     /**
      * Get the template attribute on this object
@@ -210,10 +171,11 @@ public class KimCreateResponsibility extends AbstractChange implements CustomSql
         this.active = active;
     }
 
-    public void setUp() throws SetupException {
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }    
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }
