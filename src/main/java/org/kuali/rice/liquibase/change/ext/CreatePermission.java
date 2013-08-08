@@ -15,23 +15,17 @@
  */
 package org.kuali.rice.liquibase.change.ext;
 
-import java.math.BigInteger;
-
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
+import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
+import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
-import liquibase.change.core.DeleteDataChange;
+import java.math.BigInteger;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -40,32 +34,27 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreatePermission extends AbstractChange implements CustomSqlChange {
-    private String template;
-    private String namespace;
-    private String name;
-    private String description;
-    private String active;
-    
-    
-    public CreatePermission() {
+public class CreatePermission extends RiceAbstractChange implements CustomSqlChange, CustomSqlRollback {
+
+	private static final String SEQUENCE_NAME = "KRIM_PERM_ID_S";
+
+	private String template;
+	private String namespace;
+	private String name;
+	private String description;
+	private String active;
+
+
+	public CreatePermission() {
         super("CreatePermission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
     }
-    
+
     /**
-     * Supports all databases 
+     * Supports all databases
      */
     @Override
     public boolean supports(Database database) {
         return true;
-    }
-
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
     }
 
     /**
@@ -76,60 +65,40 @@ public class CreatePermission extends AbstractChange implements CustomSqlChange 
      */
     public SqlStatement[] generateStatements(Database database) {
         final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
-        final SqlStatement getPermissionId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_perm_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_perm_id_s;")
-                    };
-                }
-            };
+		final BigInteger permissionId = getPrimaryKey(database);
+		final BigInteger templateId = getPermissionTemplateForeignKey(database,getTemplate());
 
-        try {
-            final BigInteger permissionId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
-            
-            insertPermission.addColumnValue("perm_id", permissionId);
-            insertPermission.addColumnValue("nmspc_cd", getNamespace());
-            insertPermission.addColumnValue("nm", getName());
-            insertPermission.addColumnValue("desc_txt", getDescription());
-            insertPermission.addColumnValue("actv_ind", getActive());
-            insertPermission.addColumnValue("perm_tmpl_id", 1);
-            insertPermission.addColumnValue("ver_nbr", 1);
-            insertPermission.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		insertPermission.addColumnValue("perm_id", permissionId);
+		insertPermission.addColumnValue("nmspc_cd", getNamespace());
+		insertPermission.addColumnValue("nm", getName());
+		insertPermission.addColumnValue("desc_txt", getDescription());
+		insertPermission.addColumnValue("actv_ind", getActive());
+		insertPermission.addColumnValue("perm_tmpl_id", templateId);
+		insertPermission.addColumnValue("ver_nbr", 1);
+		insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
 
         return new SqlStatement[] {
             insertPermission
         };
     }
 
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		BigInteger templateId = getPermissionTemplateForeignKey(database,getTemplate());
 
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange removePerm = new DeleteDataChange();
-        removePerm.setTableName("krim_typ_t");
-        removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id = '%s'", getNamespace(), getName(), getTemplate()));
+		final DeleteDataChange removePerm = new DeleteDataChange();
+		removePerm.setTableName("krim_perm_t");
+		removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id = '%s'", getNamespace(), getName(), templateId));
 
-        return new Change[] {
-            removePerm
-        };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
+		return removePerm.generateStatements(database);
+	}
 
-    /**
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE_NAME;
+	}
+
+	/**
      * Get the template attribute on this object
      *
      * @return template value
@@ -219,10 +188,5 @@ public class CreatePermission extends AbstractChange implements CustomSqlChange 
         this.active = active;
     }
 
-    public void setUp() throws SetupException {
-    }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }    
 }
