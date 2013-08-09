@@ -2639,6 +2639,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-178">
+        <createSequence sequenceName="krim_perm_rqrd_attr_id_s" startValue="1000"/>
         <createTable tableName="krim_perm_rqrd_attr_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -7443,7 +7444,7 @@
 
     <!--DATA-->
 
-    <changeSet author="dylanv (generated)" id="1376026549231-7">
+    <changeSet author="(generated)" id="bootstrap-data">
         <insert tableName="krim_typ_t">
             <column name="KIM_TYP_ID" value="1"/>
             <column name="OBJ_ID" value="5ADF18B6D4827954E0404F8189D85002"/>
@@ -7453,9 +7454,7 @@
             <column name="ACTV_IND" value="Y"/>
             <column name="NMSPC_CD" value="KUALI"/>
         </insert>
-    </changeSet>
 
-    <changeSet author="(generated)" id="1376026549231-38">
         <insert tableName="krim_perm_tmpl_t">
             <column name="PERM_TMPL_ID" value="1"/>
             <column name="OBJ_ID" value="5ADF18B6D4857954E0404F8189D85002"/>
@@ -7466,6 +7465,30 @@
             <column name="KIM_TYP_ID" value="1"/>
             <column name="ACTV_IND" value="Y"/>
         </insert>
+
+        <insert tableName="krim_perm_t">
+            <column name="PERM_ID" value="140"/>
+            <column name="OBJ_ID" value="5B4F09744944EF33E0404F8189D84F24"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="PERM_TMPL_ID" value="1"/>
+            <column name="NMSPC_CD" value="KR-WKFLW"/>
+            <column name="NM" value="Use Document Operation Screen"/>
+            <column name="DESC_TXT" value="Allows users to access the Document Operation screen."/>
+            <column name="ACTV_IND" value="Y"/>
+        </insert>
+
+        <insert tableName="krim_attr_defn_t">
+            <column name="KIM_ATTR_DEFN_ID" value="1"/>
+            <column name="OBJ_ID" value="5ADF18B6D4887954E0404F8189D85002"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="NM" value="beanName"/>
+            <column name="LBL"/>
+            <column name="ACTV_IND" value="Y"/>
+            <column name="NMSPC_CD" value="KR-SYS"/>
+            <column name="CMPNT_NM" value="org.kuali.rice.kim.bo.impl.KimAttributes"/>
+        </insert>
+
     </changeSet>
+
 
 </databaseChangeLog>
