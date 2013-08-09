@@ -69,10 +69,6 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 
 	protected BigInteger getPermissionTemplateForeignKey(Database database, final String templateName) {
 		try {
-			if (StringUtils.isBlank(templateName)) {
-			/* Template not required - Default to 1 */
-				return BigInteger.ONE;
-			}
 			final RuntimeStatement templateIdStatement = new RuntimeStatement() {
 				public Sql[] generate(Database database1) {
 					return new Sql[]{
