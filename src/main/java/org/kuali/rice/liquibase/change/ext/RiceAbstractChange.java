@@ -173,6 +173,21 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
+	protected BigInteger getResponsibilityForeignKey(Database database, final String responsibilityName) {
+		try {
+			final SqlStatement getResponsibilityId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select rsp_id from krim_rsp_t where nm = '%s'", responsibilityName))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility' (%s)", responsibilityName), e);
+		}
+	}
+
 	private void incrementSequence(Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
@@ -187,5 +202,6 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 			throw new UnexpectedLiquibaseException(String.format("Unable to increment sequence (%s)",getSequenceName()),e);
 		}
 	}
+
 
 }

@@ -3470,6 +3470,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-220">
+        <createSequence sequenceName="krim_rsp_rqrd_attr_id_s" startValue="1000"/>
         <createTable tableName="krim_rsp_rqrd_attr_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -7519,6 +7520,28 @@
             <column name="PRNCPL_PSWD"/>
             <column name="ACTV_IND" value="Y"/>
             <column name="LAST_UPDT_DT" valueDate="2008-11-07T09:49:02.0"/>
+        </insert>
+
+        <insert tableName="krim_rsp_tmpl_t">
+            <column name="RSP_TMPL_ID" value="1"/>
+            <column name="OBJ_ID" value="5ADFE172441D6320E0404F8189D85169"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="NMSPC_CD" value="KR-WKFLW"/>
+            <column name="NM" value="Review"/>
+            <column name="KIM_TYP_ID" value="1"/>
+            <column name="DESC_TXT"/>
+            <column name="ACTV_IND" value="Y"/>
+        </insert>
+
+        <insert tableName="krim_rsp_t">
+            <column name="RSP_ID" value="10000"/>
+            <column name="OBJ_ID" value="199d51c8-fea8-11e2-8920-009c021e06d7"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="RSP_TMPL_ID" value="1"/>
+            <column name="NMSPC_CD" value="KR-SYS"/>
+            <column name="NM" value="Line Manager"/>
+            <column name="DESC_TXT" value="Responsibility for Line Manager"/>
+            <column name="ACTV_IND" value="Y"/>
         </insert>
 
     </changeSet>
