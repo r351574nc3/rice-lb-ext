@@ -33,7 +33,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AssignRole extends RiceAbstractChange implements CustomSqlChange {
+public class AssignRoleMember extends RiceAbstractChange implements CustomSqlChange {
 
     private String namespace;
     private String type;
@@ -41,7 +41,7 @@ public class AssignRole extends RiceAbstractChange implements CustomSqlChange {
     private String role;
 	   	        
     
-    public AssignRole() {
+    public AssignRoleMember() {
         super("AssignRole", "Assigning a KIM role", EXTENSION_PRIORITY);
     }
     

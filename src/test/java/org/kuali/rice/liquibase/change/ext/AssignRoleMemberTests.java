@@ -1,6 +1,6 @@
 package org.kuali.rice.liquibase.change.ext;
 
-public class AssignRoleTests extends KimChangeBaseTest{
+public class AssignRoleMemberTests extends KimChangeBaseTest{
 
 	@Override
 	protected String entityName() {
