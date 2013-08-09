@@ -66,7 +66,11 @@ public class CreatePermission extends RiceAbstractChange implements CustomSqlCha
     public SqlStatement[] generateStatements(Database database) {
         final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
 		final BigInteger permissionId = getPrimaryKey(database);
-		final BigInteger templateId = getPermissionTemplateForeignKey(database,getTemplate());
+
+		BigInteger templateId = null;
+		if (getTemplate() != null){
+			templateId = getPermissionTemplateForeignKey(database,getTemplate());
+		}
 
 		insertPermission.addColumnValue("perm_id", permissionId);
 		insertPermission.addColumnValue("nmspc_cd", getNamespace());
@@ -84,11 +88,14 @@ public class CreatePermission extends RiceAbstractChange implements CustomSqlCha
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		BigInteger templateId = getPermissionTemplateForeignKey(database,getTemplate());
+		String templateId = "is null";
+		if (getTemplate() != null){
+			templateId = " = '" + getPermissionTemplateForeignKey(database,getTemplate()) + "'";
+		}
 
 		final DeleteDataChange removePerm = new DeleteDataChange();
 		removePerm.setTableName("krim_perm_t");
-		removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id = '%s'", getNamespace(), getName(), templateId));
+		removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id %s", getNamespace(), getName(), templateId));
 
 		return removePerm.generateStatements(database);
 	}
