@@ -3343,6 +3343,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-211">
+        <createSequence sequenceName="krim_role_perm_id_s" startValue="1000"/>
         <createTable tableName="krim_role_perm_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -7475,7 +7476,7 @@
             <column name="OBJ_ID" value="5B4F09744944EF33E0404F8189D84F24"/>
             <column name="VER_NBR" valueNumeric="1"/>
             <column name="PERM_TMPL_ID" value="1"/>
-            <column name="NMSPC_CD" value="KR-WKFLW"/>
+            <column name="NMSPC_CD" value="KUALI"/>
             <column name="NM" value="Use Document Operation Screen"/>
             <column name="DESC_TXT" value="Allows users to access the Document Operation screen."/>
             <column name="ACTV_IND" value="Y"/>
