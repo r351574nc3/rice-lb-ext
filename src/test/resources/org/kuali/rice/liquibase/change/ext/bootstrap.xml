@@ -3463,6 +3463,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-219">
+        <createSequence sequenceName="krim_rsp_id_s" startValue="1000"/>
         <createTable tableName="krim_rsp_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>

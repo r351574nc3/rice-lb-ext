@@ -33,7 +33,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class KimCreateResponsibility extends RiceAbstractChange implements CustomSqlChange {
+public class CreateResponsibility extends RiceAbstractChange implements CustomSqlChange {
     private String template;
     private String namespace;
     private String name;
@@ -41,7 +41,7 @@ public class KimCreateResponsibility extends RiceAbstractChange implements Custo
 	private String description;
     
     
-    public KimCreateResponsibility() {
+    public CreateResponsibility() {
         super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
     }
     
