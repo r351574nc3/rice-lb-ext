@@ -17,7 +17,6 @@ package org.kuali.rice.liquibase.change.ext;
 
 import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
-import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.UnsupportedChangeException;
@@ -30,74 +29,69 @@ import java.util.UUID;
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
- * Custom Liquibase Refactoring for creating a KIM permission.
+ * Custom Liquibase Refactoring for creating a KIM Responsibility.
  *
  * @author Leo Przybylski
  */
-public class CreatePermission extends KimAbstractChange implements CustomSqlChange, CustomSqlRollback {
-
-	private static final String SEQUENCE_NAME = "KRIM_PERM_ID_S";
-
-	private String template;
-	private String namespace;
-	private String name;
+public class CreateResponsibility extends KimAbstractChange implements CustomSqlChange {
+    private String template;
+    private String namespace;
+    private String name;
+    private String active;
 	private String description;
-	private String active;
-
-
-	public CreatePermission() {
-        super("CreatePermission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
+    
+    
+    public CreateResponsibility() {
+        super("KimCreateResponsiblity", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
     }
 
-    /**
+	@Override
+	protected String getSequenceName() {
+		return "krim_rsp_id_s";
+	}
+
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
-		final BigInteger permissionId = getPrimaryKey(database);
-
-		BigInteger templateId = null;
+		final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(), "krim_rsp_t");
+		final BigInteger responsibilityId = getPrimaryKey(database);
+		BigInteger responsibilityTemplateId = null;
 		if (getTemplate() != null){
-			templateId = getPermissionTemplateForeignKey(database,getTemplate());
+			responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace());
 		}
-
-		insertPermission.addColumnValue("perm_id", permissionId);
-		insertPermission.addColumnValue("nmspc_cd", getNamespace());
-		insertPermission.addColumnValue("nm", getName());
-		insertPermission.addColumnValue("desc_txt", getDescription());
-		insertPermission.addColumnValue("actv_ind", getActive());
-		insertPermission.addColumnValue("perm_tmpl_id", templateId);
-		insertPermission.addColumnValue("ver_nbr", 1);
-		insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
+		insertResponsibility.addColumnValue("rsp_id", responsibilityId);
+		insertResponsibility.addColumnValue("rsp_tmpl_id", responsibilityTemplateId);
+		insertResponsibility.addColumnValue("nm", getName());
+		insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
+		insertResponsibility.addColumnValue("desc_txt", getDescription());
+		insertResponsibility.addColumnValue("actv_ind", getActive());
+		insertResponsibility.addColumnValue("ver_nbr", 1);
+		insertResponsibility.addColumnValue("obj_id", UUID.randomUUID().toString());
 
         return new SqlStatement[] {
-            insertPermission
+            insertResponsibility
         };
     }
 
+
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		String templateId = "is null";
+		String responsibilityTemplateId = "null";
 		if (getTemplate() != null){
-			templateId = " = '" + getPermissionTemplateForeignKey(database,getTemplate()) + "'";
+			responsibilityTemplateId = new String("'" + getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace()) + "'");
 		}
+		final DeleteDataChange removeResponsibility = new DeleteDataChange();
+		removeResponsibility.setTableName("krim_rsp_t");
+		removeResponsibility.setWhereClause(String.format("nm = '%s' and NMSPC_CD = '%s' and RSP_TMPL_ID = %s", getName(), getNamespace(), responsibilityTemplateId));
 
-		final DeleteDataChange removePerm = new DeleteDataChange();
-		removePerm.setTableName("krim_perm_t");
-		removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id %s", getNamespace(), getName(), templateId));
-
-		return removePerm.generateStatements(database);
+		return removeResponsibility.generateStatements(database);
 	}
 
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
-	/**
+    /**
      * Get the template attribute on this object
      *
      * @return template value
@@ -152,24 +146,6 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
     }
 
     /**
-     * Get the description attribute on this object
-     *
-     * @return description value
-     */
-    public String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * Set the description attribute on this object
-     *
-     * @param description value to set
-     */
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    /**
      * Get the active attribute on this object
      *
      * @return active value
@@ -187,5 +163,11 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
         this.active = active;
     }
 
+	public String getDescription() {
+		return description;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

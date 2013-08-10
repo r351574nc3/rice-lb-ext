@@ -16,20 +16,13 @@
 package org.kuali.rice.liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
-import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
@@ -40,7 +33,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateAttributeDefinition extends AbstractChange implements CustomSqlChange {
+public class CreateAttributeDefinition extends KimAbstractChange implements CustomSqlChange {
     private String label;
     private String namespace;
     private String name;
@@ -51,66 +44,42 @@ public class CreateAttributeDefinition extends AbstractChange implements CustomS
     public CreateAttributeDefinition() {
         super("CreateAttributeDefinition", "Adding an attribute definition to KIM", EXTENSION_PRIORITY);
     }
-    
-    /**
-     * Supports all databases 
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
-    }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_attr_defn_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertDefinition = new InsertStatement(database.getDefaultSchemaName(), "krim_attr_defn_t");
-        final SqlStatement getId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_attr_defn_id_s values(null)"),
-                        new UnparsedSql("select max(id) from krim_attr_defn_id_s")
-                    };
-                }
-            };
+	public SqlStatement[] generateStatements(Database database) {
+		final InsertStatement insertDefinition = new InsertStatement(database.getDefaultSchemaName(), "krim_attr_defn_t");
 
-        try {
-            final BigInteger id = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
-            
-            insertDefinition.addColumnValue("KIM_ATTR_DEFN_ID", id);
-            insertDefinition.addColumnValue("nmspc_cd", getNamespace());
-            insertDefinition.addColumnValue("NM", getName());
-            insertDefinition.addColumnValue("LBL", getLabel());
-            insertDefinition.addColumnValue("actv_ind", getActive());
-            insertDefinition.addColumnValue("CMPNT_NM", getComponent());
-            insertDefinition.addColumnValue("ver_nbr", 1);
-            insertDefinition.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		final BigInteger id = getPrimaryKey(database);
 
-        return new SqlStatement[] {
-            insertDefinition
-        };
-    }
+		insertDefinition.addColumnValue("kim_attr_defn_id", id);
+		insertDefinition.addColumnValue("nmspc_cd", getNamespace());
+		insertDefinition.addColumnValue("nm", getName());
+		insertDefinition.addColumnValue("lbl", getLabel());
+		insertDefinition.addColumnValue("actv_ind", getActive());
+		insertDefinition.addColumnValue("cmpnt_nm", getComponent());
+		insertDefinition.addColumnValue("ver_nbr", 1);
+		insertDefinition.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+		return new SqlStatement[]{
+			insertDefinition
+		};
+	}
 
 
     /**
      * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
      * 
-     * @return {@link Array} of {@link Change} instances
+     * @return of {@link Change} instances
      */
     protected Change[] createInverses() {
         final DeleteDataChange removeDefinition = new DeleteDataChange();
@@ -120,13 +89,6 @@ public class CreateAttributeDefinition extends AbstractChange implements CustomS
         return new Change[] {
             removeDefinition
         };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
     }
 
     /**
@@ -219,10 +181,4 @@ public class CreateAttributeDefinition extends AbstractChange implements CustomS
         this.active = active;
     }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }
-
-    public void setUp() throws SetupException {
-    }
 }

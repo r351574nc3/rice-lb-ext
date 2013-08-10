@@ -1,0 +1,17 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="tst-role-resp-action" author="lb-ext">
+        <customChange class="org.kuali.rice.liquibase.change.ext.AddRoleResponsibilityAction">
+            <param name="role" value="User"/>
+            <param name="responsibility" value="Line Manager"/>
+            <param name="namespace" value="KUALI"/>
+            <param name="force" value="Y"/>
+            <param name="priority" value="999"/>
+            <param name="actionTypeCode" value="A"/>
+            <param name="actionPolicyCode" value="F"/>
+        </customChange>
+    </changeSet>
+
+</databaseChangeLog>

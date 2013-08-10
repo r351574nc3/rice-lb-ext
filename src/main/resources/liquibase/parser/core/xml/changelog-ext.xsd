@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/changelog-ext"
+            xmlns="http://www.liquibase.org/xml/ns/changelog-ext"
+            elementFormDefault="qualified">
+
+    <xsd:element name="type">
+        <xsd:complexType>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="serviceName" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

@@ -1,0 +1,15 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="tst-create-role" author="lb-ext">
+        <customChange class="org.kuali.rice.liquibase.change.ext.CreateRole">
+            <param name="namespace" value="KUALI"/>
+            <param name="name" value="Tst Role"/>
+            <param name="description" value="Description"/>
+            <param name="type" value="Default"/>
+            <param name="active" value="Y"/>
+        </customChange>
+    </changeSet>
+
+</databaseChangeLog>
