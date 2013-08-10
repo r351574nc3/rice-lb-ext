@@ -188,6 +188,21 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 		}
 	}
 
+	protected BigInteger getRoleResponsibilityForeignKey(Database database, final BigInteger roleId , final BigInteger responsibilityId) {
+		try {
+			final SqlStatement getRoleRespId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s'", roleId, responsibilityId))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Responsibility' (role_id: %s, resp_id: %s)", roleId, responsibilityId), e);
+		}
+	}
+
 	private void incrementSequence(Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {

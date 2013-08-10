@@ -16,12 +16,15 @@
 package org.kuali.rice.liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.exception.ValidationErrors;
 import liquibase.executor.ExecutorService;
 import liquibase.resource.ResourceAccessor;
@@ -40,7 +43,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateRoleResponsibilityAction extends AbstractChange implements CustomSqlChange {
+public class AddRoleResponsibilityAction extends RiceAbstractChange implements CustomSqlChange {
     private String role;
     private String responsibility;
     private String namespace;
@@ -50,7 +53,7 @@ public class CreateRoleResponsibilityAction extends AbstractChange implements Cu
     private String actionPolicyCode;
     
     
-    public CreateRoleResponsibilityAction() {
+    public AddRoleResponsibilityAction() {
         super("CreateRoleResponsibilityAction", "Adding an action to a role with a responsibility to KIM", EXTENSION_PRIORITY);
     }
     
@@ -62,100 +65,54 @@ public class CreateRoleResponsibilityAction extends AbstractChange implements Cu
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_role_rsp_actn_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(),
-                                                                         "krim_role_rsp_actn_t");
-        final SqlStatement getActionId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_role_rsp_actn_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_role_rsp_actn_id_s;")
-                    };
-                }
-            };
+	public SqlStatement[] generateStatements(Database database) {
+		final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
+		final BigInteger id = getPrimaryKey(database);
+		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		final BigInteger roleRespId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
-        final SqlStatement getRoleId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql(String.format("select role_id from krim_role_t where role_nm = '%s' and nmspc_cd = '%s'", getRole(), getNamespace()))
-                    };
-                }
-            };
+		insertAction.addColumnValue("role_rsp_actn_id", id);
+		insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
+		insertAction.addColumnValue("actn_plcy_cd", getActionPolicyCode());
+		insertAction.addColumnValue("frc_actn", getForce());
+		insertAction.addColumnValue("role_rsp_id", roleRespId);
+		insertAction.addColumnValue("priority_nbr", getPriority());
+		insertAction.addColumnValue("role_mbr_id", "*");
+		insertAction.addColumnValue("ver_nbr", 1);
+		insertAction.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-        try {
-            final BigInteger roleId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
-            
-            final SqlStatement getResponsibilityId = new RuntimeStatement() {
-                    public Sql[] generate(Database database) {
-                        return new Sql[] {
-                            new UnparsedSql(String.format("select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s'", getResponsibility(), getNamespace()))
-                        };
-                    }
-                };
-            final BigInteger responsibilityId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
-            
-            final SqlStatement getRoleRespId = new RuntimeStatement() {
-                    public Sql[] generate(Database database) {
-                        return new Sql[] {
-                            new UnparsedSql(String.format("select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s'", roleId, responsibilityId))
-                        };
-                    }
-                };
-
-            final BigInteger actionId   = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getActionId, BigInteger.class);
-            final BigInteger roleRespId = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
-            
-            insertAction.addColumnValue("ROLE_RSP_ACTN_ID", actionId);
-            insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
-            insertAction.addColumnValue("actn_plcy_cd", getActionPolicyCode());
-            insertAction.addColumnValue("force", getForce());
-            insertAction.addColumnValue("role_rsp_id", roleRespId);
-            insertAction.addColumnValue("ver_nbr", 1);
-            insertAction.addColumnValue("role_mbr_id", "*");
-            insertAction.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return new SqlStatement[] {
-            insertAction
-        };
-    }
+		return new SqlStatement[]{
+			insertAction
+		};
+	}
 
 
-    /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange undoAssign = new DeleteDataChange();
-        final String roleId = String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", getRole(), getNamespace());
-        final String respId = String.format("(select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s')", getResponsibility(), getNamespace());
-        final String assignId = String.format("(select role_rsp_id from krim_role_rsp_t where role_id in '%s' and rsp_id in '%s')", roleId, respId);
-        undoAssign.setTableName("krim_role_rsp_actn_t");
-        undoAssign.setWhereClause(String.format("role_rsp_id in %s and mbr_id = '*'", assignId));
+	@Override
+	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
+		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		final BigInteger assignId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
-        return new Change[] {
-            undoAssign
-        };
-    }
-    
+		final DeleteDataChange undoAssign = new DeleteDataChange();
+		undoAssign.setTableName("krim_role_rsp_actn_t");
+		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '*'", assignId));
+
+		return undoAssign.generateStatements(database);
+	}
+
+
     /**
      * @return Confirmation message to be displayed after the change is executed
      */
@@ -289,10 +246,4 @@ public class CreateRoleResponsibilityAction extends AbstractChange implements Cu
         this.actionTypeCode = actionTypeCode;
     }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }
-
-    public void setUp() throws SetupException {
-    }
 }

@@ -1865,6 +1865,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-127">
+        <createSequence sequenceName="krim_attr_defn_id_s" startValue="1000"/>
         <createTable tableName="krim_attr_defn_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -3371,6 +3372,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-213">
+        <createSequence sequenceName="krim_role_rsp_actn_id_s" startValue="1000"/>
         <createTable tableName="krim_role_rsp_actn_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -3397,6 +3399,7 @@
         </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-215">
+        <createSequence sequenceName="krim_role_rsp_id_s" startValue="1000"/>
         <createTable tableName="krim_role_rsp_id_s">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -7540,9 +7543,18 @@
             <column name="OBJ_ID" value="199d51c8-fea8-11e2-8920-009c021e06d7"/>
             <column name="VER_NBR" valueNumeric="1"/>
             <column name="RSP_TMPL_ID" value="1"/>
-            <column name="NMSPC_CD" value="KR-SYS"/>
+            <column name="NMSPC_CD" value="KUALI"/>
             <column name="NM" value="Line Manager"/>
             <column name="DESC_TXT" value="Responsibility for Line Manager"/>
+            <column name="ACTV_IND" value="Y"/>
+        </insert>
+
+        <insert tableName="krim_role_rsp_t">
+            <column name="ROLE_RSP_ID" value="10000"/>
+            <column name="OBJ_ID" value="19aa1eba-fea8-11e2-8920-009c021e06d7"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="ROLE_ID" value="1"/>
+            <column name="RSP_ID" value="10000"/>
             <column name="ACTV_IND" value="Y"/>
         </insert>
 
