@@ -18,19 +18,11 @@ package org.kuali.rice.liquibase.change.ext;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import liquibase.change.AbstractChange;
 import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
@@ -41,7 +33,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateAttributeDefinition extends RiceAbstractChange implements CustomSqlChange {
+public class CreateAttributeDefinition extends KimAbstractChange implements CustomSqlChange {
     private String label;
     private String namespace;
     private String name;
@@ -51,14 +43,6 @@ public class CreateAttributeDefinition extends RiceAbstractChange implements Cus
     
     public CreateAttributeDefinition() {
         super("CreateAttributeDefinition", "Adding an attribute definition to KIM", EXTENSION_PRIORITY);
-    }
-    
-    /**
-     * Supports all databases 
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
     }
 
 	@Override
@@ -105,13 +89,6 @@ public class CreateAttributeDefinition extends RiceAbstractChange implements Cus
         return new Change[] {
             removeDefinition
         };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
     }
 
     /**

@@ -43,7 +43,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AddPermissionAttribute extends RiceAbstractChange {
+public class AddPermissionAttribute extends KimAbstractChange {
 
 	private static final String SEQUENCE_NAME = "KRIM_PERM_RQRD_ATTR_ID_S";
 
@@ -58,14 +58,6 @@ public class AddPermissionAttribute extends RiceAbstractChange {
 
     public AddPermissionAttribute() {
         super("AddPermissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
-    }
-
-    /**
-     * Supports all databases
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
     }
 
     /**

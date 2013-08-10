@@ -34,7 +34,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreatePermission extends RiceAbstractChange implements CustomSqlChange, CustomSqlRollback {
+public class CreatePermission extends KimAbstractChange implements CustomSqlChange, CustomSqlRollback {
 
 	private static final String SEQUENCE_NAME = "KRIM_PERM_ID_S";
 
@@ -47,14 +47,6 @@ public class CreatePermission extends RiceAbstractChange implements CustomSqlCha
 
 	public CreatePermission() {
         super("CreatePermission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
-    }
-
-    /**
-     * Supports all databases
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
     }
 
     /**

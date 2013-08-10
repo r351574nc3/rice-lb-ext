@@ -34,7 +34,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateRole extends RiceAbstractChange implements CustomSqlChange {
+public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 
 	private String name;
 	private String namespace;
@@ -46,14 +46,6 @@ public class CreateRole extends RiceAbstractChange implements CustomSqlChange {
     
     public CreateRole() {
         super("CreateRole", "Adding a Role to KIM", EXTENSION_PRIORITY);
-    }
-    
-    /**
-     * Supports all databases 
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
     }
 
 	@Override

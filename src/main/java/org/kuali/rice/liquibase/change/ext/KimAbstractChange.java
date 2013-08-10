@@ -18,29 +18,33 @@ import org.apache.commons.lang.StringUtils;
 
 import java.math.BigInteger;
 
-public abstract class RiceAbstractChange extends AbstractChange implements CustomSqlChange, CustomSqlRollback {
+public abstract class KimAbstractChange extends AbstractChange implements CustomSqlChange, CustomSqlRollback {
 
-	public RiceAbstractChange(String changeName, String changeDescription, int priority) {
+	public KimAbstractChange(String changeName, String changeDescription, int priority) {
 		super(changeName, changeDescription, priority);
 	}
 
 	@Override
-	public ValidationErrors validate(Database database) {
+	public final ValidationErrors validate(Database database) {
 		//todo: Default validation calls generateStatements which in turn tries to retrieve foreign key references for parameters not yet initialized
 		return new ValidationErrors();
 	}
 
-
 	@Override
-	public String getConfirmationMessage() {
+	public final String getConfirmationMessage() {
 		return "";
 	}
 
-	public void setFileOpener(final ResourceAccessor resourceAccessor) {
+	public final void setFileOpener(final ResourceAccessor resourceAccessor) {
 		setResourceAccessor(resourceAccessor);
 	}
 
-	public void setUp() throws SetupException {
+	public final void setUp() throws SetupException {
+	}
+
+	@Override
+	public final boolean supports(Database database) {
+		return true;
 	}
 
 	protected abstract String getSequenceName();
@@ -217,6 +221,5 @@ public abstract class RiceAbstractChange extends AbstractChange implements Custo
 			throw new UnexpectedLiquibaseException(String.format("Unable to increment sequence (%s)",getSequenceName()),e);
 		}
 	}
-
 
 }

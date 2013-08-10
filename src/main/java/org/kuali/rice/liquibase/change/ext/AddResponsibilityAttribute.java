@@ -18,21 +18,12 @@ package org.kuali.rice.liquibase.change.ext;
 import java.math.BigInteger;
 import java.util.UUID;
 
-import liquibase.change.AbstractChange;
-import liquibase.change.Change;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.SetupException;
 import liquibase.exception.UnsupportedChangeException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
 
 import liquibase.change.core.DeleteDataChange;
 
@@ -43,7 +34,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AddResponsibilityAttribute extends RiceAbstractChange implements CustomSqlChange {
+public class AddResponsibilityAttribute extends KimAbstractChange implements CustomSqlChange {
     private String value;
     private String attributeDef;
     private String responsibility;
@@ -52,14 +43,6 @@ public class AddResponsibilityAttribute extends RiceAbstractChange implements Cu
     
     public AddResponsibilityAttribute() {
         super("CreateResponsibilityAttribute", "Adding an attribute to a responsibility to KIM", EXTENSION_PRIORITY);
-    }
-    
-    /**
-     * Supports all databases 
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
     }
 
 	@Override
@@ -106,13 +89,6 @@ public class AddResponsibilityAttribute extends RiceAbstractChange implements Cu
 
 		return undoAssign.generateStatements(database);
 	}
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
-    }
 
     /**
      * Get the responsibility attribute on this object
