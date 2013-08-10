@@ -1,14 +1,22 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+                   xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+                   http://www.liquibase.org/xml/ns/changelog-ext http://www.liquibase.org/xml/ns/changelog-ext">
 
-    <changeSet id="create-type" author="lb-ext">
-        <customChange class="org.kuali.rice.liquibase.change.ext.CreateType">
+    <changeSet id="create-type" author="lb-ext" context="default">
+        <customChange class="liquibase.change.ext.CreateType">
             <param name="namespace" value="KFS-TEM"/>
             <param name="name" value="lb=ext Type"/>
             <param name="serviceName" value="Amend Service Name"/>
             <param name="active" value="Y"/>
         </customChange>
     </changeSet>
+
+    <changeSet id="create-type:custom-ns" author="lb-ext" context="custom-namespace">
+        <kim:type namespace="KFS-TEM" name="lb=ext Type" serviceName="Amend Service" active="Y"/>
+    </changeSet>
+
 
 </databaseChangeLog>

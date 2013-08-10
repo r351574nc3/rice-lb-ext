@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
-
-import java.util.UUID;
+package liquibase.change.ext;
 
 import liquibase.change.Change;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
+import org.kuali.rice.liquibase.change.ext.KimAbstractChange;
 
-import liquibase.change.core.DeleteDataChange;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -39,7 +39,7 @@ public class CreateType extends KimAbstractChange {
     
     
     public CreateType() {
-        super("CreateType", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
+        super("type", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
     }
 
 	@Override
@@ -54,24 +54,24 @@ public class CreateType extends KimAbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
-            insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
-            insertType.addColumnValue("nmspc_cd", getNamespace());
-            insertType.addColumnValue("nm", getName());
-            insertType.addColumnValue("srvc_nm", getServiceName());
-            insertType.addColumnValue("actv_ind", getActive());
-            insertType.addColumnValue("ver_nbr", 1);
-            insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
-        return new SqlStatement[] {
-            insertType
-        };
+	    final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
+	    insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
+	    insertType.addColumnValue("nmspc_cd", getNamespace());
+	    insertType.addColumnValue("nm", getName());
+	    insertType.addColumnValue("srvc_nm", getServiceName());
+	    insertType.addColumnValue("actv_ind", getActive());
+	    insertType.addColumnValue("ver_nbr", 1);
+	    insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
+	    return new SqlStatement[]{
+		    insertType
+	    };
     }
 
 
     /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
+     * Used for rollbacks. Defines the steps/{@link liquibase.change.Change}s necessary to rollback.
+     *
+     * @return {@link Array} of {@link liquibase.change.Change} instances
      */
     protected Change[] createInverses() {
         final DeleteDataChange removeType = new DeleteDataChange();

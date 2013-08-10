@@ -25,17 +25,22 @@ public abstract class KimChangeBaseTest {
 		liquibase.update(null);
 	}
 
+
 	@Test
 	public void testUpdateAndRollback() throws Exception{
+		performUpdateAndRollback("default");
+	}
+
+	protected void performUpdateAndRollback(String context) throws Exception{
 		//given
 		Liquibase liquibase = new Liquibase("org/kuali/rice/liquibase/change/ext/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
 		//when
-		liquibase.update(null);
+		liquibase.update(context);
 		//then
 		assertInsert(whereClause());
 
 		//when
-		liquibase.rollback(1,null);
+		liquibase.rollback(1,context);
 		//then
 		assertRollback(whereClause());
 	}
