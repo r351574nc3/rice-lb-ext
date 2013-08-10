@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="tst-rsp-attr-data" author="lb-ext">
+        <customChange class="org.kuali.rice.liquibase.change.ext.AddResponsibilityAttribute">
+            <param name="attributeDef" value="beanName"/>
+            <param name="type" value="Default"/>
+            <param name="responsibility" value="Line Manager"/>
+            <param name="value" value="Test Responsibility Attr"/>
+        </customChange>
+    </changeSet>
+
+</databaseChangeLog>

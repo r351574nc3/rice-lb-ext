@@ -1,0 +1,15 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="tst-create-role" author="lb-ext">
+        <customChange class="org.kuali.rice.liquibase.change.ext.CreateResponsibility">
+            <param name="template" value="Review"/>
+            <param name="namespace" value="KFS-SYS"/>
+            <param name="name" value="Tst Responsibility"/>
+            <param name="active" value="Y"/>
+            <param name="description" value="Test 123"/>
+        </customChange>
+    </changeSet>
+
+</databaseChangeLog>

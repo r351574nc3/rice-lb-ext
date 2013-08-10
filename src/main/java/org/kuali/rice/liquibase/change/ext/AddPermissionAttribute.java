@@ -43,7 +43,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class AddPermissionAttribute extends RiceAbstractChange {
+public class AddPermissionAttribute extends KimAbstractChange {
 
 	private static final String SEQUENCE_NAME = "KRIM_PERM_RQRD_ATTR_ID_S";
 
@@ -61,14 +61,6 @@ public class AddPermissionAttribute extends RiceAbstractChange {
     }
 
     /**
-     * Supports all databases
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
-    }
-
-    /**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
@@ -78,8 +70,8 @@ public class AddPermissionAttribute extends RiceAbstractChange {
         final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_attr_data_t");
         try {
             final BigInteger attributeId = getPrimaryKey(database);
-			final BigInteger permissionId = getPermissionReference(database,getPermission(),getNamespace());
-			final BigInteger typeId = getTypeReference(database, getType());
+			final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+			final BigInteger typeId = getTypeForeignKey(database, getType());
             final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
             insertAttribute.addColumnValue("attr_data_id", attributeId);
@@ -111,8 +103,8 @@ public class AddPermissionAttribute extends RiceAbstractChange {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_perm_attr_data_t");
 
-		final BigInteger permissionId = getPermissionReference(database, getPermission(),getNamespace());
-		final BigInteger typeId = getTypeReference(database,getType());
+		final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		final BigInteger typeId = getTypeForeignKey(database, getType());
 		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
 		removeAttribute.setWhereClause(String.format("perm_id = %s AND kim_typ_id = %s AND kim_attr_defn_id = %s",

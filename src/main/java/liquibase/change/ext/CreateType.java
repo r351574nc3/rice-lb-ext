@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
-import java.math.BigInteger;
-
-import liquibase.change.AbstractChange;
 import liquibase.change.Change;
-import liquibase.change.custom.CustomSqlChange;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.executor.ExecutorService;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import liquibase.statement.core.RuntimeStatement;
+import org.kuali.rice.liquibase.change.ext.KimAbstractChange;
 
-import liquibase.change.core.DeleteDataChange;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -40,7 +31,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-public class CreateType extends AbstractChange implements CustomSqlChange {
+public class CreateType extends KimAbstractChange {
     private String namespace;
     private String name;
     private String serviceName;
@@ -48,83 +39,48 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
     
     
     public CreateType() {
-        super("CreateType", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
-    }
-    
-    /**
-     * Supports all databases 
-     */
-    @Override
-    public boolean supports(Database database) {
-        return true;
+        super("type", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
     }
 
-    /**
-     *
-     */
-    @Override
-    public ValidationErrors validate(Database database) {
-        return super.validate(database);
-    }
+	@Override
+	protected String getSequenceName() {
+		return "krim_typ_id_s";
+	}
 
-    /**
+	/**
      * Generates the SQL statements required to run the change.
      *
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-        final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
-        final SqlStatement getId = new RuntimeStatement() {
-                public Sql[] generate(Database database) {
-                    return new Sql[] {
-                        new UnparsedSql("insert into krim_typ_id_s values(null);"),
-                        new UnparsedSql("select max(id) from krim_typ_id_s;")
-                    };
-                }
-            };
-
-        try {
-            final BigInteger id = (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getId, BigInteger.class);
-            
-            insertType.addColumnValue("kim_typ_id", id);
-            insertType.addColumnValue("nmspc_cd", getNamespace());
-            insertType.addColumnValue("nm", getName());
-            insertType.addColumnValue("svc_nm", getServiceName());
-            insertType.addColumnValue("actv_ind", getActive());
-            insertType.addColumnValue("ver_nbr", 1);
-            insertType.addColumnValue("obj_id", "sys_guid()");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return new SqlStatement[] {
-            insertType
-        };
+	    final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
+	    insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
+	    insertType.addColumnValue("nmspc_cd", getNamespace());
+	    insertType.addColumnValue("nm", getName());
+	    insertType.addColumnValue("srvc_nm", getServiceName());
+	    insertType.addColumnValue("actv_ind", getActive());
+	    insertType.addColumnValue("ver_nbr", 1);
+	    insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
+	    return new SqlStatement[]{
+		    insertType
+	    };
     }
 
 
     /**
-     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
-     * 
-     * @return {@link Array} of {@link Change} instances
+     * Used for rollbacks. Defines the steps/{@link liquibase.change.Change}s necessary to rollback.
+     *
+     * @return {@link Array} of {@link liquibase.change.Change} instances
      */
     protected Change[] createInverses() {
         final DeleteDataChange removeType = new DeleteDataChange();
         removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND svc_nm = '%s'", getNamespace(), getName(), getServiceName()));
+        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getServiceName()));
 
         return new Change[] {
             removeType
         };
-    }
-    
-    /**
-     * @return Confirmation message to be displayed after the change is executed
-     */
-    public String getConfirmationMessage() {
-        return "";
     }
 
     /**
@@ -199,10 +155,5 @@ public class CreateType extends AbstractChange implements CustomSqlChange {
         this.active = active;
     }
 
-    public void setUp() throws SetupException {
-    }
 
-    public void setFileOpener(final ResourceAccessor resourceAccessor) {    
-        setResourceAccessor(resourceAccessor);
-    }    
 }
