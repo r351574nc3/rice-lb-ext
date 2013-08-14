@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
     private String actionPolicyCode;
 
     public AddRoleResponsibilityAction() {
-        super("CreateRoleResponsibilityAction", "Adding an action to a role with a responsibility to KIM", EXTENSION_PRIORITY);
+        super("roleResponsibilityAction", "Adding an action to a role with a responsibility to KIM", EXTENSION_PRIORITY);
     }
 
 	@Override

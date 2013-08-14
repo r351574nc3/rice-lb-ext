@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -42,7 +42,7 @@ public class CreateAttributeDefinition extends KimAbstractChange implements Cust
     
     
     public CreateAttributeDefinition() {
-        super("CreateAttributeDefinition", "Adding an attribute definition to KIM", EXTENSION_PRIORITY);
+        super("attributeDefinition", "Create an attribute definition to KIM", EXTENSION_PRIORITY);
     }
 
 	@Override

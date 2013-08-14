@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
@@ -45,8 +45,6 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 public class AddPermissionAttribute extends KimAbstractChange {
 
-	private static final String SEQUENCE_NAME = "KRIM_PERM_RQRD_ATTR_ID_S";
-
 	private String name;
 	private String value;
     private String namespace;
@@ -57,7 +55,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
 
     public AddPermissionAttribute() {
-        super("AddPermissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
+        super("permissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
     }
 
     /**
@@ -94,7 +92,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
 	@Override
 	protected String getSequenceName() {
-		return SEQUENCE_NAME;
+		return "KRIM_PERM_RQRD_ATTR_ID_S";
 	}
 
 

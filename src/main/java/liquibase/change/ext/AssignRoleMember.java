@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -42,7 +42,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	   	        
     
     public AssignRoleMember() {
-        super("AssignRole", "Assigning a KIM role", EXTENSION_PRIORITY);
+        super("roleMember", "Assigning a KIM role", EXTENSION_PRIORITY);
     }
 
 	@Override

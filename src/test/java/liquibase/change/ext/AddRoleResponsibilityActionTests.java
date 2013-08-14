@@ -1,4 +1,4 @@
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 public class AddRoleResponsibilityActionTests extends KimChangeBaseTest {
 

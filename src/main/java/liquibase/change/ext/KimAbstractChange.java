@@ -1,4 +1,4 @@
-package org.kuali.rice.liquibase.change.ext;
+package liquibase.change.ext;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.custom.CustomSqlChange;

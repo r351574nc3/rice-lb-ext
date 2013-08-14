@@ -13,4 +13,99 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="attributeDefinition">
+        <xsd:complexType>
+            <xsd:attribute name="label" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="component" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="permission">
+        <xsd:complexType>
+            <xsd:attribute name="template" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="description" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="responsibility">
+        <xsd:complexType>
+            <xsd:attribute name="template" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="description" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:element name="role">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="type" type="xsd:string"/>
+            <xsd:attribute name="description" type="xsd:string"/>
+            <xsd:attribute name="lastUpdated" type="xsd:date"/>
+            <xsd:attribute name="active" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:element name="permissionAttribute">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="value" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="attributeDef" type="xsd:string"/>
+            <xsd:attribute name="permission" type="xsd:string"/>
+            <xsd:attribute name="type" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+
+    <xsd:element name="responsibilityAttribute">
+        <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:string"/>
+            <xsd:attribute name="attributeDef" type="xsd:string"/>
+            <xsd:attribute name="responsibility" type="xsd:string"/>
+            <xsd:attribute name="type" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="roleResponsibilityAction">
+        <xsd:complexType>
+            <xsd:attribute name="role" type="xsd:string"/>
+            <xsd:attribute name="responsibility" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="priority" type="xsd:string"/>
+            <xsd:attribute name="force" type="xsd:string"/>
+            <xsd:attribute name="actionTypeCode" type="xsd:string"/>
+            <xsd:attribute name="actionPolicyCode" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="roleMember">
+        <xsd:complexType>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="type" type="xsd:string"/>
+            <xsd:attribute name="member" type="xsd:string"/>
+            <xsd:attribute name="role" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="rolePermission">
+        <xsd:complexType>
+            <xsd:attribute name="permission" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="role" type="xsd:string"/>
+            <xsd:attribute name="active" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>

@@ -20,7 +20,6 @@ import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-import org.kuali.rice.liquibase.change.ext.KimAbstractChange;
 
 import java.util.UUID;
 
