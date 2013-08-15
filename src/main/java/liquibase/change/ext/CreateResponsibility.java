@@ -37,9 +37,9 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
     private String template;
     private String namespace;
     private String name;
-    private String active;
 	private String description;
-    
+	private String active = "Y";
+
     
     public CreateResponsibility() {
         super("responsibility", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
@@ -61,7 +61,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 		final BigInteger responsibilityId = getPrimaryKey(database);
 		BigInteger responsibilityTemplateId = null;
 		if (getTemplate() != null){
-			responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace());
+			responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate());
 		}
 		insertResponsibility.addColumnValue("rsp_id", responsibilityId);
 		insertResponsibility.addColumnValue("rsp_tmpl_id", responsibilityTemplateId);
@@ -82,7 +82,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		String responsibilityTemplateId = "null";
 		if (getTemplate() != null){
-			responsibilityTemplateId = new String("'" + getResponsibilityTemplateForeignKey(database, getTemplate(), getNamespace()) + "'");
+			responsibilityTemplateId = new String("'" + getResponsibilityTemplateForeignKey(database, getTemplate()) + "'");
 		}
 		final DeleteDataChange removeResponsibility = new DeleteDataChange();
 		removeResponsibility.setTableName("krim_rsp_t");
