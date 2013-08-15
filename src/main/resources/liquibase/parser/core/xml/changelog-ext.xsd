@@ -101,8 +101,9 @@
     <xsd:element name="rolePermission">
         <xsd:complexType>
             <xsd:attribute name="permission" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="permissionNamespace" type="xsd:string"/>
             <xsd:attribute name="role" type="xsd:string"/>
+            <xsd:attribute name="roleNamespace" type="xsd:string"/>
             <xsd:attribute name="active" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>

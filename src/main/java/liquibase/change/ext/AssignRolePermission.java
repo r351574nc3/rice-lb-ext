@@ -35,9 +35,11 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class AssignRolePermission extends KimAbstractChange implements CustomSqlChange {
-    private String permission;
-    private String namespace;
+
+	private String permission;
+    private String permissionNamespace;
     private String role;
+    private String roleNamespace;
     private String active = "Y";
     
     
@@ -59,8 +61,8 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement assignPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_role_perm_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		final BigInteger roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
 
 		assignPermission.addColumnValue("role_perm_id", id);
 		assignPermission.addColumnValue("role_id", roleId);
@@ -78,8 +80,8 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		final BigInteger roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
 		undoAssign.setTableName("krim_role_perm_t");
 		undoAssign.setWhereClause(String.format("role_id = '%s' and perm_id = '%s'", roleId, permId));
 		return undoAssign.generateStatements(database);
@@ -104,21 +106,21 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     }
 
     /**
-     * Get the namespace attribute on this object
+     * Get the permissionNamespace attribute on this object
      *
-     * @return namespace value
+     * @return permissionNamespace value
      */
-    public String getNamespace() {
-        return this.namespace;
+    public String getPermissionNamespace() {
+        return this.permissionNamespace;
     }
 
     /**
-     * Set the namespace attribute on this object
+     * Set the permissionNamespace attribute on this object
      *
-     * @param namespace value to set
+     * @param permissionNamespace value to set
      */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
+    public void setPermissionNamespace(final String permissionNamespace) {
+        this.permissionNamespace = permissionNamespace;
     }
 
     /**
@@ -157,4 +159,11 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
         this.active = active;
     }
 
+	public String getRoleNamespace() {
+		return roleNamespace;
+	}
+
+	public void setRoleNamespace(String roleNamespace) {
+		this.roleNamespace = roleNamespace;
+	}
 }

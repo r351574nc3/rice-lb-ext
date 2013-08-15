@@ -4,15 +4,16 @@
 
     <changeSet id="tst-assign-role-permission" author="lb-ext" context="default">
         <customChange class="liquibase.change.ext.AssignRolePermission">
-            <param name="namespace" value="KUALI"/>
+            <param name="roleNamespace" value="KUALI"/>
             <param name="role" value="User"/>
             <param name="permission" value="Use Document Operation Screen"/>
+            <param name="permissionNamespace" value="KUALI"/>
             <param name="active" value="Y"/>
         </customChange>
     </changeSet>
 
     <changeSet id="tst-assign-role-permission-cns" author="lb-ext" context="custom-namespace">
-        <kim:rolePermission namespace="KUALI" role="User" permission="Use Document Operation Screen" active="Y"/>
+        <kim:rolePermission roleNamespace="KUALI" role="User" permission="Use Document Operation Screen" permissionNamespace="KUALI" active="Y"/>
     </changeSet>
 
 </databaseChangeLog>
