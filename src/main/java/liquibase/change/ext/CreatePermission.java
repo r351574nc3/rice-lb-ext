@@ -23,6 +23,7 @@ import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
+import org.apache.commons.lang.StringUtils;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	private String namespace;
 	private String name;
 	private String description;
-	private String active;
+	private String active = "Y";
 
 
 	public CreatePermission() {
@@ -59,7 +60,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 
 		BigInteger templateId = null;
 		if (getTemplate() != null){
-			templateId = getPermissionTemplateForeignKey(database,getTemplate());
+			templateId = getPermissionTemplateForeignKey(database, getTemplate());
 		}
 
 		insertPermission.addColumnValue("perm_id", permissionId);
@@ -79,8 +80,8 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		String templateId = "is null";
-		if (getTemplate() != null){
-			templateId = " = '" + getPermissionTemplateForeignKey(database,getTemplate()) + "'";
+		if (StringUtils.isNotBlank(getTemplate())){
+			templateId = " = '" + getPermissionTemplateForeignKey(database, getTemplate()) + "'";
 		}
 
 		final DeleteDataChange removePerm = new DeleteDataChange();
@@ -184,6 +185,5 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
     public void setActive(final String active) {
         this.active = active;
     }
-
 
 }
