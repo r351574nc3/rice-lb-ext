@@ -4,14 +4,12 @@ import liquibase.change.AbstractChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.exception.ValidationErrors;
+import liquibase.exception.*;
 import liquibase.executor.ExecutorService;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
+import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RuntimeStatement;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +26,11 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 	public final ValidationErrors validate(Database database) {
 		//todo: Default validation calls generateStatements which in turn tries to retrieve foreign key references for parameters not yet initialized
 		return new ValidationErrors();
+	}
+
+	@Override
+	public Warnings warn(Database database) {
+		return new Warnings();
 	}
 
 	@Override
@@ -86,7 +89,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
-	protected BigInteger getResponsibilityTemplateForeignKey(Database database, final String templateName, final String nameSpaceCode) {
+	protected BigInteger getResponsibilityTemplateForeignKey(Database database, final String templateName) {
 		try {
 			final RuntimeStatement templateIdStatement = new RuntimeStatement() {
 				public Sql[] generate(Database database1) {
@@ -97,7 +100,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 			};
 			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, BigInteger.class);
 		} catch (DatabaseException e) {
-			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility Template' (nm: %s, nmSpace: %s)", templateName, nameSpaceCode), e);
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility Template' (nm: %s)", templateName), e);
 		}
 	}
 
