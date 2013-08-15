@@ -16,6 +16,7 @@
 package liquibase.change.ext;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
@@ -37,7 +38,7 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     private String permission;
     private String namespace;
     private String role;
-    private String active;
+    private String active = "Y";
     
     
     public AssignRolePermission() {
@@ -66,7 +67,7 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
 		assignPermission.addColumnValue("perm_id", permId);
 		assignPermission.addColumnValue("actv_ind", getActive());
 		assignPermission.addColumnValue("ver_nbr", 1);
-		assignPermission.addColumnValue("obj_id", "sys_guid()");
+		assignPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
 
 		return new SqlStatement[]{
 			assignPermission
