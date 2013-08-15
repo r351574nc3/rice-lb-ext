@@ -58,7 +58,6 @@
 
     <xsd:element name="permissionAttribute">
         <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
             <xsd:attribute name="value" type="xsd:string"/>
             <xsd:attribute name="namespace" type="xsd:string"/>
             <xsd:attribute name="attributeDef" type="xsd:string"/>

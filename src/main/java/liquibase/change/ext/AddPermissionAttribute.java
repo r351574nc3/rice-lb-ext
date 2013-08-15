@@ -45,13 +45,12 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 public class AddPermissionAttribute extends KimAbstractChange {
 
-	private String name;
 	private String value;
     private String namespace;
     private String attributeDef;
     private String permission;
     private String type;
-    private String active;
+    private String active = "Y";
 
 
     public AddPermissionAttribute() {
@@ -105,7 +104,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 		final BigInteger typeId = getTypeForeignKey(database, getType());
 		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
-		removeAttribute.setWhereClause(String.format("perm_id = %s AND kim_typ_id = %s AND kim_attr_defn_id = %s",
+		removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
 			permissionId, typeId, definitionId));
 		return removeAttribute.generateStatements(database);
 	}
@@ -218,15 +217,6 @@ public class AddPermissionAttribute extends KimAbstractChange {
     public void setActive(final String active) {
         this.active = active;
     }
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 
 
 }
