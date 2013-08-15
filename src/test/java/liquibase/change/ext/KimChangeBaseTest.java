@@ -25,13 +25,35 @@ public abstract class KimChangeBaseTest {
 		liquibase.update(null);
 	}
 
-
 	@Test
 	public void testUpdateAndRollback() throws Exception{
 		performUpdateAndRollback("default");
 	}
 
-	protected void performUpdateAndRollback(String context) throws Exception{
+	@Test
+	public void testUpdateAndRollback_customNamespace() throws Exception{
+		performUpdateAndRollback("custom-namespace");
+	}
+
+	protected abstract String entityName();
+
+	protected abstract String whereClause();
+
+	protected void assertInsert(String whereClause) throws SQLException {
+		ResultSet r = getEntityResultSet(whereClause);
+		if(!r.next()) {
+			fail("Insert failed!");
+		}
+	}
+
+	protected void assertRollback(String whereClause) throws SQLException {
+		ResultSet r = getEntityResultSet(whereClause);
+		if(r.next()) {
+			fail("Rollback failed!");
+		}
+	}
+
+	private void performUpdateAndRollback(String context) throws Exception{
 		//given
 		Liquibase liquibase = new Liquibase("org/kuali/rice/liquibase/change/ext/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
 		//when
@@ -43,24 +65,6 @@ public abstract class KimChangeBaseTest {
 		liquibase.rollback(1,context);
 		//then
 		assertRollback(whereClause());
-	}
-
-	protected abstract String entityName();
-
-	protected abstract String whereClause();
-
-	private void assertInsert(String whereClause) throws SQLException {
-		ResultSet r = getEntityResultSet(whereClause);
-		if(!r.next()) {
-			fail("Insert failed!");
-		}
-	}
-
-	private void assertRollback(String whereClause) throws SQLException {
-		ResultSet r = getEntityResultSet(whereClause);
-		if(r.next()) {
-			fail("Rollback failed!");
-		}
 	}
 
 	private ResultSet getEntityResultSet(String whereClause) throws SQLException {

@@ -12,9 +12,4 @@ public class CreateTypeTests extends KimChangeBaseTest {
 		return "NM = 'lb=ext Type'";
 	}
 
-	@Test
-	public void testUpdateAndRollback_CustomNamespace() throws Exception{
-		performUpdateAndRollback("custom-namespace");
-	}
-
 }
