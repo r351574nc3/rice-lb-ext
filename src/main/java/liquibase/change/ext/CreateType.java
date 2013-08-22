@@ -34,7 +34,7 @@ public class CreateType extends KimAbstractChange {
     private String namespace;
     private String name;
     private String serviceName;
-    private String active;
+    private String active = "Y";
     
     
     public CreateType() {

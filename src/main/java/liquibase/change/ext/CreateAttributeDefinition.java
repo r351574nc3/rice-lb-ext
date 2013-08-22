@@ -38,7 +38,7 @@ public class CreateAttributeDefinition extends KimAbstractChange implements Cust
     private String namespace;
     private String name;
     private String component;
-    private String active;
+    private String active = "Y";
     
     
     public CreateAttributeDefinition() {

@@ -41,7 +41,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 	private String description;
 	private String type;
     private String lastUpdated;
-    private String active;
+    private String active = "Y";
     
 
     public CreateRole() {
