@@ -7558,6 +7558,16 @@
             <column name="ACTV_IND" value="Y"/>
         </insert>
 
+        <insert tableName="krim_role_mbr_t">
+            <column name="ROLE_MBR_ID" value="90000"/>
+            <column name="OBJ_ID" value="19aa1eba-fea8-11e2-8920-009c021e06d7"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="ROLE_ID" value="1"/>
+            <column name="MBR_ID" value="1"/>
+            <column name="MBR_TYP_CD" value="P"/>
+        </insert>
+
+
     </changeSet>
 
 

@@ -210,6 +210,21 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
+	protected BigInteger getRoleMemberForeignKey(Database database, final BigInteger roleId , final BigInteger memberId) {
+		try {
+			final SqlStatement getRoleRespId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select role_mbr_id from krim_role_mbr_t where role_id = '%s' and mbr_id = '%s'", roleId, memberId))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s)", roleId, memberId), e);
+		}
+	}
+
 	private void incrementSequence(Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
