@@ -7508,6 +7508,19 @@
             <column name="LAST_UPDT_DT" valueDate="2008-11-04T14:37:10.0"/>
         </insert>
 
+
+	    <insert tableName="krim_role_t">
+		    <column name="ROLE_ID" value="2"/>
+		    <column name="OBJ_ID" value="4ADF18B6D4847954E0404F8189D85002"/>
+		    <column name="VER_NBR" valueNumeric="1"/>
+		    <column name="ROLE_NM" value="User2"/>
+		    <column name="NMSPC_CD" value="KUALI"/>
+		    <column name="DESC_TXT" value="This role derives its members from the users in the Principal table. This role gives users high-level permissions to interact with RICE documents and to login to KUALI."/>
+		    <column name="KIM_TYP_ID" value="1"/>
+		    <column name="ACTV_IND" value="Y"/>
+		    <column name="LAST_UPDT_DT" valueDate="2008-11-04T14:37:10.0"/>
+	    </insert>
+
         <insert tableName="krim_entity_t">
             <column name="ENTITY_ID" value="1"/>
             <column name="OBJ_ID" value="5B1B6B919CC96496E0404F8189D822F2"/>

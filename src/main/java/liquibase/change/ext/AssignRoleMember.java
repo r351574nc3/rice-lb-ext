@@ -16,8 +16,9 @@
 package liquibase.change.ext;
 
 import java.math.BigInteger;
-import java.util.UUID;
+import java.util.*;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.*;
@@ -39,6 +40,8 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
     private String type;
     private String member;
     private String role;
+	@ChangeProperty(includeInSerialization = false)
+	private List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
 	   	        
     
     public AssignRoleMember() {
@@ -69,9 +72,13 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		assignRole.addColumnValue("ver_nbr", 1);
 		assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-		return new SqlStatement[]{
-			assignRole
-		};
+		List<SqlStatement> results = new ArrayList<SqlStatement>();
+		results.add(assignRole);
+		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+			addRoleMemberAttribute.setRoleMemberId(id);
+			results.addAll(Arrays.asList(addRoleMemberAttribute.generateStatements(database)));
+		}
+       return results.toArray(new SqlStatement[results.size()]);
 	}
 
 
@@ -80,12 +87,29 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		final BigInteger roleId = getRoleForeignKey(database, getRole(),getNamespace());
 		final BigInteger mbrId  = getPrincipalForeignKey(database, getMember());
+		final BigInteger rolMemberId = getRoleMemberForeignKey(database,roleId,mbrId,getUniqueAttribute(attributes));
 		undoAssign.setTableName("KRIM_ROLE_MBR_T");
 		undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, mbrId));
-		return undoAssign.generateStatements(database);
+
+		List<SqlStatement> results = new ArrayList<SqlStatement>();
+		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+			addRoleMemberAttribute.setRoleMemberId(rolMemberId);
+			results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
+		}
+		results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
+		return results.toArray(new SqlStatement[results.size()]);
 	}
 
-    /**
+	private String getUniqueAttribute(List<AddRoleMemberAttribute> attributes) {
+		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+			if (addRoleMemberAttribute.isUnique()){
+				return addRoleMemberAttribute.getValue();
+			}
+		}
+		return null;
+	}
+
+	/**
      * Get the member attribute on this object
      *
      * @return member value
@@ -156,4 +180,10 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
     public void setType(final String type) {
         this.type = type;
     }
+
+	public AddRoleMemberAttribute createRoleMemberAttribute(){
+		AddRoleMemberAttribute addRoleMemberAttribute = new AddRoleMemberAttribute();
+		this.attributes.add(addRoleMemberAttribute);
+		return addRoleMemberAttribute;
+	}
 }

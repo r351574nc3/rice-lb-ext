@@ -6,126 +6,142 @@
 
     <xsd:element name="type">
         <xsd:complexType>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="serviceName" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="name" type="xsd:string"  use="required"/>
+            <xsd:attribute name="serviceName" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="attributeDefinition">
         <xsd:complexType>
-            <xsd:attribute name="label" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="component" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="label" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="name" type="xsd:string"  use="required"/>
+            <xsd:attribute name="component" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="permission">
         <xsd:complexType>
-            <xsd:attribute name="template" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="description" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="template" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="name" type="xsd:string"  use="required"/>
+            <xsd:attribute name="description" type="xsd:string"  use="optional"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="responsibility">
         <xsd:complexType>
-            <xsd:attribute name="template" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="description" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="template" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="name" type="xsd:string"  use="required"/>
+            <xsd:attribute name="description" type="xsd:string"  use="optional"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
 
     <xsd:element name="role">
         <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="type" type="xsd:string"/>
-            <xsd:attribute name="description" type="xsd:string"/>
-            <xsd:attribute name="lastUpdated" type="xsd:date"/>
-            <xsd:attribute name="active" type="xsd:string" />
+            <xsd:attribute name="name" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="type" type="xsd:string"  use="required"/>
+            <xsd:attribute name="description" type="xsd:string"  use="required"/>
+            <xsd:attribute name="lastUpdated" type="xsd:date" use="optional"/>
+            <xsd:attribute name="active" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
 
     <xsd:element name="permissionAttribute">
         <xsd:complexType>
-            <xsd:attribute name="value" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="attributeDef" type="xsd:string"/>
-            <xsd:attribute name="permission" type="xsd:string"/>
-            <xsd:attribute name="type" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string" />
+            <xsd:attribute name="value" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="attributeDef" type="xsd:string"  use="required"/>
+            <xsd:attribute name="permission" type="xsd:string"  use="required"/>
+            <xsd:attribute name="type" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
 
     <xsd:element name="responsibilityAttribute">
         <xsd:complexType>
-            <xsd:attribute name="value" type="xsd:string"/>
-            <xsd:attribute name="attributeDef" type="xsd:string"/>
-            <xsd:attribute name="responsibility" type="xsd:string"/>
-            <xsd:attribute name="type" type="xsd:string"/>
+            <xsd:attribute name="value" type="xsd:string"  use="required"/>
+            <xsd:attribute name="attributeDef" type="xsd:string"  use="required"/>
+            <xsd:attribute name="responsibility" type="xsd:string"  use="required"/>
+            <xsd:attribute name="type" type="xsd:string"  use="required"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="roleResponsibilityAction">
         <xsd:complexType>
-            <xsd:attribute name="role" type="xsd:string"/>
-            <xsd:attribute name="responsibility" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="priority" type="xsd:string"/>
-            <xsd:attribute name="force" type="xsd:string"/>
-            <xsd:attribute name="actionTypeCode" type="xsd:string"/>
-            <xsd:attribute name="actionPolicyCode" type="xsd:string"/>
+            <xsd:attribute name="role" type="xsd:string"  use="required"/>
+            <xsd:attribute name="responsibility" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="priority" type="xsd:string"  use="required"/>
+            <xsd:attribute name="force" type="xsd:string"  use="required"/>
+            <xsd:attribute name="actionTypeCode" type="xsd:string"  use="required"/>
+            <xsd:attribute name="actionPolicyCode" type="xsd:string"  use="required"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="roleMember">
         <xsd:complexType>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="type" type="xsd:string"/>
-            <xsd:attribute name="member" type="xsd:string"/>
-            <xsd:attribute name="role" type="xsd:string"/>
+            <xsd:sequence>
+                <xsd:element name="roleMemberAttribute" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+	                    <xsd:attributeGroup ref="roleMemberAttributeBaseType"/>
+                        <xsd:attribute name="unique" type="xsd:boolean" use="optional"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="typeAttributes"/>
+            <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+            <xsd:attribute name="member" type="xsd:string" use="required"/>
+            <xsd:attribute name="role" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="roleMemberAttribute">
         <xsd:complexType>
-            <xsd:attribute name="type" type="xsd:string"/>
-            <xsd:attribute name="attributeDef" type="xsd:string"/>
-            <xsd:attribute name="roleName" type="xsd:string"/>
-            <xsd:attribute name="roleNamespace" type="xsd:string"/>
-            <xsd:attribute name="member" type="xsd:string"/>
-            <xsd:attribute name="value" type="xsd:string"/>
+	        <xsd:attributeGroup ref="roleMemberAttributeBaseType"/>
+	        <xsd:attribute name="roleName" type="xsd:string" use="required"/>
+	        <xsd:attribute name="roleNamespace" type="xsd:string" use="required"/>
+	        <xsd:attribute name="member" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="rolePermission">
         <xsd:complexType>
-            <xsd:attribute name="permission" type="xsd:string"/>
-            <xsd:attribute name="permissionNamespace" type="xsd:string"/>
-            <xsd:attribute name="role" type="xsd:string"/>
-            <xsd:attribute name="roleNamespace" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="permission" type="xsd:string" use="required"/>
+            <xsd:attribute name="permissionNamespace" type="xsd:string" use="required"/>
+            <xsd:attribute name="role" type="xsd:string" use="required"/>
+            <xsd:attribute name="roleNamespace" type="xsd:string" use="required"/>
+            <xsd:attribute name="active" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="roleResponsibility">
         <xsd:complexType>
-            <xsd:attribute name="responsibility" type="xsd:string"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
-            <xsd:attribute name="role" type="xsd:string"/>
-            <xsd:attribute name="active" type="xsd:string"/>
+            <xsd:attribute name="responsibility" type="xsd:string"  use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="role" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string"  use="required"/>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:attributeGroup name="typeAttributes">
+        <xsd:attribute name="type" type="xsd:string" use="required" />
+    </xsd:attributeGroup>
+
+	<xsd:attributeGroup name="roleMemberAttributeBaseType">
+		<xsd:attribute name="attributeDef" type="xsd:string" use="required"/>
+		<xsd:attribute name="type" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:attributeGroup>
 
 </xsd:schema>

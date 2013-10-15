@@ -225,6 +225,26 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
+	protected BigInteger getRoleMemberForeignKey(Database database, final BigInteger roleId , final BigInteger memberId, final String uniqueAttributeValue) {
+		if (uniqueAttributeValue == null){
+			return getRoleMemberForeignKey(database,roleId,memberId);
+		}
+		try {
+			final SqlStatement getRoleRespId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select rm.role_mbr_id " +
+							"from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID  " +
+							"where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL = '%s'", roleId, memberId, uniqueAttributeValue))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s, attr. val: %s)", roleId, memberId, uniqueAttributeValue), e);
+		}
+	}
+
 	private void incrementSequence(Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
