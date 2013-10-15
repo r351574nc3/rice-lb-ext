@@ -40,6 +40,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 	private String namespace;
 	private String description;
 	private String type;
+	private String typeNamespace;
     private String lastUpdated;
     private String active = "Y";
     
@@ -62,7 +63,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 	public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement insertRole = new InsertStatement(database.getDefaultSchemaName(), "KRIM_ROLE_T");
 		final BigInteger roleId = getPrimaryKey(database);
-		final BigInteger typeId = getTypeForeignKey(database, getType());
+		final BigInteger typeId = getTypeForeignKey(database, getType(), getTypeNamespace());
 
 		insertRole.addColumnValue("role_id", roleId);
 		insertRole.addColumnValue("nmspc_cd", getNamespace());
@@ -83,7 +84,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		final BigInteger typeReference = getTypeForeignKey(database, getType());
+		final BigInteger typeReference = getTypeForeignKey(database, getType(), getTypeNamespace());
 		final DeleteDataChange removeRole = new DeleteDataChange();
 		removeRole.setTableName("KRIM_ROLE_T");
 		removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id = '%s'", getName(), typeReference));
@@ -198,4 +199,11 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         this.active = active;
     }
 
+	public String getTypeNamespace() {
+		return typeNamespace;
+	}
+
+	public void setTypeNamespace(String typeNamespace) {
+		this.typeNamespace = typeNamespace;
+	}
 }

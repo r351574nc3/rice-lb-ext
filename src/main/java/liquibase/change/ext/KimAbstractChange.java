@@ -134,6 +134,24 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
+	protected BigInteger getTypeForeignKey(Database database, final String kimType, final String kimTypeNamespace) {
+		if (kimTypeNamespace == null){
+			return getTypeForeignKey(database,kimType);
+		}
+		try {
+			final SqlStatement getTypeId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[] {
+						new UnparsedSql(String.format("select kim_typ_id from krim_typ_t where nm = '%s' and nmspc_cd = '%s'", kimType, kimTypeNamespace))
+					};
+				}
+			};
+			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key 'Type Reference' (%s, %s)",kimType, kimTypeNamespace),e);
+		}
+	}
+
 	protected BigInteger getPermissionForeignKey(Database database, final String permissionName, final String permissionNameSpace){
 		try {
 			final SqlStatement getPermissionId = new RuntimeStatement() {
