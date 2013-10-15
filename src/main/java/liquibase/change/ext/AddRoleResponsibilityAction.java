@@ -35,9 +35,9 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class AddRoleResponsibilityAction extends KimAbstractChange implements CustomSqlChange {
-    private String role;
-    private String responsibility;
-    private String namespace;
+    private String roleName;
+    private String responsibilityName;
+    private String roleNamespace;
     private String priority;
     private String force;
     private String actionTypeCode;
@@ -61,8 +61,8 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 	public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		final BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
 		final BigInteger roleRespId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
 		insertAction.addColumnValue("role_rsp_actn_id", id);
@@ -83,8 +83,8 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		final BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
 		final BigInteger assignId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
 		final DeleteDataChange undoAssign = new DeleteDataChange();
@@ -99,17 +99,17 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
      *
      * @return responsibility value
      */
-    public String getResponsibility() {
-        return this.responsibility;
+    public String getResponsibilityName() {
+        return this.responsibilityName;
     }
 
     /**
      * Set the responsibility attribute on this object
      *
-     * @param responsibility value to set
+     * @param responsibilityName value to set
      */
-    public void setResponsibility(final String responsibility) {
-        this.responsibility = responsibility;
+    public void setResponsibilityName(final String responsibilityName) {
+        this.responsibilityName = responsibilityName;
     }
 
     /**
@@ -171,17 +171,17 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
      *
      * @return namespace value
      */
-    public String getNamespace() {
-        return this.namespace;
+    public String getRoleNamespace() {
+        return this.roleNamespace;
     }
 
     /**
      * Set the namespace attribute on this object
      *
-     * @param namespace value to set
+     * @param roleNamespace value to set
      */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
+    public void setRoleNamespace(final String roleNamespace) {
+        this.roleNamespace = roleNamespace;
     }
 
     /**
@@ -189,17 +189,17 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
      *
      * @return role value
      */
-    public String getRole() {
-        return this.role;
+    public String getRoleName() {
+        return this.roleName;
     }
 
     /**
      * Set the role attribute on this object
      *
-     * @param role value to set
+     * @param roleName value to set
      */
-    public void setRole(final String role) {
-        this.role = role;
+    public void setRoleName(final String roleName) {
+        this.roleName = roleName;
     }
 
     /**

@@ -79,9 +79,9 @@
 
     <xsd:element name="roleResponsibilityAction">
         <xsd:complexType>
-            <xsd:attribute name="role" type="xsd:string"  use="required"/>
-            <xsd:attribute name="responsibility" type="xsd:string"  use="required"/>
-            <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+            <xsd:attribute name="roleName" type="xsd:string"  use="required"/>
+            <xsd:attribute name="responsibilityName" type="xsd:string"  use="required"/>
+            <xsd:attribute name="roleNamespace" type="xsd:string"  use="required"/>
             <xsd:attribute name="priority" type="xsd:string"  use="required"/>
             <xsd:attribute name="force" type="xsd:string"  use="required"/>
             <xsd:attribute name="actionTypeCode" type="xsd:string"  use="required"/>
@@ -130,7 +130,7 @@
             <xsd:attribute name="responsibility" type="xsd:string"  use="required"/>
             <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
             <xsd:attribute name="role" type="xsd:string"  use="required"/>
-            <xsd:attribute name="active" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
