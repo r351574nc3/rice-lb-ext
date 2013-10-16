@@ -60,9 +60,9 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 		final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_rsp_attr_data_t");
 
 		final BigInteger attributeId = getPrimaryKey(database);
-		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
-		final BigInteger typeId = getTypeForeignKey(database, getType());
-		final BigInteger attributeDefintionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		final String typeId = getTypeForeignKey(database, getType());
+		final String attributeDefintionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
 		insertAttribute.addColumnValue("attr_data_id", attributeId);
 		insertAttribute.addColumnValue("rsp_id", responsibilityId);
@@ -81,9 +81,9 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		BigInteger respId = getResponsibilityForeignKey(database, getResponsibility());
-		BigInteger typeId = getTypeForeignKey(database, getType());
-		BigInteger defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+		String respId = getResponsibilityForeignKey(database, getResponsibility());
+		String typeId = getTypeForeignKey(database, getType());
+		String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 		undoAssign.setTableName("krim_rsp_attr_data_t");
 		undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", respId, typeId, defnId));
 

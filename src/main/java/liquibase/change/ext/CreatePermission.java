@@ -15,6 +15,7 @@
  */
 package liquibase.change.ext;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
@@ -26,6 +27,9 @@ import liquibase.statement.core.InsertStatement;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -42,6 +46,8 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	private String name;
 	private String description;
 	private String active = "Y";
+	@ChangeProperty(includeInSerialization = false)
+	private List<AddPermissionAttribute> attributes = new ArrayList<AddPermissionAttribute>();
 
 
 	public CreatePermission() {
@@ -58,7 +64,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
         final InsertStatement insertPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_t");
 		final BigInteger permissionId = getPrimaryKey(database);
 
-		BigInteger templateId = null;
+	    String templateId = null;
 		if (getTemplate() != null){
 			templateId = getPermissionTemplateForeignKey(database, getTemplate());
 		}
@@ -72,23 +78,32 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 		insertPermission.addColumnValue("ver_nbr", 1);
 		insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-        return new SqlStatement[] {
-            insertPermission
-        };
+	    List<SqlStatement> result = new ArrayList<SqlStatement>();
+	    result.add(insertPermission);
+	    for (AddPermissionAttribute attribute : attributes){
+		    attribute.setPermissionId(permissionId.toString());
+		    result.addAll(Arrays.asList(attribute.generateStatements(database)));
+	    }
+
+	    return result.toArray(new SqlStatement[result.size()]);
     }
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		String templateId = "is null";
-		if (StringUtils.isNotBlank(getTemplate())){
-			templateId = " = '" + getPermissionTemplateForeignKey(database, getTemplate()) + "'";
-		}
+		List<SqlStatement> result = new ArrayList<SqlStatement>();
+		String permissionId = getPermissionForeignKey(database, getName(), getNamespace(), getTemplate());
 
 		final DeleteDataChange removePerm = new DeleteDataChange();
 		removePerm.setTableName("krim_perm_t");
-		removePerm.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND perm_tmpl_id %s", getNamespace(), getName(), templateId));
+		removePerm.setWhereClause(String.format("perm_id = '%s'",permissionId));
 
-		return removePerm.generateStatements(database);
+		for (AddPermissionAttribute attribute : attributes){
+			attribute.setPermissionId(permissionId);
+			result.addAll(Arrays.asList(attribute.generateStatements(database)));
+		}
+
+		result.addAll(Arrays.asList(removePerm.generateStatements(database)));
+		return result.toArray(new SqlStatement[result.size()]);
 	}
 
 	@Override
@@ -185,5 +200,12 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
     public void setActive(final String active) {
         this.active = active;
     }
+
+
+	public AddPermissionAttribute createAttribute(){
+		AddPermissionAttribute permissionAttribute = new AddPermissionAttribute();
+		this.attributes.add(permissionAttribute);
+		return permissionAttribute;
+	}
 
 }

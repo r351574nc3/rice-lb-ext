@@ -59,7 +59,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
     public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement insertResponsibility = new InsertStatement(database.getDefaultSchemaName(), "krim_rsp_t");
 		final BigInteger responsibilityId = getPrimaryKey(database);
-		BigInteger responsibilityTemplateId = null;
+	    String responsibilityTemplateId = null;
 		if (getTemplate() != null){
 			responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate());
 		}

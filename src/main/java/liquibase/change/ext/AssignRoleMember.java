@@ -62,8 +62,8 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement assignRole = new InsertStatement(database.getDefaultSchemaName(), "krim_role_mbr_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger memberId = getPrincipalForeignKey(database, getMember());
+		final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final String memberId = getPrincipalForeignKey(database, getMember());
 
 		assignRole.addColumnValue("role_mbr_id", id);
 		assignRole.addColumnValue("role_id", roleId);
@@ -75,7 +75,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		List<SqlStatement> results = new ArrayList<SqlStatement>();
 		results.add(assignRole);
 		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-			addRoleMemberAttribute.setRoleMemberId(id);
+			addRoleMemberAttribute.setRoleMemberId(id.toString());
 			results.addAll(Arrays.asList(addRoleMemberAttribute.generateStatements(database)));
 		}
        return results.toArray(new SqlStatement[results.size()]);
@@ -85,9 +85,9 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		final BigInteger roleId = getRoleForeignKey(database, getRole(),getNamespace());
-		final BigInteger mbrId  = getPrincipalForeignKey(database, getMember());
-		final BigInteger rolMemberId = getRoleMemberForeignKey(database,roleId,mbrId,getUniqueAttribute(attributes));
+		final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
+		final String mbrId  = getPrincipalForeignKey(database, getMember());
+		final String rolMemberId = getRoleMemberForeignKey(database,roleId,mbrId,getUniqueAttribute(attributes));
 		undoAssign.setTableName("KRIM_ROLE_MBR_T");
 		undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, mbrId));
 

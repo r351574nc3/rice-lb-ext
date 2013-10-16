@@ -21,7 +21,10 @@
     </changeSet>
 
     <changeSet id="tst-permission-cns" author="lb-ext" context="custom-namespace">
-        <kim:permission template="Default" namespace="KFS-TEM" name="lb-ext permission" description="Allows access tst permission" active="Y"/>
+        <kim:permission template="Default" namespace="KFS-TEM" name="lb-ext permission" description="Allows access tst permission" active="Y">
+	        <kim:attribute attributeDef="beanName" type="Default" value="Test Perm Attr 1"/>
+	        <kim:attribute attributeDef="beanName" type="Default" value="Test Perm Attr 2"/>
+        </kim:permission>
     </changeSet>
 
 </databaseChangeLog>

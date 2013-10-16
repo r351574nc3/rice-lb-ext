@@ -61,9 +61,9 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 	public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
-		final BigInteger roleRespId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
+		final String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
+		final String roleRespId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
 		insertAction.addColumnValue("role_rsp_actn_id", id);
 		insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
@@ -83,9 +83,9 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		final BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		final BigInteger responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
-		final BigInteger assignId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
+		final String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
+		final String assignId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		undoAssign.setTableName("krim_role_rsp_actn_t");

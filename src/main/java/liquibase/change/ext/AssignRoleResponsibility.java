@@ -58,8 +58,8 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
     public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement statement = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger rspId = getResponsibilityForeignKey(database, getResponsibility());
+		final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final String rspId = getResponsibilityForeignKey(database, getResponsibility());
 
 		statement.addColumnValue("role_rsp_id", id);
 		statement.addColumnValue("role_id", roleId);
@@ -77,8 +77,8 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final BigInteger permId = getResponsibilityForeignKey(database, getResponsibility());
+		final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
+		final String permId = getResponsibilityForeignKey(database, getResponsibility());
 		undoAssign.setTableName("krim_role_rsp_t");
 		undoAssign.setWhereClause(String.format("role_id = '%s' and rsp_id = '%s'", roleId, permId));
 		return undoAssign.generateStatements(database);

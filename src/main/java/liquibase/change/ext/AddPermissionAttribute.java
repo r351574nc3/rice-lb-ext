@@ -15,6 +15,7 @@
  */
 package liquibase.change.ext;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
@@ -24,6 +25,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -51,9 +54,12 @@ public class AddPermissionAttribute extends KimAbstractChange {
     private String permission;
     private String type;
     private String active = "Y";
+	@ChangeProperty(includeInSerialization = false)
+	private String permissionId;
 
 
-    public AddPermissionAttribute() {
+
+	public AddPermissionAttribute() {
         super("permissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
     }
 
@@ -67,9 +73,11 @@ public class AddPermissionAttribute extends KimAbstractChange {
         final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_perm_attr_data_t");
         try {
             final BigInteger attributeId = getPrimaryKey(database);
-			final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
-			final BigInteger typeId = getTypeForeignKey(database, getType());
-            final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+	        if (permissionId == null){
+				permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+	        }
+			final String typeId = getTypeForeignKey(database, getType());
+            final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
             insertAttribute.addColumnValue("attr_data_id", attributeId);
             insertAttribute.addColumnValue("perm_id", permissionId);
@@ -78,15 +86,17 @@ public class AddPermissionAttribute extends KimAbstractChange {
             insertAttribute.addColumnValue("attr_val", getValue());
             insertAttribute.addColumnValue("ver_nbr", 1);
             insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+
+
+	        return new SqlStatement[] {
+		        insertAttribute
+	        };
         }
         catch (Exception e) {
             throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Permission Attribute' (perm: %s, name: %s, attr_def: %s)'",getPermission(),
 				getValue(), getAttributeDef()), e);
         }
-
-        return new SqlStatement[] {
-            insertAttribute
-        };
     }
 
 	@Override
@@ -100,9 +110,9 @@ public class AddPermissionAttribute extends KimAbstractChange {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_perm_attr_data_t");
 
-		final BigInteger permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
-		final BigInteger typeId = getTypeForeignKey(database, getType());
-		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+		final String permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		final String typeId = getTypeForeignKey(database, getType());
+		final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
 		removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
 			permissionId, typeId, definitionId));
@@ -218,5 +228,8 @@ public class AddPermissionAttribute extends KimAbstractChange {
         this.active = active;
     }
 
+	public void setPermissionId(String permissionId) {
+		this.permissionId = permissionId;
+	}
 
 }

@@ -61,8 +61,8 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement assignPermission = new InsertStatement(database.getDefaultSchemaName(), "krim_role_perm_t");
 		final BigInteger id = getPrimaryKey(database);
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
-		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
+		final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+		final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
 
 		assignPermission.addColumnValue("role_perm_id", id);
 		assignPermission.addColumnValue("role_id", roleId);
@@ -80,8 +80,8 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		final BigInteger roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
-		final BigInteger permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
+		final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+		final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
 		undoAssign.setTableName("krim_role_perm_t");
 		undoAssign.setWhereClause(String.format("role_id = '%s' and perm_id = '%s'", roleId, permId));
 		return undoAssign.generateStatements(database);

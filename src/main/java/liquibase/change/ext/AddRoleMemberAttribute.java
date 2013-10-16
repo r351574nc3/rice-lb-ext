@@ -55,7 +55,7 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
 	@ChangeProperty(includeInSerialization = false)
 	private String unique;
 	@ChangeProperty(includeInSerialization = false)
-	private BigInteger roleMemberId;
+	private String roleMemberId;
 
     public AddRoleMemberAttribute() {
         super("roleMemberAttribute", "Adding an attribute to a Role Member", EXTENSION_PRIORITY);
@@ -71,11 +71,11 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
         final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_role_mbr_attr_data_t");
         try {
             final BigInteger attributeId = getPrimaryKey(database);
-			final BigInteger typeId = getTypeForeignKey(database, getType());
-            final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+			final String typeId = getTypeForeignKey(database, getType());
+            final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 	        if (roleMemberId == null){
-	            BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		        final BigInteger memberId = getPrincipalForeignKey(database, getMember());
+		        String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+		        final String memberId = getPrincipalForeignKey(database, getMember());
 		        roleMemberId = getRoleMemberForeignKey(database, roleId, memberId);
 	        }
 
@@ -108,10 +108,10 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_role_mbr_attr_data_t");
 
-		final BigInteger definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+		final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 		if (roleMemberId == null){
-			BigInteger roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-			BigInteger memberId = getPrincipalForeignKey(database, getMember());
+			String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
+			String memberId = getPrincipalForeignKey(database, getMember());
 			roleMemberId = getRoleMemberForeignKey(database, roleId, memberId);
 		}
 
@@ -175,7 +175,7 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
 		this.unique = unique;
 	}
 
-	public void setRoleMemberId(BigInteger roleMemberId) {
+	public void setRoleMemberId(String roleMemberId) {
 		this.roleMemberId = roleMemberId;
 	}
 }

@@ -74,7 +74,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
-	protected BigInteger getPermissionTemplateForeignKey(Database database, final String templateName) {
+	protected String getPermissionTemplateForeignKey(Database database, final String templateName) {
 		try {
 			final RuntimeStatement templateIdStatement = new RuntimeStatement() {
 				public Sql[] generate(Database database1) {
@@ -83,13 +83,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Permission Template' (%s)", templateName), e);
 		}
 	}
 
-	protected BigInteger getResponsibilityTemplateForeignKey(Database database, final String templateName) {
+	protected String getResponsibilityTemplateForeignKey(Database database, final String templateName) {
 		try {
 			final RuntimeStatement templateIdStatement = new RuntimeStatement() {
 				public Sql[] generate(Database database1) {
@@ -98,13 +98,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(templateIdStatement, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility Template' (nm: %s)", templateName), e);
 		}
 	}
 
-	protected BigInteger getAttributeDefinitionForeignKey(Database database, final String attributeDef){
+	protected String getAttributeDefinitionForeignKey(Database database, final String attributeDef){
 		try {
 			final SqlStatement getDefinitionId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -113,13 +113,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getDefinitionId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getDefinitionId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key 'Attribute Definition' (%s)",attributeDef),e);
 		}
 	}
 
-	protected BigInteger getTypeForeignKey(Database database, final String kimType) {
+	protected String getTypeForeignKey(Database database, final String kimType) {
 		try {
 			final SqlStatement getTypeId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -128,13 +128,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key 'Type Reference' (%s)",kimType),e);
 		}
 	}
 
-	protected BigInteger getTypeForeignKey(Database database, final String kimType, final String kimTypeNamespace) {
+	protected String getTypeForeignKey(Database database, final String kimType, final String kimTypeNamespace) {
 		if (kimTypeNamespace == null){
 			return getTypeForeignKey(database,kimType);
 		}
@@ -146,13 +146,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getTypeId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key 'Type Reference' (%s, %s)",kimType, kimTypeNamespace),e);
 		}
 	}
 
-	protected BigInteger getPermissionForeignKey(Database database, final String permissionName, final String permissionNameSpace){
+	protected String getPermissionForeignKey(Database database, final String permissionName, final String permissionNameSpace){
 		try {
 			final SqlStatement getPermissionId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -161,14 +161,33 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, String.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retreive foreign key reference for 'Permission' (name: %s, namespace: %s)", permissionName, permissionNameSpace));
+		}
+	}
+
+	protected String getPermissionForeignKey(Database database, final String permissionName, final String permissionNameSpace, final String permissionTemplate){
+		if (permissionTemplate == null){
+			return getPermissionForeignKey(database,permissionName,permissionNameSpace);
+		}
+		try {
+			final String permissionTemplateId = getPermissionTemplateForeignKey(database,permissionTemplate);
+			final SqlStatement getPermissionId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+						new UnparsedSql(String.format("select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s' and perm_tmpl_id = '%s'", permissionName, permissionNameSpace, permissionTemplateId))
+					};
+				}
+			};
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getPermissionId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retreive foreign key reference for 'Permission' (name: %s, namespace: %s)", permissionName, permissionNameSpace));
 		}
 	}
 
 
-	protected BigInteger getRoleForeignKey(Database database, final String roleName, final String namespaceCode) {
+	protected String getRoleForeignKey(Database database, final String roleName, final String namespaceCode) {
 		try {
 			final SqlStatement getRoleId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -177,13 +196,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role' (role: %s, namespace: %s)", roleName, namespaceCode), e);
 		}
 	}
 
-	protected BigInteger getPrincipalForeignKey(Database database, final String memberName) {
+	protected String getPrincipalForeignKey(Database database, final String memberName) {
 		try {
 			final SqlStatement getMemberId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -192,13 +211,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getMemberId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getMemberId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Principal' (%s)", memberName), e);
 		}
 	}
 
-	protected BigInteger getResponsibilityForeignKey(Database database, final String responsibilityName) {
+	protected String getResponsibilityForeignKey(Database database, final String responsibilityName) {
 		try {
 			final SqlStatement getResponsibilityId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -207,13 +226,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility' (%s)", responsibilityName), e);
 		}
 	}
 
-	protected BigInteger getRoleResponsibilityForeignKey(Database database, final BigInteger roleId , final BigInteger responsibilityId) {
+	protected String getRoleResponsibilityForeignKey(Database database, final String roleId , final String responsibilityId) {
 		try {
 			final SqlStatement getRoleRespId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -222,13 +241,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Responsibility' (role_id: %s, resp_id: %s)", roleId, responsibilityId), e);
 		}
 	}
 
-	protected BigInteger getRoleMemberForeignKey(Database database, final BigInteger roleId , final BigInteger memberId) {
+	protected String getRoleMemberForeignKey(Database database, final String roleId , final String memberId) {
 		try {
 			final SqlStatement getRoleRespId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
@@ -237,13 +256,13 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s)", roleId, memberId), e);
 		}
 	}
 
-	protected BigInteger getRoleMemberForeignKey(Database database, final BigInteger roleId , final BigInteger memberId, final String uniqueAttributeValue) {
+	protected String getRoleMemberForeignKey(Database database, final String roleId , final String memberId, final String uniqueAttributeValue) {
 		if (uniqueAttributeValue == null){
 			return getRoleMemberForeignKey(database,roleId,memberId);
 		}
@@ -257,7 +276,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
-			return (BigInteger) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, BigInteger.class);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s, attr. val: %s)", roleId, memberId, uniqueAttributeValue), e);
 		}
