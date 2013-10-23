@@ -78,9 +78,9 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final String permId = getResponsibilityForeignKey(database, getResponsibility());
+		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
 		undoAssign.setTableName("krim_role_rsp_t");
-		undoAssign.setWhereClause(String.format("role_id = '%s' and rsp_id = '%s'", roleId, permId));
+		undoAssign.setWhereClause(String.format("role_id = '%s' and rsp_id = '%s'", roleId, responsibilityId));
 		return undoAssign.generateStatements(database);
 	}
 

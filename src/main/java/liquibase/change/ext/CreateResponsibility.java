@@ -15,6 +15,7 @@
  */
 package liquibase.change.ext;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
@@ -24,6 +25,9 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -34,14 +38,16 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class CreateResponsibility extends KimAbstractChange implements CustomSqlChange {
-    private String template;
+
+	private String template;
     private String namespace;
     private String name;
 	private String description;
 	private String active = "Y";
+	@ChangeProperty(includeInSerialization = false)
+	private List<AddResponsibilityAttribute> attributes = new ArrayList<AddResponsibilityAttribute>();
 
-    
-    public CreateResponsibility() {
+	public CreateResponsibility() {
         super("responsibility", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
     }
 
@@ -72,23 +78,34 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 		insertResponsibility.addColumnValue("ver_nbr", 1);
 		insertResponsibility.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-        return new SqlStatement[] {
-            insertResponsibility
-        };
+	    List<SqlStatement> result = new ArrayList<SqlStatement>();
+	    result.add(insertResponsibility);
+	    for (AddResponsibilityAttribute attribute : attributes){
+		    attribute.setResponsibilityId(responsibilityId.toString());
+		    result.addAll(Arrays.asList(attribute.generateStatements(database)));
+	    }
+
+	    return result.toArray(new SqlStatement[result.size()]);
     }
 
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		String responsibilityTemplateId = "null";
-		if (getTemplate() != null){
-			responsibilityTemplateId = new String("'" + getResponsibilityTemplateForeignKey(database, getTemplate()) + "'");
-		}
+		List<SqlStatement> result = new ArrayList<SqlStatement>();
+		String responsibilityId = getResponsibilityForeignKey(database, getName(),getNamespace());
+
 		final DeleteDataChange removeResponsibility = new DeleteDataChange();
 		removeResponsibility.setTableName("krim_rsp_t");
-		removeResponsibility.setWhereClause(String.format("nm = '%s' and NMSPC_CD = '%s' and RSP_TMPL_ID = %s", getName(), getNamespace(), responsibilityTemplateId));
+		removeResponsibility.setWhereClause(String.format("rsp_id = '%s'", responsibilityId));
 
-		return removeResponsibility.generateStatements(database);
+		for (AddResponsibilityAttribute attribute : attributes){
+			attribute.setResponsibilityId(responsibilityId);
+			result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
+		}
+
+		result.addAll(Arrays.asList(removeResponsibility.generateStatements(database)));
+		return result.toArray(new SqlStatement[result.size()]);
+
 	}
 
     /**
@@ -170,4 +187,11 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public AddResponsibilityAttribute createAttribute(){
+		AddResponsibilityAttribute attribute = new AddResponsibilityAttribute();
+		this.attributes.add(attribute);
+		return attribute;
+	}
+
 }

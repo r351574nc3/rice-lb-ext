@@ -18,6 +18,7 @@ package liquibase.change.ext;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
@@ -39,9 +40,11 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
     private String attributeDef;
     private String responsibility;
     private String type;
+	@ChangeProperty(includeInSerialization = false)
+	private String responsibilityId;
 
-    
-    public AddResponsibilityAttribute() {
+
+	public AddResponsibilityAttribute() {
         super("responsibilityAttribute", "Adding an attribute to a responsibility to KIM", EXTENSION_PRIORITY);
     }
 
@@ -60,7 +63,9 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 		final InsertStatement insertAttribute = new InsertStatement(database.getDefaultSchemaName(), "krim_rsp_attr_data_t");
 
 		final BigInteger attributeId = getPrimaryKey(database);
-		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		if (responsibilityId == null){
+			responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		}
 		final String typeId = getTypeForeignKey(database, getType());
 		final String attributeDefintionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
@@ -81,11 +86,13 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
-		String respId = getResponsibilityForeignKey(database, getResponsibility());
+		if (responsibilityId == null){
+			responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+		}
 		String typeId = getTypeForeignKey(database, getType());
 		String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 		undoAssign.setTableName("krim_rsp_attr_data_t");
-		undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", respId, typeId, defnId));
+		undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", responsibilityId, typeId, defnId));
 
 		return undoAssign.generateStatements(database);
 	}
@@ -162,4 +169,7 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
         this.value = value;
     }
 
+	public void setResponsibilityId(String responsibilityId) {
+		this.responsibilityId = responsibilityId;
+	}
 }

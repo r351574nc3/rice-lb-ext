@@ -99,7 +99,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 
 		for (AddPermissionAttribute attribute : attributes){
 			attribute.setPermissionId(permissionId);
-			result.addAll(Arrays.asList(attribute.generateStatements(database)));
+			result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
 		}
 
 		result.addAll(Arrays.asList(removePerm.generateStatements(database)));

@@ -109,8 +109,9 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_perm_attr_data_t");
-
-		final String permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		if (permissionId == null){
+			permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		}
 		final String typeId = getTypeForeignKey(database, getType());
 		final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 
