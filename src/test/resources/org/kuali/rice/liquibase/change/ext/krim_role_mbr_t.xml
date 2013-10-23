@@ -13,8 +13,8 @@
 
     <changeSet id="tst-assign-role-member-cns" author="lb-ext" context="custom-namespace">
         <kim:roleMember namespace="KUALI" role="User2" type="P" member="kr">
-            <kim:roleMemberAttribute type="Default" value="Test Role Mbr Attr" attributeDef="beanName"/>
-            <kim:roleMemberAttribute type="Default" value="Unique Value" attributeDef="beanName" unique="true" />
+            <kim:attribute type="Default" value="Test Role Mbr Attr" attributeDef="beanName"/>
+            <kim:attribute type="Default" value="Unique Value" attributeDef="beanName" unique="true" />
         </kim:roleMember>
     </changeSet>
 

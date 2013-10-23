@@ -181,7 +181,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
         this.type = type;
     }
 
-	public AddRoleMemberAttribute createRoleMemberAttribute(){
+	public AddRoleMemberAttribute createAttribute(){
 		AddRoleMemberAttribute addRoleMemberAttribute = new AddRoleMemberAttribute();
 		this.attributes.add(addRoleMemberAttribute);
 		return addRoleMemberAttribute;

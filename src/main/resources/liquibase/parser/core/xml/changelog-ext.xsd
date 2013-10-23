@@ -94,7 +94,7 @@
     <xsd:element name="roleMember">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="roleMemberAttribute" minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
                     <xsd:complexType>
 	                    <xsd:attributeGroup ref="roleMemberAttributeBaseType"/>
                         <xsd:attribute name="unique" type="xsd:boolean" use="optional"/>
