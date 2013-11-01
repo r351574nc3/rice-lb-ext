@@ -7496,6 +7496,17 @@
             <column name="CMPNT_NM" value="org.kuali.rice.kim.bo.impl.KimAttributes"/>
         </insert>
 
+	    <insert tableName="krim_attr_defn_t">
+		    <column name="KIM_ATTR_DEFN_ID" value="2"/>
+		    <column name="OBJ_ID" value="6BDF18B6D4887954E0404F8189D85002"/>
+		    <column name="VER_NBR" valueNumeric="1"/>
+		    <column name="NM" value="beanName2"/>
+		    <column name="LBL"/>
+		    <column name="ACTV_IND" value="Y"/>
+		    <column name="NMSPC_CD" value="KR-SYS"/>
+		    <column name="CMPNT_NM" value="org.kuali.rice.kim.bo.impl.KimAttributes"/>
+	    </insert>
+
         <insert tableName="krim_role_t">
             <column name="ROLE_ID" value="1"/>
             <column name="OBJ_ID" value="5ADF18B6D4847954E0404F8189D85002"/>

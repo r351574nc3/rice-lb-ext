@@ -15,6 +15,7 @@ import liquibase.statement.core.RuntimeStatement;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public abstract class KimAbstractChange extends AbstractChange implements CustomSqlChange, CustomSqlRollback {
 
@@ -280,23 +281,28 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 		}
 	}
 
-	protected String getRoleMemberForeignKey(Database database, final String roleId , final String memberId, final String uniqueAttributeValue) {
-		if (uniqueAttributeValue == null){
+	protected String getRoleMemberForeignKey(Database database, final String roleId , final String memberId, final List<String> uniqueAttributeValues) {
+		if (uniqueAttributeValues == null){
 			return getRoleMemberForeignKey(database,roleId,memberId);
 		}
 		try {
+			final StringBuilder sql = new StringBuilder();
+			final String sqlTemplate = "select rm.role_mbr_id  from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID  " +
+				"where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL = '%s'";
+			for (String uniqueAttributeValue : uniqueAttributeValues){
+				sql.append(String.format(sqlTemplate, roleId, memberId, uniqueAttributeValue));
+				sql.append(" intersect ");
+			}
 			final SqlStatement getRoleRespId = new RuntimeStatement() {
 				public Sql[] generate(Database database) {
 					return new Sql[]{
-						new UnparsedSql(String.format("select rm.role_mbr_id " +
-							"from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID  " +
-							"where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL = '%s'", roleId, memberId, uniqueAttributeValue))
+						new UnparsedSql(StringUtils.removeEnd(sql.toString(),"intersect "))
 					};
 				}
 			};
 			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getRoleRespId, String.class);
 		} catch (DatabaseException e) {
-			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s, attr. val: %s)", roleId, memberId, uniqueAttributeValue), e);
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Role Member' (role_id: %s, member_id: %s, attr. val: %s)", roleId, memberId, uniqueAttributeValues), e);
 		}
 	}
 

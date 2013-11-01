@@ -111,6 +111,7 @@
             <xsd:attribute name="namespace" type="xsd:string" use="required"/>
             <xsd:attribute name="member" type="xsd:string" use="required"/>
             <xsd:attribute name="role" type="xsd:string" use="required"/>
+            <xsd:attribute name="uniqueAttributeDefinitions" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
