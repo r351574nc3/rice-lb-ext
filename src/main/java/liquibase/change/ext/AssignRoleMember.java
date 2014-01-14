@@ -40,6 +40,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
     private String namespace;
     private String type;
     private String member;
+    private String memberNamespace;
     private String role;
 	@ChangeProperty(includeInSerialization = false)
 	private List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
@@ -65,7 +66,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		final InsertStatement assignRole = new InsertStatement(database.getDefaultSchemaName(), "krim_role_mbr_t");
 		final BigInteger id = getPrimaryKey(database);
 		final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
-		final String memberId = getPrincipalForeignKey(database, getMember());
+		String memberId = getMemberId(database);
 
 		assignRole.addColumnValue("role_mbr_id", id);
 		assignRole.addColumnValue("role_id", roleId);
@@ -83,19 +84,32 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
        return results.toArray(new SqlStatement[results.size()]);
 	}
 
+	private String getMemberId(Database database) {
+		String memberId;
+		if ("P".equals(getType())){
+	        memberId = getPrincipalForeignKey(database, getMember());
+		}else if ("R".equals(getType())){
+			memberId = getRoleForeignKey(database, getMember(), getMemberNamespace()!=null?getMemberNamespace():getNamespace());
+		}
+		else{
+			throw new RuntimeException(String.format("Role type '%s' not supported!", getType()));
+		}
+		return memberId;
+	}
+
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
-		final String mbrId  = getPrincipalForeignKey(database, getMember());
+		String memberId = getMemberId(database);
 		List<String> uniqueAttributeValues = null;
 		if (StringUtils.isNotBlank(uniqueAttributeDefinitions)){
 			uniqueAttributeValues = getUniqueAttributeValues(attributes, uniqueAttributeDefinitions);
 		}
-		final String rolMemberId = getRoleMemberForeignKey(database,roleId,mbrId,uniqueAttributeValues);
+		final String rolMemberId = getRoleMemberForeignKey(database,roleId,memberId,uniqueAttributeValues);
 		undoAssign.setTableName("KRIM_ROLE_MBR_T");
-		undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, mbrId));
+		undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, memberId));
 
 		List<SqlStatement> results = new ArrayList<SqlStatement>();
 		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
@@ -195,6 +209,13 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
         this.type = type;
     }
 
+	public String getMemberNamespace() {
+		return memberNamespace;
+	}
+
+	public void setMemberNamespace(String memberNamespace) {
+		this.memberNamespace = memberNamespace;
+	}
 
 	public String getUniqueAttributeDefinitions() {
 		return uniqueAttributeDefinitions;
