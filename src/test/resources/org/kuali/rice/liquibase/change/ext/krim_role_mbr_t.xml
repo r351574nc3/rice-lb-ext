@@ -15,6 +15,7 @@
         <kim:roleMember namespace="KUALI" role="User2" type="R" member="User" uniqueAttributeDefinitions="beanName,beanName2">
             <kim:attribute type="Default" value="Test Role Mbr Attr" attributeDef="beanName"/>
             <kim:attribute type="Default" value="Unique Value" attributeDef="beanName2" />
+            <kim:action priority="998" actionTypeCode="A" actionPolicyCode="F" force="Y" />
         </kim:roleMember>
     </changeSet>
 

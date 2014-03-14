@@ -15,18 +15,21 @@
  */
 package liquibase.change.ext;
 
-import java.math.BigInteger;
-import java.util.*;
-
 import liquibase.change.ChangeProperty;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.*;
+import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
-
-import liquibase.change.core.DeleteDataChange;
 import org.apache.commons.lang.StringUtils;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -45,6 +48,8 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	@ChangeProperty(includeInSerialization = false)
 	private List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
 	private String uniqueAttributeDefinitions;
+	@ChangeProperty(includeInSerialization = false)
+	private List<AddRoleResponsibilityAction> actions = new ArrayList<AddRoleResponsibilityAction>();
 	   	        
     
     public AssignRoleMember() {
@@ -81,6 +86,10 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 			addRoleMemberAttribute.setRoleMemberId(id.toString());
 			results.addAll(Arrays.asList(addRoleMemberAttribute.generateStatements(database)));
 		}
+		for (AddRoleResponsibilityAction action : actions){
+			action.setRoleMemberId(id.toString());
+			results.addAll(Arrays.asList(action.generateStatements(database)));
+		}
        return results.toArray(new SqlStatement[results.size()]);
 	}
 
@@ -115,6 +124,10 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
 			addRoleMemberAttribute.setRoleMemberId(rolMemberId);
 			results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
+		}
+		for (AddRoleResponsibilityAction action : actions){
+			action.setRoleMemberId(rolMemberId);
+			results.addAll(Arrays.asList(action.generateRollbackStatements(database)));
 		}
 		results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
 		return results.toArray(new SqlStatement[results.size()]);
@@ -229,5 +242,11 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 		AddRoleMemberAttribute addRoleMemberAttribute = new AddRoleMemberAttribute();
 		this.attributes.add(addRoleMemberAttribute);
 		return addRoleMemberAttribute;
+	}
+
+	public AddRoleResponsibilityAction createAction(){
+		AddRoleResponsibilityAction addRoleResponsibilityAction = new AddRoleResponsibilityAction();
+		this.actions.add(addRoleResponsibilityAction);
+		return addRoleResponsibilityAction;
 	}
 }

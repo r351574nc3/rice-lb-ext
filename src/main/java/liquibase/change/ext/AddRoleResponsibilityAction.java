@@ -44,8 +44,9 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
     private String force;
     private String actionTypeCode;
     private String actionPolicyCode;
+	private String roleMemberId;
 
-    public AddRoleResponsibilityAction() {
+	public AddRoleResponsibilityAction() {
         super("roleResponsibilityAction", "Adding an action to a role with a responsibility to KIM", EXTENSION_PRIORITY);
     }
 
@@ -64,7 +65,9 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
 		final BigInteger id = getPrimaryKey(database);
 		final String roleRespId = resolveRoleResponsibility(database);
-		final String memberId = resolveRoleMember(database);
+		if (roleMemberId == null){
+			roleMemberId = resolveRoleMember(database);
+		}
 
 		insertAction.addColumnValue("role_rsp_actn_id", id);
 		insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
@@ -72,7 +75,7 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		insertAction.addColumnValue("frc_actn", getForce());
 		insertAction.addColumnValue("role_rsp_id", roleRespId);
 		insertAction.addColumnValue("priority_nbr", getPriority());
-		insertAction.addColumnValue("role_mbr_id", memberId);
+		insertAction.addColumnValue("role_mbr_id", roleMemberId);
 		insertAction.addColumnValue("ver_nbr", 1);
 		insertAction.addColumnValue("obj_id", UUID.randomUUID().toString());
 
@@ -81,33 +84,16 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		};
 	}
 
-	private String resolveRoleMember(Database database) {
-		if (StringUtils.isBlank(member)){
-			return "*";
-		}
-		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
-		final String memberId = getPrincipalForeignKey(database, member);
-		return getRoleMemberForeignKey(database, roleId, memberId);
-	}
-
-	private String resolveRoleResponsibility(Database database) {
-		if (StringUtils.isBlank(responsibilityName) || "*".equals(responsibilityName)){
-			return "*";
-		}
-		String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
-		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
-		return getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
-	}
-
-
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
 		final String roleRespId = resolveRoleResponsibility(database);
-		final String memberId = resolveRoleMember(database);
+		if (roleMemberId == null){
+			roleMemberId = resolveRoleMember(database);
+		}
 
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		undoAssign.setTableName("krim_role_rsp_actn_t");
-		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '%s'", roleRespId, memberId));
+		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '%s'", roleRespId, roleMemberId));
 		return undoAssign.generateStatements(database);
 	}
 
@@ -243,5 +229,28 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 
 	public void setMember(String member) {
 		this.member = member;
+	}
+
+	public void setRoleMemberId(String roleMemberId) {
+		this.roleMemberId = roleMemberId;
+	}
+
+
+	private String resolveRoleMember(Database database) {
+		if (StringUtils.isBlank(member)){
+			return "*";
+		}
+		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
+		final String memberId = getPrincipalForeignKey(database, member);
+		return getRoleMemberForeignKey(database, roleId, memberId);
+	}
+
+	private String resolveRoleResponsibility(Database database) {
+		if (StringUtils.isBlank(responsibilityName) || "*".equals(responsibilityName)){
+			return "*";
+		}
+		String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
+		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
+		return getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
 	}
 }

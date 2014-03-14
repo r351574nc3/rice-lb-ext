@@ -87,14 +87,11 @@
 
     <xsd:element name="roleResponsibilityAction">
         <xsd:complexType>
+	        <xsd:attributeGroup ref="roleResponsibilityActionBaseType"/>
             <xsd:attribute name="roleName" type="xsd:string"  use="required"/>
 	        <xsd:attribute name="roleNamespace" type="xsd:string"  use="optional"/>
 	        <xsd:attribute name="responsibilityName" type="xsd:string"  use="optional"/>
 	        <xsd:attribute name="member" type="xsd:string"  use="optional"/>
-            <xsd:attribute name="priority" type="xsd:string"  use="required"/>
-            <xsd:attribute name="force" type="xsd:string"  use="required"/>
-            <xsd:attribute name="actionTypeCode" type="xsd:string"  use="required"/>
-            <xsd:attribute name="actionPolicyCode" type="xsd:string"  use="required"/>
         </xsd:complexType>
     </xsd:element>
 
@@ -107,6 +104,11 @@
                         <xsd:attribute name="unique" type="xsd:boolean" use="optional"/>
                     </xsd:complexType>
                 </xsd:element>
+	            <xsd:element name="action" minOccurs="0" maxOccurs="unbounded">
+		            <xsd:complexType>
+			            <xsd:attributeGroup ref="roleResponsibilityActionBaseType"/>
+		            </xsd:complexType>
+	            </xsd:element>
             </xsd:sequence>
             <xsd:attributeGroup ref="typeAttributes"/>
             <xsd:attribute name="namespace" type="xsd:string" use="required"/>
@@ -166,6 +168,14 @@
 		<xsd:attribute name="value" type="xsd:string"  use="required"/>
 		<xsd:attribute name="attributeDef" type="xsd:string"  use="required"/>
 		<xsd:attribute name="type" type="xsd:string"  use="required"/>
+	</xsd:attributeGroup>
+
+
+	<xsd:attributeGroup name="roleResponsibilityActionBaseType">
+		<xsd:attribute name="force" type="xsd:string"  use="required"/>
+		<xsd:attribute name="actionTypeCode" type="xsd:string"  use="required"/>
+		<xsd:attribute name="priority" type="xsd:string"  use="required"/>
+		<xsd:attribute name="actionPolicyCode" type="xsd:string"  use="required"/>
 	</xsd:attributeGroup>
 
 </xsd:schema>

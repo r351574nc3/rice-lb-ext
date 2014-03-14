@@ -22,6 +22,4 @@
 	    <kim:roleResponsibilityAction roleName="User" roleNamespace="KUALI" member="kr" priority="998" actionTypeCode="A" actionPolicyCode="F" force="Y" />
     </changeSet>
 
-
-
 </databaseChangeLog>
