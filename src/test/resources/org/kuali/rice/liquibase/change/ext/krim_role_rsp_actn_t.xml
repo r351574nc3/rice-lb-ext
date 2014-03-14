@@ -19,7 +19,9 @@
 
     <changeSet id="tst-role-resp-action-cns" author="lb-ext" context="custom-namespace">
         <kim:roleResponsibilityAction roleName="User" responsibilityName="Line Manager" roleNamespace="KUALI" force="Y" priority="999" actionTypeCode="A" actionPolicyCode="F"/>
+	    <kim:roleResponsibilityAction roleName="User" roleNamespace="KUALI" member="kr" priority="998" actionTypeCode="A" actionPolicyCode="F" force="Y" />
     </changeSet>
+
 
 
 </databaseChangeLog>

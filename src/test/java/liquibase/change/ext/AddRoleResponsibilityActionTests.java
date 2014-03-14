@@ -9,6 +9,6 @@ public class AddRoleResponsibilityActionTests extends KimChangeBaseTest {
 
 	@Override
 	protected String whereClause() {
-		return "PRIORITY_NBR = '999'";
+		return "PRIORITY_NBR = '999' OR PRIORITY_NBR = '998'";
 	}
 }

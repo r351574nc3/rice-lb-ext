@@ -15,17 +15,17 @@
  */
 package liquibase.change.ext;
 
-import java.math.BigInteger;
-import java.util.UUID;
-
+import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.UnsupportedChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
+import org.apache.commons.lang.StringUtils;
 
-import liquibase.change.core.DeleteDataChange;
+import java.math.BigInteger;
+import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -35,10 +35,12 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 public class AddRoleResponsibilityAction extends KimAbstractChange implements CustomSqlChange {
-    private String roleName;
+
+	private String roleName;
     private String responsibilityName;
     private String roleNamespace;
-    private String priority;
+	private String member;
+	private String priority;
     private String force;
     private String actionTypeCode;
     private String actionPolicyCode;
@@ -61,9 +63,8 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 	public SqlStatement[] generateStatements(Database database) {
 		final InsertStatement insertAction = new InsertStatement(database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
 		final BigInteger id = getPrimaryKey(database);
-		final String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
-		final String roleRespId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
+		final String roleRespId = resolveRoleResponsibility(database);
+		final String memberId = resolveRoleMember(database);
 
 		insertAction.addColumnValue("role_rsp_actn_id", id);
 		insertAction.addColumnValue("actn_typ_cd", getActionTypeCode());
@@ -71,7 +72,7 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		insertAction.addColumnValue("frc_actn", getForce());
 		insertAction.addColumnValue("role_rsp_id", roleRespId);
 		insertAction.addColumnValue("priority_nbr", getPriority());
-		insertAction.addColumnValue("role_mbr_id", "*");
+		insertAction.addColumnValue("role_mbr_id", memberId);
 		insertAction.addColumnValue("ver_nbr", 1);
 		insertAction.addColumnValue("obj_id", UUID.randomUUID().toString());
 
@@ -80,17 +81,33 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		};
 	}
 
+	private String resolveRoleMember(Database database) {
+		if (StringUtils.isBlank(member)){
+			return "*";
+		}
+		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
+		final String memberId = getPrincipalForeignKey(database, member);
+		return getRoleMemberForeignKey(database, roleId, memberId);
+	}
+
+	private String resolveRoleResponsibility(Database database) {
+		if (StringUtils.isBlank(responsibilityName) || "*".equals(responsibilityName)){
+			return "*";
+		}
+		String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
+		final String roleId = getRoleForeignKey(database, roleName, roleNamespace);
+		return getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
+	}
+
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(Database database) throws UnsupportedChangeException, RollbackImpossibleException {
-		final String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		final String responsibilityId = getResponsibilityForeignKey(database, getResponsibilityName());
-		final String assignId = getRoleResponsibilityForeignKey(database, roleId, responsibilityId);
+		final String roleRespId = resolveRoleResponsibility(database);
+		final String memberId = resolveRoleMember(database);
 
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		undoAssign.setTableName("krim_role_rsp_actn_t");
-		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '*'", assignId));
-
+		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '%s'", roleRespId, memberId));
 		return undoAssign.generateStatements(database);
 	}
 
@@ -220,4 +237,11 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
         this.actionTypeCode = actionTypeCode;
     }
 
+	public String getMember() {
+		return member;
+	}
+
+	public void setMember(String member) {
+		this.member = member;
+	}
 }
