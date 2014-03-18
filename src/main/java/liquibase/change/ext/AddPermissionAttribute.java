@@ -25,8 +25,6 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -101,7 +99,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
 	@Override
 	protected String getSequenceName() {
-		return "KRIM_PERM_RQRD_ATTR_ID_S";
+		return "KRIM_ATTR_DATA_ID_S";
 	}
 
 
