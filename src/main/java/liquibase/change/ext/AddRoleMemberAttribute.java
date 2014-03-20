@@ -99,7 +99,7 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
 
 	@Override
 	protected String getSequenceName() {
-		return "krim_perm_rqrd_attr_id_s";
+		return "krim_attr_data_id_s";
 	}
 
 
