@@ -15,6 +15,7 @@
  */
 package liquibase.change.ext;
 
+import liquibase.change.ChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
@@ -44,6 +45,7 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
     private String force;
     private String actionTypeCode;
     private String actionPolicyCode;
+	@ChangeProperty(includeInSerialization = false)
 	private String roleMemberId;
 
 	public AddRoleResponsibilityAction() {
