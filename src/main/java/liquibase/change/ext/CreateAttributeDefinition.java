@@ -15,35 +15,39 @@
  */
 package liquibase.change.ext;
 
+import java.math.BigInteger;
+import java.util.UUID;
+
 import liquibase.change.Change;
-import liquibase.change.core.DeleteDataChange;
+import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
-import java.util.UUID;
+import liquibase.change.core.DeleteDataChange;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
- * Custom Liquibase Refactoring for creating a KIM Type.
+ * Custom Liquibase Refactoring for adding an attribute definition to KIM.
  *
  * @author Leo Przybylski
  */
-public class CreateType extends KimAbstractChange {
+public class CreateAttributeDefinition extends KimAbstractChange implements CustomSqlChange {
+    private String label;
     private String namespace;
     private String name;
-    private String serviceName;
+    private String component;
     private String active = "Y";
     
     
-    public CreateType() {
-        super("type", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
+    public CreateAttributeDefinition() {
+        super("attributeDefinition", "Create an attribute definition to KIM", EXTENSION_PRIORITY);
     }
 
 	@Override
 	protected String getSequenceName() {
-		return "krim_typ_id_s";
+		return "krim_attr_defn_id_s";
 	}
 
 	/**
@@ -52,34 +56,57 @@ public class CreateType extends KimAbstractChange {
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-	    final InsertStatement insertType = new InsertStatement(database.getDefaultSchemaName(), "krim_typ_t");
-	    insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
-	    insertType.addColumnValue("nmspc_cd", getNamespace());
-	    insertType.addColumnValue("nm", getName());
-	    insertType.addColumnValue("srvc_nm", getServiceName());
-	    insertType.addColumnValue("actv_ind", getActive());
-	    insertType.addColumnValue("ver_nbr", 1);
-	    insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
-	    return new SqlStatement[]{
-		    insertType
-	    };
-    }
+	public SqlStatement[] generateStatements(Database database) {
+		final InsertStatement insertDefinition = new InsertStatement(database.getDefaultSchemaName(), "krim_attr_defn_t");
+
+		final BigInteger id = getPrimaryKey(database);
+
+		insertDefinition.addColumnValue("kim_attr_defn_id", id);
+		insertDefinition.addColumnValue("nmspc_cd", getNamespace());
+		insertDefinition.addColumnValue("nm", getName());
+		insertDefinition.addColumnValue("lbl", getLabel());
+		insertDefinition.addColumnValue("actv_ind", getActive());
+		insertDefinition.addColumnValue("cmpnt_nm", getComponent());
+		insertDefinition.addColumnValue("ver_nbr", 1);
+		insertDefinition.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+		return new SqlStatement[]{
+			insertDefinition
+		};
+	}
 
 
     /**
-     * Used for rollbacks. Defines the steps/{@link liquibase.change.Change}s necessary to rollback.
-     *
-     * @return {@link Array} of {@link liquibase.change.Change} instances
+     * Used for rollbacks. Defines the steps/{@link Change}s necessary to rollback.
+     * 
+     * @return of {@link Change} instances
      */
     protected Change[] createInverses() {
-        final DeleteDataChange removeType = new DeleteDataChange();
-        removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getServiceName()));
+        final DeleteDataChange removeDefinition = new DeleteDataChange();
+        removeDefinition.setTableName("krim_attr_defn_t");
+        removeDefinition.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND cmpnt_nm = '%s'", getNamespace(), getName(), getComponent()));
 
         return new Change[] {
-            removeType
+            removeDefinition
         };
+    }
+
+    /**
+     * Get the component attribute on this object
+     *
+     * @return component value
+     */
+    public String getComponent() {
+        return this.component;
+    }
+
+    /**
+     * Set the component attribute on this object
+     *
+     * @param component value to set
+     */
+    public void setComponent(final String component) {
+        this.component = component;
     }
 
     /**
@@ -119,21 +146,21 @@ public class CreateType extends KimAbstractChange {
     }
 
     /**
-     * Get the serviceName attribute on this object
+     * Get the label attribute on this object
      *
-     * @return serviceName value
+     * @return label value
      */
-    public String getServiceName() {
-        return this.serviceName;
+    public String getLabel() {
+        return this.label;
     }
 
     /**
-     * Set the serviceName attribute on this object
+     * Set the label attribute on this object
      *
-     * @param serviceName value to set
+     * @param label value to set
      */
-    public void setServiceName(final String serviceName) {
-        this.serviceName = serviceName;
+    public void setLabel(final String label) {
+        this.label = label;
     }
 
     /**
@@ -153,6 +180,5 @@ public class CreateType extends KimAbstractChange {
     public void setActive(final String active) {
         this.active = active;
     }
-
 
 }

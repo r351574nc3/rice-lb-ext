@@ -5,20 +5,20 @@
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
                    http://www.liquibase.org/xml/ns/changelog-ext http://www.liquibase.org/xml/ns/changelog-ext">
 
-    <changeSet id="tst-perm-attr-data" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.AddPermissionAttribute">
-            <param name="permission" value="Use Document Operation Screen"/>
-            <param name="namespace" value="KUALI"/>
+
+    <changeSet id="tst-role-mbr-attr-data" author="lb-ext" context="default">
+        <customChange class="liquibase.change.ext.AddRoleMemberAttribute">
             <param name="type" value="Default"/>
             <param name="attributeDef" value="beanName"/>
-            <param name="value" value="Test Perm Attr"/>
-            <param name="active" value="Y"/>
+            <param name="roleName" value="User"/>
+            <param name="roleNamespace" value="KUALI"/>
+            <param name="member" value="kr"/>
+            <param name="value" value="Test Role Mbr Attr"/>
         </customChange>
     </changeSet>
 
-    <changeSet id="tst-perm-attr-data-cns" author="lb-ext" context="custom-namespace">
-       <kim:permissionAttribute permission="Use Document Operation Screen" namespace="KUALI" type="Default" attributeDef="beanName" value="Test Perm Attr" active="Y"/>
+    <changeSet id="tst-role-mbr-attr-data-cns" author="lb-ext" context="custom-namespace">
+       <kim:roleMemberAttribute type="Default" attributeDef="beanName" member="kr" roleName="User" roleNamespace="KUALI" value="Test Role Mbr Attr"/>
     </changeSet>
-
 
 </databaseChangeLog>

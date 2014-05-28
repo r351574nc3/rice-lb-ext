@@ -7496,6 +7496,17 @@
             <column name="CMPNT_NM" value="org.kuali.rice.kim.bo.impl.KimAttributes"/>
         </insert>
 
+	    <insert tableName="krim_attr_defn_t">
+		    <column name="KIM_ATTR_DEFN_ID" value="2"/>
+		    <column name="OBJ_ID" value="6BDF18B6D4887954E0404F8189D85002"/>
+		    <column name="VER_NBR" valueNumeric="1"/>
+		    <column name="NM" value="beanName2"/>
+		    <column name="LBL"/>
+		    <column name="ACTV_IND" value="Y"/>
+		    <column name="NMSPC_CD" value="KR-SYS"/>
+		    <column name="CMPNT_NM" value="org.kuali.rice.kim.bo.impl.KimAttributes"/>
+	    </insert>
+
         <insert tableName="krim_role_t">
             <column name="ROLE_ID" value="1"/>
             <column name="OBJ_ID" value="5ADF18B6D4847954E0404F8189D85002"/>
@@ -7507,6 +7518,19 @@
             <column name="ACTV_IND" value="Y"/>
             <column name="LAST_UPDT_DT" valueDate="2008-11-04T14:37:10.0"/>
         </insert>
+
+
+	    <insert tableName="krim_role_t">
+		    <column name="ROLE_ID" value="2"/>
+		    <column name="OBJ_ID" value="4ADF18B6D4847954E0404F8189D85002"/>
+		    <column name="VER_NBR" valueNumeric="1"/>
+		    <column name="ROLE_NM" value="User2"/>
+		    <column name="NMSPC_CD" value="KUALI"/>
+		    <column name="DESC_TXT" value="This role derives its members from the users in the Principal table. This role gives users high-level permissions to interact with RICE documents and to login to KUALI."/>
+		    <column name="KIM_TYP_ID" value="1"/>
+		    <column name="ACTV_IND" value="Y"/>
+		    <column name="LAST_UPDT_DT" valueDate="2008-11-04T14:37:10.0"/>
+	    </insert>
 
         <insert tableName="krim_entity_t">
             <column name="ENTITY_ID" value="1"/>
@@ -7557,6 +7581,16 @@
             <column name="RSP_ID" value="10000"/>
             <column name="ACTV_IND" value="Y"/>
         </insert>
+
+        <insert tableName="krim_role_mbr_t">
+            <column name="ROLE_MBR_ID" value="90000"/>
+            <column name="OBJ_ID" value="19aa1eba-fea8-11e2-8920-009c021e06d7"/>
+            <column name="VER_NBR" valueNumeric="1"/>
+            <column name="ROLE_ID" value="1"/>
+            <column name="MBR_ID" value="1"/>
+            <column name="MBR_TYP_CD" value="P"/>
+        </insert>
+
 
     </changeSet>
 
