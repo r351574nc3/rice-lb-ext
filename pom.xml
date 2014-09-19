@@ -10,7 +10,7 @@
 	<artifactId>rice-lb-extensions</artifactId>
 	<packaging>jar</packaging>
 	<name>rice-lb-extensions</name>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<description>Liquibase Extensions specific to Kuali Rice</description>
 	<url>http://r351574nc3.github.com/lbcopy/</url>
 	<organization>
