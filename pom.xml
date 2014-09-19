@@ -318,7 +318,7 @@
     <plugin.nexus.version>2.1</plugin.nexus.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <site.descriptor.phase>package</site.descriptor.phase>
-    <site-maven-plugin.version>0.9</site-maven-plugin.version>
+    <site-maven-plugin.version>0.10</site-maven-plugin.version>
     <testjar.phase>package</testjar.phase>
 
     <!-- used for escape -->
