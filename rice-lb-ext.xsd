@@ -330,25 +330,17 @@
     <xsd:complexType>
       <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
       <xsd:attribute name="namespace" type="xsd:string" use="required"/>
-      <xsd:attribute name="component" type="xsd:string" use="required"/>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
-      <xsd:attribute name="value" type="xsd:string" use="required" />
-      <xsd:attribute name="type" type="xsd:String" default="CONFG" />
-      <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
-      <xsd:attribute name="description" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 
   <xsd:element name="createAttributeDefinition">
     <xsd:complexType>
-      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
-      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
-      <xsd:attribute name="component" type="xsd:string" use="required"/>
-      <xsd:attribute name="name" type="xsd:string" use="required"/>
-      <xsd:attribute name="value" type="xsd:string" use="required" />
-      <xsd:attribute name="type" type="xsd:String" default="CONFG" />
-      <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
-      <xsd:attribute name="description" type="xsd:string" />
+      <xsd:attribute name="label" type="xsd:string"  use="required"/>
+      <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+      <xsd:attribute name="name" type="xsd:string"  use="required"/>
+      <xsd:attribute name="component" type="xsd:string"  use="required"/>
+      <xsd:attribute name="active" type="xsd:string"  use="optional"/>
     </xsd:complexType>
   </xsd:element>
 
