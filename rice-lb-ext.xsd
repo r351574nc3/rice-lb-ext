@@ -147,7 +147,7 @@
       <xsd:attribute name="namespace" type="xsd:string" />
       <xsd:attribute name="documentType" type="xsd:string" use="required" />
       <xsd:attribute name="routeNode" type="xsd:string" use="required" />
-      <xsd:attribute name="actionType" type="WorkflowActionType" use="optional" default="APPROVE" />
+      <xsd:attribute name="actionType" type="xsd:string" use="optional" default="APPROVE" />
       <xsd:attribute name="forceAction" type="xsd:boolean" default="false" />
     </xsd:complexType>
   </xsd:element>
