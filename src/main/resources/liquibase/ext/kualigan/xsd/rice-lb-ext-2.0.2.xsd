@@ -65,18 +65,9 @@
 
   <xsd:element name="dropRole">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="kimType" minOccurs="0" maxOccurs="unbounded">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string" use="required" />
-            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
-          </xsd:complexType>
-        </xsd:element>
-      </xsd:sequence>
       <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
       <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
-      <xsd:attribute name="active" type="xsd:string" />
-      <xsd:attribute name="description" type="xsd:string" />
+      <xsd:attribute name="name" type="xsd:string" use="required" />
     </xsd:complexType>
   </xsd:element>
 
@@ -87,7 +78,7 @@
   <xsd:element name="createResponsibility">
     <xsd:complexType>
       <xsd:sequence>
-	<xsd:element name="attribute">
+	<xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
 	  <xsd:complexType>
 	    <xsd:attribute name="name" type="xsd:string" />
 	    <xsd:attribute name="type" type="xsd:string" />
