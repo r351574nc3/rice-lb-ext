@@ -249,8 +249,6 @@
             <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
           </xsd:complexType>
         </xsd:element>
-      </xsd:sequence>
-      <xsd:sequence>
         <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string" use="required" />
@@ -258,8 +256,6 @@
             <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
           </xsd:complexType>
         </xsd:element>
-      </xsd:sequence>
-      <xsd:sequence>
         <xsd:element name="actions" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string" use="required" />
@@ -267,8 +263,6 @@
             <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
           </xsd:complexType>
         </xsd:element>
-      </xsd:sequence>
-      <xsd:sequence>
         <xsd:element name="role" minOccurs="1" maxOccurs="1">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string" use="required" />
