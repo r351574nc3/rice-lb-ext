@@ -312,7 +312,7 @@
       <xsd:attribute name="component" type="xsd:string" use="required"/>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="value" type="xsd:string" use="required" />
-      <xsd:attribute name="type" type="xsd:String" default="CONFG" />
+      <xsd:attribute name="type" type="xsd:string" default="CONFG" />
       <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
       <xsd:attribute name="description" type="xsd:string" />
     </xsd:complexType>
@@ -343,7 +343,7 @@
       <xsd:attribute name="component" type="xsd:string" use="required"/>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="value" type="xsd:string" use="required" />
-      <xsd:attribute name="type" type="xsd:String" default="CONFG" />
+      <xsd:attribute name="type" type="xsd:string" default="CONFG" />
       <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
       <xsd:attribute name="description" type="xsd:string" />
     </xsd:complexType>
