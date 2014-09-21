@@ -50,6 +50,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
     protected String name;
     protected String value;
     protected String namespace;
+    protected String name;
     protected String attributeDef;
     protected String permission;
     protected String type;
@@ -132,6 +133,25 @@ public class AddPermissionAttribute extends KimAbstractChange {
      */
     public void setAttributeDef(final String attributeDef) {
         this.attributeDef = attributeDef;
+    }
+
+
+    /**
+     * Get the name attribute on this object
+     *
+     * @return name value
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Set the name attribute on this object
+     *
+     * @param name value to set
+     */
+    public void setName(final String name) {
+        this.name = name;
     }
 
     /**
