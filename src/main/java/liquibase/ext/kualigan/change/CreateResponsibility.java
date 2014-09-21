@@ -15,6 +15,7 @@
  */
 package liquibase.ext.kualigan.change;
 
+import liquibase.change.Change;
 import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.DeleteDataChange;
@@ -46,7 +47,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
     protected String description;
     protected String active = "Y";
 
-    private List<AddResponsibilityAttribute> attributes = new ArrayList<AddResponsibilityAttribute>();
+    protected List<AddResponsibilityAttribute> attributes = new ArrayList<AddResponsibilityAttribute>();
 
     public CreateResponsibility() {
         super("responsibility", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
@@ -79,9 +80,9 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	insertResponsibility.addColumnValue("ver_nbr", 1);
 	insertResponsibility.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	List<SqlStatement> result = new ArrayList<SqlStatement>();
+	final List<SqlStatement> result = new ArrayList<SqlStatement>();
 	result.add(insertResponsibility);
-	for (final AddResponsibilityAttribute attribute : attributes){
+	for (final AddResponsibilityAttribute attribute : getAttributes()){
 	    attribute.setResponsibilityId(responsibilityId.toString());
 	    result.addAll(Arrays.asList(attribute.generateStatements(database)));
 	}
@@ -189,9 +190,17 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	this.description = description;
     }
 
+    public List<AddResponsibilityAttribute> getAttributes() {
+	return attributes;
+    }
+
+    public void setAttributes(final List<AddResponsibilityAttribute> attributes) {
+	this.attributes = attributes;
+    }
+
     public AddResponsibilityAttribute createAttribute() {
 	AddResponsibilityAttribute attribute = new AddResponsibilityAttribute();
-	this.attributes.add(attribute);
+	this.getAttributes().add(attribute);
 	return attribute;
     }
 
