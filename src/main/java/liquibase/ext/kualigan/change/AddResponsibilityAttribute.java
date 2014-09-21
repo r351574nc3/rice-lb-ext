@@ -40,6 +40,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 @DatabaseChange(name="addResponsibilityAttribute", description = "Adds an Attribute to a Responsibility", priority = EXTENSION_PRIORITY)
 public class AddResponsibilityAttribute extends KimAbstractChange implements CustomSqlChange {
     protected String value;
+    protected String name;
     protected String attributeDef;
     protected String responsibility;
     protected String type;
@@ -133,6 +134,24 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
      */
     public void setAttributeDef(final String attributeDef) {
         this.attributeDef = attributeDef;
+    }
+
+    /**
+     * Get the name attribute on this object
+     *
+     * @return name value
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Set the name attribute on this object
+     *
+     * @param name value to set
+     */
+    public void setName(final String name) {
+        this.name = name;
     }
 
     /**
