@@ -59,7 +59,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
     }
 
     @Override
-    public final String getConfirmationMessage() {
+    public String getConfirmationMessage() {
 	return "";
     }
 

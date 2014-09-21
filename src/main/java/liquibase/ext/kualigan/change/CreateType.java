@@ -41,7 +41,7 @@ public class CreateType extends KimAbstractChange {
     protected String application;
     protected String namespace;
     protected String name;
-    protected String serviceName;
+    protected String service;
     protected String active = "Y";
     protected List<AssignKimTypeAttribute> attributes;
     protected String uniqueAttributeDefinitions;
@@ -49,6 +49,11 @@ public class CreateType extends KimAbstractChange {
     public CreateType() {
         super("type", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
 	setAttributes(new ArrayList<AssignKimTypeAttribute>());
+    }
+
+    @Override
+    public final String getConfirmationMessage() {
+	return String.format("Inserted KIM Type '%s' into namespace '%s' successfully.", getName(), getNamespace());
     }
 
     @Override
@@ -67,10 +72,11 @@ public class CreateType extends KimAbstractChange {
 	insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
 	insertType.addColumnValue("nmspc_cd", getNamespace());
 	insertType.addColumnValue("nm", getName());
-	insertType.addColumnValue("srvc_nm", getServiceName());
+	insertType.addColumnValue("srvc_nm", getService());
 	insertType.addColumnValue("actv_ind", getActive());
 	insertType.addColumnValue("ver_nbr", 1);
 	insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
+		
 	return new SqlStatement[]{
 	    insertType
 	};
@@ -84,7 +90,7 @@ public class CreateType extends KimAbstractChange {
     protected Change[] createInverses() {
         final DeleteDataChange removeType = new DeleteDataChange();
         removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getServiceName()));
+        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getService()));
 
         return new Change[] {
             removeType
@@ -128,21 +134,21 @@ public class CreateType extends KimAbstractChange {
     }
 
     /**
-     * Get the serviceName attribute on this object
+     * Get the service attribute on this object
      *
-     * @return serviceName value
+     * @return service value
      */
-    public String getServiceName() {
-        return this.serviceName;
+    public String getService() {
+        return this.service;
     }
 
     /**
-     * Set the serviceName attribute on this object
+     * Set the service attribute on this object
      *
-     * @param serviceName value to set
+     * @param service value to set
      */
-    public void setServiceName(final String serviceName) {
-        this.serviceName = serviceName;
+    public void setService(final String service) {
+        this.service = service;
     }
 
     /**

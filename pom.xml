@@ -334,12 +334,12 @@
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-      <version>3.2.0</version>
+      <version>${liquibase.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kualigan.liquibase</groupId>
       <artifactId>kualigan-lb-extensions</artifactId>
-      <version>2.0.0</version>
+      <version>${kualigan-lb-extensions.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
