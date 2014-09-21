@@ -23,7 +23,7 @@
           <ribbonColor>red</ribbonColor>
 	</gitHub>
 	<topBarEnabled>true</topBarEnabled>
-	<sideBarEnabled>false</sideBarEnabled>
+	<sideBarEnabled>true</sideBarEnabled>
       </fluidoSkin>
     </custom>
 
