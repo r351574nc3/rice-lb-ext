@@ -58,6 +58,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
     public AddPermissionAttribute() {
         super("permissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
+	System.out.println("New instance");
     }
 
     /**
@@ -68,13 +69,15 @@ public class AddPermissionAttribute extends KimAbstractChange {
      */
     public SqlStatement[] generateStatements(final Database database) {
         final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_perm_attr_data_t");
+	final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
         try {
             final BigInteger attributeId = getPrimaryKey(database);
 	    if (permissionId == null){
 		permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
 	    }
+
 	    final String typeId = getTypeForeignKey(database, getType());
-            final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+            final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
 
             insertAttribute.addColumnValue("attr_data_id", attributeId);
             insertAttribute.addColumnValue("perm_id", permissionId);
@@ -89,8 +92,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	    };
         }
         catch (Exception e) {
-            throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Permission Attribute' (perm: %s, name: %s, attr_def: %s)'",getPermission(),
-								 getValue(), getAttributeDef()), e);
+            throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Permission Attribute' (perm: %s, name: %s, attr_def: %s)'", getPermission(), getValue(), attrName), e);
         }
     }
 
@@ -108,7 +110,8 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	    permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
 	}
 	final String typeId = getTypeForeignKey(database, getType());
-	final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+	final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
+	final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
 
 	removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
 						     permissionId, typeId, definitionId));
@@ -141,7 +144,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      * @return name value
      */
     public String getName() {
-        return this.name;
+	return this.name;
     }
 
     /**
@@ -149,6 +152,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param name value to set
      */
+    @DatabaseChangeProperty
     public void setName(final String name) {
         this.name = name;
     }
@@ -167,6 +171,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param type value to set
      */
+    @DatabaseChangeProperty
     public void setType(final String type) {
         this.type = type;
     }
@@ -185,6 +190,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param namespace value to set
      */
+    @DatabaseChangeProperty
     public void setNamespace(final String namespace) {
         this.namespace = namespace;
     }
@@ -203,6 +209,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param permission value to set
      */
+    @DatabaseChangeProperty
     public void setPermission(final String permission) {
         this.permission = permission;
     }
@@ -221,6 +228,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param value value to set
      */
+    @DatabaseChangeProperty
     public void setValue(final String value) {
         this.value = value;
     }
@@ -239,6 +247,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      *
      * @param active value to set
      */
+    @DatabaseChangeProperty
     public void setActive(final String active) {
         this.active = active;
     }
