@@ -23,91 +23,45 @@
 // The views and conclusions contained in the software and documentation are those of the
 // authors and should not be interpreted as representing official policies, either expressed
 // or implied, of Leo Przybylski.
-package liquibase.ext.kualigan.change;
+package liquibase.ext.kualigan.statement;
 
 
-import liquibase.change.Change;
-import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
-import liquibase.change.core.DeleteDataChange;
-import liquibase.database.Database;
+import liquibase.statement.AbstractSqlStatement;
 import liquibase.statement.SqlStatement;
+import liquibase.sql.Sql;
+import liquibase.sql.UnparsedSql;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import liquibase.ext.kualigan.statement.CreateTypeStatement;
-
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
- * Custom Liquibase Refactoring for creating a KIM Type.
- *
+ * Statement basically exists solely to map and kick-off the sql generator chain
+ * 
  * @author Leo Przybylski
  */
-@DatabaseChange(name="createKimType", description = "Creates a Rice Kim Type Record.", priority = EXTENSION_PRIORITY)
-public class CreateType extends KimAbstractChange {
-
+public class CreateTypeStatement extends AbstractSqlStatement {
     protected String application;
     protected String namespace;
     protected String name;
     protected String service;
     protected String active = "Y";
-    protected List<AssignKimTypeAttribute> attributes;
+    protected List<SqlStatement> attributes;
     protected String uniqueAttributeDefinitions;
     
-    public CreateType() {
-        super("type", "Adding a new KIM Type to KIM", EXTENSION_PRIORITY);
-        setAttributes(new ArrayList<AssignKimTypeAttribute>());
+    public CreateTypeStatement() {
     }
 
-    @Override
-    public final String getConfirmationMessage() {
-        return String.format("Inserted KIM Type '%s' into namespace '%s' successfully.", getName(), getNamespace());
+    public CreateTypeStatement(final String namespace,
+			       final String name, 
+			       final String service,
+			       final String active,
+			       final List<SqlStatement> attributes) {
+	setNamespace(namespace);
+	setName(name);
+	setService(service);
+	setActive(active);
+	setAttributes(attributes);
     }
 
-    @Override
-    protected String getSequenceName() {
-        return "krim_typ_id_s";
-    }
-
-    /**
-     * Generates the SQL statements required to run the change.
-     *
-     * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
-     * @return an array of {@link String}s with the statements
-     */
-    public SqlStatement[] generateStatements(final Database database) {
-        
-        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
-        
-        for (final AssignKimTypeAttribute attribute : getAttributes()) {
-            for (final SqlStatement statement : attribute.generateStatements(database)) {
-                attributeStatements.add(statement);
-            }
-        }
-
-        return new SqlStatement[] { new CreateTypeStatement(getNamespace(),
-                                                            getName(),
-                                                            getService(),
-                                                            getActive(), attributeStatements) };
-    }
-
-    /**
-     * Used for rollbacks. Defines the steps/{@link liquibase.change.Change}s necessary to rollback.
-     *
-     * @return {@link Array} of {@link liquibase.change.Change} instances
-     */
-    protected Change[] createInverses() {
-        final DeleteDataChange removeType = new DeleteDataChange();
-        removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getService()));
-
-        return new Change[] {
-            removeType
-        };
-    }
 
     /**
      * Get the namespace attribute on this object
@@ -201,24 +155,18 @@ public class CreateType extends KimAbstractChange {
 
 
     public String getUniqueAttributeDefinitions() {
-        return uniqueAttributeDefinitions;
+	return uniqueAttributeDefinitions;
     }
 
     public void setUniqueAttributeDefinitions(final String uniqueAttributeDefinitions) {
-        this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
+	this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
     }
 
-    public void setAttributes(final List<AssignKimTypeAttribute> attributes) {
-        this.attributes = attributes;
+    public void setAttributes(final List<SqlStatement> attributes) {
+	this.attributes = attributes;
     }
 
-    public List<AssignKimTypeAttribute> getAttributes() {
-        return this.attributes;
-    }
-
-    public AssignKimTypeAttribute createAttribute() {
-        final AssignKimTypeAttribute assignKimTypeAttribute = new AssignKimTypeAttribute();
-        this.getAttributes().add(assignKimTypeAttribute);
-        return assignKimTypeAttribute;
+    public List<SqlStatement> getAttributes() {
+	return this.attributes;
     }
 }

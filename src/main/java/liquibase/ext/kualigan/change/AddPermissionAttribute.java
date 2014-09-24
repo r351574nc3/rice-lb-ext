@@ -58,7 +58,6 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
     public AddPermissionAttribute() {
         super("permissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
-	System.out.println("New instance");
     }
 
     /**

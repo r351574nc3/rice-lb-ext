@@ -34,7 +34,6 @@ import liquibase.executor.ExecutorService;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
-import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RuntimeStatement;
 import org.apache.commons.lang.StringUtils;
