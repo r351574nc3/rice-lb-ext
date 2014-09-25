@@ -124,8 +124,16 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 	return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s')", roleId, responsibilityId));
     }
 
+    protected DatabaseFunction getRoleResponsibilityForeignKey(final Database database, final DatabaseFunction roleId , final DatabaseFunction responsibilityId) {
+	return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id IN '%s' and rsp_id IN '%s')", roleId, responsibilityId));
+    }
+
     protected DatabaseFunction getRoleMemberForeignKey(final Database database, final String roleId , final String memberId) {
 	return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id = '%s' and mbr_id = '%s')", roleId, memberId));
+    }
+
+    protected DatabaseFunction getRoleMemberForeignKey(final Database database, final DatabaseFunction roleId , final DatabaseFunction memberId) {
+	return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id IN '%s' and mbr_id IN '%s')", roleId, memberId));
     }
 
     protected DatabaseFunction getRoleMemberForeignKey(final Database database, final String roleId , final String memberId, final List<String> uniqueAttributeValues) {

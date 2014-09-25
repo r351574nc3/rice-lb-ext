@@ -40,9 +40,10 @@ import java.util.List;
  */
 public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
 
+    protected String roleNamespace;
     protected String role;
-    protected String responsibility;
     protected String namespace;
+    protected String responsibility;
     protected String member;
     protected String priority;
     protected String force;
@@ -53,14 +54,16 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
     public AddRoleResponsibilityActionStatement() {
     }
 
-    public AddRoleResponsibilityActionStatement(final String role,
-						final String responsibility,
+    public AddRoleResponsibilityActionStatement(final String roleNamespace,
+						final String role,
 						final String namespace, 
+						final String responsibility,
 						final String member,
 						final String priority,
 						final String force,
 						final String actionTypeCode,
 						final String actionPolicyCode) {
+	setRoleNamespace(roleNamespace);
 	setRole(role);
 	setResponsibility(responsibility);
 	setNamespace(namespace);
@@ -69,6 +72,24 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
 	setForce(force);
 	setActionTypeCode(actionTypeCode);
 	setActionPolicyCode(actionPolicyCode);
+    }
+
+    /**
+     * Get the roleNamespace attribute on this object
+     *
+     * @return roleNamespace value
+     */
+    public String getRoleNamespace() {
+        return this.roleNamespace;
+    }
+
+    /**
+     * Set the roleNamespace attribute on this object
+     *
+     * @param roleNamespace value to set
+     */
+    public void setRoleNamespace(final String roleNamespace) {
+        this.roleNamespace = roleNamespace;
     }
 
     /**

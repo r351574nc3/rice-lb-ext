@@ -40,6 +40,7 @@ import java.util.List;
  */
 public class AddResponsibilityAttributeStatement extends AbstractSqlStatement {
 
+    protected String namespace;
     protected String value;
     protected String name;
     protected String attributeDef;
@@ -51,17 +52,37 @@ public class AddResponsibilityAttributeStatement extends AbstractSqlStatement {
     public AddResponsibilityAttributeStatement() {
     }
 
-    public AddResponsibilityAttributeStatement(final String responsibility,
+    public AddResponsibilityAttributeStatement(final String namespace,
+					       final String responsibility,
 					       final String name, 
 					       final String type,
 					       final String value,
 					       final String active,
-			       final List<SqlStatement> attributes) {
+					       final List<SqlStatement> attributes) {
+	setNamespace(namespace);
 	setResponsibility(responsibility);
 	setName(name);
 	setType(type);
 	setActive(active);
 	setValue(value);
+    }
+
+    /**
+     * Get the namespace attribute on this object
+     *
+     * @return namespace value
+     */
+    public String getNamespace() {
+        return this.namespace;
+    }
+
+    /**
+     * Set the namespace attribute on this object
+     *
+     * @param namespace value to set
+     */
+    public void setNamespace(final String namespace) {
+        this.namespace = namespace;
     }
 
     /**

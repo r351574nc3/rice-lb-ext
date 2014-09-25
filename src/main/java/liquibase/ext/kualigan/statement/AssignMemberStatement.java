@@ -47,6 +47,7 @@ public class AssignMemberStatement extends AbstractSqlStatement {
     protected String role;
     protected String active = "Y";
     protected List<SqlStatement> attributes;
+    protected List<SqlStatement> actions;
     
     
     public AssignMemberStatement() {
@@ -58,7 +59,8 @@ public class AssignMemberStatement extends AbstractSqlStatement {
 				 final String memberNamespace,
 				 final String role,	
 				 final String active,
-				 final List<SqlStatement> attributes) {
+				 final List<SqlStatement> attributes,
+				 final List<SqlStatement> actions) {
 	setNamespace(namespace);
 	setType(type);
 	setMember(member);
@@ -66,6 +68,7 @@ public class AssignMemberStatement extends AbstractSqlStatement {
 	setRole(role);
 	setActive(active);
 	setAttributes(attributes);
+	setActions(actions);
     }
 
     /**
@@ -173,5 +176,12 @@ public class AssignMemberStatement extends AbstractSqlStatement {
 
     public void setAttributes(final List<SqlStatement> attributes) {
 	this.attributes = attributes;
+    }
+    public List<SqlStatement> getActions() {
+	return actions;
+    }
+
+    public void setActions(final List<SqlStatement> actions) {
+	this.actions = actions;
     }
 }

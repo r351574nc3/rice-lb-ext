@@ -39,6 +39,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 @DatabaseChange(name="addResponsibilityAttribute", description = "Adds an Attribute to a Responsibility", priority = EXTENSION_PRIORITY)
 public class AddResponsibilityAttribute extends KimAbstractChange implements CustomSqlChange {
+    protected String namespace;
     protected String value;
     protected String name;
     protected String attributeDef;
@@ -98,6 +99,24 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 	undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", responsibilityId, typeId, defnId));
 
 	return undoAssign.generateStatements(database);
+    }
+
+    /**
+     * Get the namespace attribute on this object
+     *
+     * @return namespace value
+     */
+    public String getNamespace() {
+        return this.namespace;
+    }
+
+    /**
+     * Set the namespace attribute on this object
+     *
+     * @param namespace value to set
+     */
+    public void setNamespace(final String namespace) {
+        this.namespace = namespace;
     }
 
     /**
