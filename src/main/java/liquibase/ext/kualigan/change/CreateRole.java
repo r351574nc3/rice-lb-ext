@@ -16,6 +16,8 @@
 package liquibase.ext.kualigan.change;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import liquibase.change.DatabaseChange;
@@ -46,10 +48,15 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
     private String typeNamespace;
     private String lastUpdated;
     private String active = "Y";
+
+    protected List<AssignRoleMember> members;
+    protected List<CreateType> types; // There's only one really
     
 
     public CreateRole() {
         super("role", "Adding a Role to KIM", EXTENSION_PRIORITY);
+	members = new ArrayList<AssignRoleMember>();
+	types = new ArrayList<CreateType>();
     }
 
     @Override
@@ -208,5 +215,33 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 
     public void setTypeNamespace(String typeNamespace) {
 	this.typeNamespace = typeNamespace;
+    }
+
+    public List<CreateType> getTypes() {
+	return types;
+    }
+
+    public void setTypes(final List<CreateType> types) {
+	this.types = types;
+    }   
+
+    public List<AssignRoleMember> getMembers() {
+	return members;
+    }
+
+    public void setMembers(final List<AssignRoleMember> members) {
+	this.members = members;
+    }   
+
+    public CreateType createType(){
+	final CreateType createType = new CreateType();
+	getTypes().add(createType);
+	return createType;
+    }
+
+    public AssignRoleMember createMember(){
+	final AssignRoleMember assignRoleMember = new AssignRoleMember();
+	getMembers().add(assignRoleMember);
+	return assignRoleMember;
     }
 }

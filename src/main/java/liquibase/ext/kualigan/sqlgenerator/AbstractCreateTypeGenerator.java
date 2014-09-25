@@ -38,6 +38,7 @@ import liquibase.ext.kualigan.statement.CreateTypeStatement;
 
 import java.util.UUID;
 
+import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
  * Generic base class for generators mapped to the {@link CreateTypeStatement}
@@ -45,6 +46,7 @@ import java.util.UUID;
  * @author Leo Przybylski
  */
 public abstract class AbstractCreateTypeGenerator extends AbstractKimSqlGenerator<CreateTypeStatement> {
+
 
     @Override
     protected String getSequenceName() {
