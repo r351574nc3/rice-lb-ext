@@ -29,6 +29,8 @@ import liquibase.exception.CustomChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
+import liquibase.ext.kualigan.statement.CreateRoleStatement;
+
 import liquibase.change.core.DeleteDataChange;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -71,25 +73,31 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement insertRole = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_ROLE_T");
-	final BigInteger roleId = getPrimaryKey(database);
-	final String typeId = getTypeForeignKey(database, getType(), getTypeNamespace());
+        final List<SqlStatement> memberStatements = new ArrayList<SqlStatement>();
+        
+        for (final AssignRoleMember member : getMembers()) {
+            for (final SqlStatement statement : member.generateStatements(database)) {
+                memberStatements.add(statement);
+            }
+        }
 
-	insertRole.addColumnValue("role_id", roleId);
-	insertRole.addColumnValue("nmspc_cd", getNamespace());
-	insertRole.addColumnValue("role_nm", getName());
-	insertRole.addColumnValue("actv_ind", getActive());
-	insertRole.addColumnValue("kim_typ_id", typeId);
-	insertRole.addColumnValue("ver_nbr", 1);
-	insertRole.addColumnValue("desc_txt", getDescription());
-	if (getLastUpdated() != null) {
-	    insertRole.addColumnValue("LAST_UPDT_DT", getLastUpdated());
-	}
-	insertRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+        final List<SqlStatement> typeStatements = new ArrayList<SqlStatement>();
+        for (final CreateType type : getTypes()) {
+            for (final SqlStatement statement : type.generateStatements(database)) {
+                typeStatements.add(statement);
+            }
+        }
 
-	return new SqlStatement[]{
-	    insertRole
-	};
+        return new SqlStatement[] { new CreateRoleStatement(getNamespace(),
+							    getName(),
+							    getDescription(),
+							    "",
+							    "",
+							    getLastUpdated(),
+							    getActive(),
+							    memberStatements,
+							    typeStatements) };
+
     }
 
     @Override

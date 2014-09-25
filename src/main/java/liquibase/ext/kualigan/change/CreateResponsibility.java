@@ -25,6 +25,8 @@ import liquibase.exception.RollbackImpossibleException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
+import liquibase.ext.kualigan.statement.CreateResponsibilityStatement;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,29 +67,22 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(Database database) {
-	final InsertStatement insertResponsibility = new InsertStatement(null, database.getDefaultSchemaName(), "krim_rsp_t");
-	final BigInteger responsibilityId = getPrimaryKey(database);
-	String responsibilityTemplateId = null;
-	if (getTemplate() != null){
-	    responsibilityTemplateId = getResponsibilityTemplateForeignKey(database, getTemplate());
-	}
-	insertResponsibility.addColumnValue("rsp_id", responsibilityId);
-	insertResponsibility.addColumnValue("rsp_tmpl_id", responsibilityTemplateId);
-	insertResponsibility.addColumnValue("nm", getName());
-	insertResponsibility.addColumnValue("nmspc_cd", getNamespace());
-	insertResponsibility.addColumnValue("desc_txt", getDescription());
-	insertResponsibility.addColumnValue("actv_ind", getActive());
-	insertResponsibility.addColumnValue("ver_nbr", 1);
-	insertResponsibility.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	final List<SqlStatement> result = new ArrayList<SqlStatement>();
-	result.add(insertResponsibility);
-	for (final AddResponsibilityAttribute attribute : getAttributes()){
-	    attribute.setResponsibilityId(responsibilityId.toString());
-	    result.addAll(Arrays.asList(attribute.generateStatements(database)));
-	}
+        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
+        
+        for (final AddResponsibilityAttribute attribute : getAttributes()) {
+            for (final SqlStatement statement : attribute.generateStatements(database)) {
+                attributeStatements.add(statement);
+            }
+        }
 
-	return result.toArray(new SqlStatement[result.size()]);
+        return new SqlStatement[] { new CreateResponsibilityStatement(getTemplate(),
+								      getNamespace(),
+								      getName(),
+								      getDescription(),
+								      getActive(), 
+								      attributeStatements) };
+
     }
 
 

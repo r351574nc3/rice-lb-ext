@@ -28,6 +28,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import org.apache.commons.lang.StringUtils;
 
+import liquibase.ext.kualigan.statement.CreatePermissionStatement;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,31 +65,21 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-        final InsertStatement insertPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_perm_t");
-	final BigInteger permissionId = getPrimaryKey(database);
 
-	String templateId = null;
-	if (getTemplate() != null){
-	    templateId = getPermissionTemplateForeignKey(database, getTemplate());
-	}
+        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
+        
+        for (final AddPermissionAttribute attribute : getAttributes()) {
+            for (final SqlStatement statement : attribute.generateStatements(database)) {
+                attributeStatements.add(statement);
+            }
+        }
 
-	insertPermission.addColumnValue("perm_id", permissionId);
-	insertPermission.addColumnValue("nmspc_cd", getNamespace());
-	insertPermission.addColumnValue("nm", getName());
-	insertPermission.addColumnValue("desc_txt", getDescription());
-	insertPermission.addColumnValue("actv_ind", getActive());
-	insertPermission.addColumnValue("perm_tmpl_id", templateId);
-	insertPermission.addColumnValue("ver_nbr", 1);
-	insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	final List<SqlStatement> result = new ArrayList<SqlStatement>();
-	result.add(insertPermission);
-	for (AddPermissionAttribute attribute : attributes){
-	    attribute.setPermissionId(permissionId.toString());
-	    result.addAll(Arrays.asList(attribute.generateStatements(database)));
-	}
-
-	return result.toArray(new SqlStatement[result.size()]);
+        return new SqlStatement[] { new CreatePermissionStatement(getTemplate(),
+								  getNamespace(),
+								  getName(),
+								  getDescription(),
+								  getActive(), 
+								  attributeStatements) };
     }
 
     @Override
@@ -201,6 +193,24 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
      */
     public void setActive(final String active) {
         this.active = active;
+    }
+
+    /**
+     * Get the attributes attribute on this object
+     *
+     * @return attributes value
+     */
+    public List<AddPermissionAttribute> getAttributes() {
+        return this.attributes;
+    }
+
+    /**
+     * Set the attributes attribute on this object
+     *
+     * @param attributes value to set
+     */
+    public void setAttributes(final List<AddPermissionAttribute> attributes) {
+        this.attributes = attributes;
     }
 
 
