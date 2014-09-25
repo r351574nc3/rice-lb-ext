@@ -37,10 +37,10 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 @DatabaseChange(name="assignRoleResponsibility", description = "Assigns a KIM Responsibility to a given KIM Role.", priority = EXTENSION_PRIORITY)
 public class AssignRoleResponsibility extends KimAbstractChange implements CustomSqlChange {
-    private String responsibility;
-    private String namespace;
-    private String role;
-    private String active = "Y";
+    protected String responsibility;
+    protected String namespace;
+    protected String role;
+    protected String active = "Y";
 
 
     public AssignRoleResponsibility() {
