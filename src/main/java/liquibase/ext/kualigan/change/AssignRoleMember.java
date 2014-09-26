@@ -26,6 +26,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 import org.apache.commons.lang.StringUtils;
 
+import liquibase.ext.kualigan.statement.AssignMemberStatement;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +49,11 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
     protected String member;
     protected String memberNamespace;
     protected String role;
+    protected String active;
     protected List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
     protected String uniqueAttributeDefinitions;
     protected List<AddRoleResponsibilityAction> actions = new ArrayList<AddRoleResponsibilityAction>();
-	   	        
+                        
     
     public AssignRoleMember() {
         super("roleMember", "Assigning a KIM role", EXTENSION_PRIORITY);
@@ -58,7 +61,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 
     @Override
     protected String getSequenceName() {
-	return "KRIM_ROLE_MBR_ID_S";
+        return "KRIM_ROLE_MBR_ID_S";
     }
 
     /**
@@ -68,86 +71,86 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
-	final BigInteger id = getPrimaryKey(database);
-	final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
-	String memberId = getMemberId(database);
+        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
+        
+        for (final AddRoleMemberAttribute member : getAttributes()) {
+            for (final SqlStatement statement : member.generateStatements(database)) {
+                attributeStatements.add(statement);
+            }
+        }
 
-	assignRole.addColumnValue("role_mbr_id", id);
-	assignRole.addColumnValue("role_id", roleId);
-	assignRole.addColumnValue("mbr_id", memberId);
-	assignRole.addColumnValue("mbr_typ_cd", getType());
-	assignRole.addColumnValue("ver_nbr", 1);
-	assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+        final List<SqlStatement> actionStatements = new ArrayList<SqlStatement>();
+        for (final AddRoleResponsibilityAction member : getActions()) {
+            for (final SqlStatement statement : member.generateStatements(database)) {
+                actionStatements.add(statement);
+            }
+        }
 
-	List<SqlStatement> results = new ArrayList<SqlStatement>();
-	results.add(assignRole);
-	for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-	    addRoleMemberAttribute.setRoleMemberId(id.toString());
-	    results.addAll(Arrays.asList(addRoleMemberAttribute.generateStatements(database)));
-	}
-	for (AddRoleResponsibilityAction action : actions){
-	    action.setRoleMemberId(id.toString());
-	    results.addAll(Arrays.asList(action.generateStatements(database)));
-	}
-	return results.toArray(new SqlStatement[results.size()]);
+        return new SqlStatement[] { new AssignMemberStatement(getNamespace(),
+                                                              getType(),
+                                                              getMember(),
+                                                              getMemberNamespace(),
+                                                              getRole(),
+                                                              getActive(),
+                                                              attributeStatements,
+                                                              actionStatements) };
     }
 
     private String getMemberId(Database database) {
-	String memberId;
-	if ("P".equals(getType())){
-	    memberId = getPrincipalForeignKey(database, getMember());
-	}else if ("R".equals(getType())){
-	    memberId = getRoleForeignKey(database, getMember(), getMemberNamespace()!=null?getMemberNamespace():getNamespace());
-	}
-	else{
-	    throw new RuntimeException(String.format("Role type '%s' not supported!", getType()));
-	}
-	return memberId;
+        String memberId;
+        if ("P".equals(getType())){
+            memberId = getPrincipalForeignKey(database, getMember());
+        }else if ("R".equals(getType())){
+            memberId = getRoleForeignKey(database, getMember(), getMemberNamespace()!=null?getMemberNamespace():getNamespace());
+        }
+        else{
+            throw new RuntimeException(String.format("Role type '%s' not supported!", getType()));
+        }
+        return memberId;
     }
 
 
     @Override
     public SqlStatement[] generateRollbackStatements(Database database) throws RollbackImpossibleException {
-	final DeleteDataChange undoAssign = new DeleteDataChange();
-	final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
-	String memberId = getMemberId(database);
-	List<String> uniqueAttributeValues = null;
-	if (StringUtils.isNotBlank(uniqueAttributeDefinitions)){
-	    uniqueAttributeValues = getUniqueAttributeValues(attributes, uniqueAttributeDefinitions);
-	}
-	final String rolMemberId = getRoleMemberForeignKey(database,roleId,memberId,uniqueAttributeValues);
-	undoAssign.setTableName("KRIM_ROLE_MBR_T");
-	undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, memberId));
+        final DeleteDataChange undoAssign = new DeleteDataChange();
+        final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
+        String memberId = getMemberId(database);
+        List<String> uniqueAttributeValues = null;
+        if (StringUtils.isNotBlank(uniqueAttributeDefinitions)){
+            uniqueAttributeValues = getUniqueAttributeValues(attributes, uniqueAttributeDefinitions);
+        }
+        final String rolMemberId = getRoleMemberForeignKey(database,roleId,memberId,uniqueAttributeValues);
+        undoAssign.setTableName("KRIM_ROLE_MBR_T");
+        undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, memberId));
 
-	List<SqlStatement> results = new ArrayList<SqlStatement>();
-	for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-	    addRoleMemberAttribute.setRoleMemberId(rolMemberId);
-	    results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
-	}
-	for (AddRoleResponsibilityAction action : actions){
-	    action.setRoleMemberId(rolMemberId);
-	    results.addAll(Arrays.asList(action.generateRollbackStatements(database)));
-	}
-	results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
-	return results.toArray(new SqlStatement[results.size()]);
+        List<SqlStatement> results = new ArrayList<SqlStatement>();
+        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+            addRoleMemberAttribute.setRoleMemberId(rolMemberId);
+            results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
+        }
+        for (AddRoleResponsibilityAction action : actions){
+            action.setRoleMemberId(rolMemberId);
+            results.addAll(Arrays.asList(action.generateRollbackStatements(database)));
+        }
+        results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
+        return results.toArray(new SqlStatement[results.size()]);
     }
 
     private List<String> getUniqueAttributeValues(List<AddRoleMemberAttribute> attributes, String uniqueAttributeDefinitions) {
-	List<String> uniqueTokens = Arrays.asList(uniqueAttributeDefinitions.split(","));
-	List<String> result = new ArrayList<String>();
-	for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-	    if (uniqueTokens.contains(addRoleMemberAttribute.getAttributeDef())){
-		result.add(addRoleMemberAttribute.getValue());
-	    }
-	    else{
-		throw new IllegalArgumentException(String.format("Attribute definition '%s' defined as unique but not part or attributes list", addRoleMemberAttribute.getAttributeDef()));
-	    }
-	}
-	if (uniqueTokens.size() > result.size()){
-	    throw new IllegalArgumentException(String.format("Unique Attribute definitions do not match attributes defined '%s<%s'",result.size(),uniqueTokens.size()));
-	}
-	return result;
+        List<String> uniqueTokens = Arrays.asList(uniqueAttributeDefinitions.split(","));
+        List<String> result = new ArrayList<String>();
+        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+            if (uniqueTokens.contains(addRoleMemberAttribute.getAttributeDef())){
+                result.add(addRoleMemberAttribute.getValue());
+            }
+            else{
+                throw new IllegalArgumentException(String.format("Attribute definition '%s' defined as unique but not part or attributes list", addRoleMemberAttribute.getAttributeDef()));
+            }
+        }
+        if (uniqueTokens.size() > result.size()){
+            throw new IllegalArgumentException(String.format("Unique Attribute definitions do not match attributes defined '%s<%s'",result.size(),uniqueTokens.size()));
+        }
+        return result;
     }
 
     /**
@@ -222,12 +225,67 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
         this.type = type;
     }
 
+    /**
+     * Get the active attribute on this object
+     *
+     * @return active value
+     */
+    public String getActive() {
+        return this.active;
+    }
+
+    /**
+     * Set the active attribute on this object
+     *
+     * @param active value to set
+     */
+    public void setActive(final String active) {
+        this.active = active;
+    }
+
+    /**
+     * Get the attributes attribute on this object
+     *
+     * @return attributes value
+     */
+    public List<AddRoleMemberAttribute> getAttributes() {
+        return this.attributes;
+    }
+
+    /**
+     * Set the attributes attribute on this object
+     *
+     * @param attributes value to set
+     */
+    public void setAttributes(final List<AddRoleMemberAttribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    /**
+     * Get the actions attribute on this object
+     *
+     * @return actions value
+     */
+    public List<AddRoleResponsibilityAction> getActions() {
+        return this.actions;
+    }
+
+    /**
+     * Set the actions attribute on this object
+     *
+     * @param actions value to set
+     */
+    public void setActions(final List<AddRoleResponsibilityAction> actions) {
+        this.actions = actions;
+    }
+
+
     public String getMemberNamespace() {
-	return memberNamespace;
+        return memberNamespace;
     }
 
     public void setMemberNamespace(String memberNamespace) {
-	this.memberNamespace = memberNamespace;
+        this.memberNamespace = memberNamespace;
     }
 
     public String getUniqueAttributeDefinitions() {
