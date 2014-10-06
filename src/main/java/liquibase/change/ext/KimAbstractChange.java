@@ -204,18 +204,8 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 	}
 
 	protected String getPrincipalForeignKey(Database database, final String memberName) {
-		try {
-			final SqlStatement getMemberId = new RuntimeStatement() {
-				public Sql[] generate(Database database) {
-					return new Sql[] {
-						new UnparsedSql(String.format("select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s'", memberName))
-					};
-				}
-			};
-			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getMemberId, String.class);
-		} catch (DatabaseException e) {
-			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Principal' (%s)", memberName), e);
-		}
+        //todo: @NWU krim_prncpl_t does not exist anymore - how can we swap between different implementations?
+        return memberName; //NWU memberName = prncpl_id; KRIM_PRNCPL_T table dropped
 	}
 
 	protected String getResponsibilityForeignKey(Database database, final String responsibilityName) {
