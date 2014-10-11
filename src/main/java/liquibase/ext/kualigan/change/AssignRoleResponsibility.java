@@ -25,6 +25,8 @@ import liquibase.exception.CustomChangeException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
+import liquibase.ext.kualigan.statement.AssignResponsibilityStatement;
+
 import java.math.BigInteger;
 import java.util.UUID;
 
@@ -59,21 +61,15 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement statement = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_rsp_t");
-	final BigInteger id = getPrimaryKey(database);
-	final String roleId = getRoleForeignKey(database, getRole(), getNamespace());
-	final String rspId = getResponsibilityForeignKey(database, getResponsibility());
-
-	statement.addColumnValue("role_rsp_id", id);
-	statement.addColumnValue("role_id", roleId);
-	statement.addColumnValue("rsp_id", rspId);
-	statement.addColumnValue("actv_ind", getActive());
-	statement.addColumnValue("ver_nbr", 1);
-	statement.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	return new SqlStatement[]{
-	    statement
-	};
+        return new SqlStatement[] { new AssignResponsibilityStatement(getApplication(),
+								      getNamespace(),
+								      getComponent(),
+								      getName(),
+								      getType(),
+								      getValue(),
+								      getDescription(),
+								      getOperator(),
+								      getActive()) };
     }
 
 

@@ -48,6 +48,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import liquibase.ext.kualigan.statement.CreateSystemParameterStatement;
+
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
@@ -97,22 +99,17 @@ public class CreateSystemParameter extends AbstractChange implements CustomSqlCh
      * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
      * @return an array of {@link String}s with the statements
      */
-    public SqlStatement[] generateStatements(Database database) {
-	final InsertStatement statement = new InsertStatement("", database.getDefaultSchemaName(),"KRCR_PARM_T");
-	statement.addColumnValue("APPL_ID", application);
-	statement.addColumnValue("NMSPC_CD", namespace);
-	statement.addColumnValue("CMPNT_CD", component);
-	statement.addColumnValue("PARM_NM", name);
-	statement.addColumnValue("VAL", value);
-	statement.addColumnValue("PARM_TYP_CD", type);
-	if (getOperator() != null) {
-	    statement.addColumnValue("EVAL_OPRTR_CD", operator.substring(0, 1));
-	}
-	if (getDescription() != null) {
-	    statement.addColumnValue("PARM_DESC_TXT", getDescription());
-	}
+    public SqlStatement[] generateStatements(final Database database) {
 	
-	return new SqlStatement[] { statement };
+        return new SqlStatement[] { new CreateSystemParameterStatement(getApplication(),
+								       getNamespace(),
+								       getComponent(),
+								       getName(),
+								       getType(),
+								       getValue(),
+								       getDescription(),
+								       getOperator(),
+								       getActive()) };
     }
 
     @Override
