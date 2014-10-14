@@ -49,13 +49,13 @@ public class AssignResponsibilityStatement extends AbstractSqlStatement {
     }
 
     public AssignResponsibilityStatement(final String namespace,
-					 final String responsibility, 
-					 final String role,
-					 final String active) {
-	setNamespace(namespace);
-	setResponsibility(responsibility);
-	setRole(role);
-	setActive(active);
+                                         final String responsibility, 
+                                         final String role,
+                                         final String active) {
+        setNamespace(namespace);
+        setResponsibility(responsibility);
+        setRole(role);
+        setActive(active);
     }
 
 

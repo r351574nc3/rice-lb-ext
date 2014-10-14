@@ -39,6 +39,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 @DatabaseChange(name="assignRoleResponsibility", description = "Assigns a KIM Responsibility to a given KIM Role.", priority = EXTENSION_PRIORITY)
 public class AssignRoleResponsibility extends KimAbstractChange implements CustomSqlChange {
+    protected String application;
     protected String responsibility;
     protected String namespace;
     protected String role;
@@ -61,15 +62,10 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-        return new SqlStatement[] { new AssignResponsibilityStatement(getApplication(),
-								      getNamespace(),
-								      getComponent(),
-								      getName(),
-								      getType(),
-								      getValue(),
-								      getDescription(),
-								      getOperator(),
-								      getActive()) };
+        return new SqlStatement[] { new AssignResponsibilityStatement(getNamespace(),
+                                                                      getResponsibility(),
+                                                                      getRole(),
+                                                                      getActive()) };
     }
 
 
@@ -153,6 +149,25 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
      */
     public void setActive(final String active) {
         this.active = active;
+    }
+
+
+    /**
+     * Get the application attribute on this object
+     *
+     * @return application value
+     */
+    public String getApplication() {
+        return this.application;
+    }
+
+    /**
+     * Set the application attribute on this object
+     *
+     * @param application value to set
+     */
+    public void setApplication(final String application) {
+        this.application = application;
     }
 
 }
