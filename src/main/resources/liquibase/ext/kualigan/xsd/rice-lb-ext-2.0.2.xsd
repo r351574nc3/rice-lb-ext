@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/rice-lb-ext"
+            xmlns="http://www.liquibase.org/xml/ns/rice-lb-ext"
+            elementFormDefault="qualified">
+
+  <xsd:element name="createKimType">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+	    <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
+	    <xsd:attribute name="component" type="xsd:string" />
+	    <xsd:attribute name="name" type="xsd:string" use="required" />
+	    <xsd:attribute name="value" type="xsd:string" use="required" />
+	    <xsd:attribute name="label" type="xsd:string" />
+	    <xsd:attribute name="active" type="xsd:string" default="Y" />
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="service" type="xsd:string" use="required" />
+      <xsd:attribute name="active" type="xsd:string" default="Y" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropKimType">
+    <xsd:complexType>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropKimTypeAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="type" type="xsd:string" use="required"/>
+      <xsd:attribute name="attribute" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- 
+       Role Tags
+  -->
+  <xsd:element name="createRole">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="type" minOccurs="0" maxOccurs="1">
+	  <xsd:complexType>
+	    <xsd:sequence>
+              <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+		<xsd:complexType>
+		  <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+		  <xsd:attribute name="component" type="xsd:string" />
+		  <xsd:attribute name="name" type="xsd:string" use="required" />
+		  <xsd:attribute name="value" type="xsd:string" use="required" />
+		  <xsd:attribute name="label" type="xsd:string" />
+		  <xsd:attribute name="active" type="xsd:string" default="Y" />
+		</xsd:complexType>
+              </xsd:element>
+	    </xsd:sequence>
+	    <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+	    <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+	    <xsd:attribute name="name" type="xsd:string" use="required" />
+	    <xsd:attribute name="service" type="xsd:string" />
+	    <xsd:attribute name="active" type="xsd:string" default="Y" />	
+	  </xsd:complexType>
+	</xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="active" type="xsd:string" />
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <xsd:element name="dropRole">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <!-- 
+       Responsibility Tags
+  -->
+  <xsd:element name="createResponsibility">
+    <xsd:complexType>
+      <xsd:sequence>
+	<xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+	  <xsd:complexType>
+	    <xsd:attribute name="name" type="xsd:string" />
+	    <xsd:attribute name="type" type="xsd:string" />
+	    <xsd:attribute name="value" type="xsd:string" />
+	  </xsd:complexType>
+	</xsd:element>
+      </xsd:sequence>
+
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropResponsibility">
+    <xsd:complexType>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addResponsibilityAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropResponsibilityAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addResponsibilityAction">
+    <xsd:complexType>
+      <xsd:attribute name="member" type="xsd:string" use="required"/>
+      <xsd:attribute name="role" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+      <xsd:attribute name="responsibility" type="xsd:string" use="required" />
+      <xsd:attribute name="forceAction" type="xsd:string" use="optional" />
+      <xsd:attribute name="policy" type="xsd:string" use="optional" />
+      <xsd:attribute name="priority" type="xsd:string" use="optional" />
+      <xsd:attribute name="action" type="xsd:string" use="optional" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropResponsibilityAction">
+    <xsd:complexType>
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="responsibility" type="xsd:string" use="required" />
+      <xsd:attribute name="role" type="xsd:string" use="required"/>
+      <xsd:attribute name="member" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="assignResponsibility">
+    <xsd:complexType>
+      <xsd:attribute name="responsibility" type="xsd:string" default="KUALI" />
+      <xsd:attribute name="role" type="xsd:string" />
+      <xsd:attribute name="namespace" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropResponsibilityAssignment">
+    <xsd:complexType>
+      <xsd:attribute name="role" type="xsd:string" use="required" />
+      <xsd:attribute name="responsibility" type="xsd:string" use=""required" />
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="createPermission">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+	    <!--
+	    <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+	    -->
+	    <xsd:attribute name="active" type="xsd:string" default="Y" />
+	    <xsd:attribute name="template" type="xsd:string" use="required" />
+	    <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+	    <xsd:attribute name="name" type="xsd:string" use="required"/>
+	    <xsd:attribute name="value" type="xsd:string" use="required"/>
+	    <xsd:attribute name="type" type="xsd:string" />
+	    <xsd:attribute name="description" type="xsd:string" />
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropPermission">
+    <xsd:complexType>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="assignPermission">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="permission" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="role" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="active" type="xsd:string" default="Y" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropPermissionAssignment">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="permission" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="role" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="active" type="xsd:string" default="Y" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addPermissionAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="permission" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
+      <xsd:attribute name="type" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropPermissionAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <xsd:element name="assignRoleMember">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="member" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="actions" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="role" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="active" type="xsd:string" default="Y" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropRoleAssignment">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addRoleMemberAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropRoleMemberAttribute">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="template" type="xsd:string" use="required" />
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <xsd:element name="createParameter">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="component" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required" />
+      <xsd:attribute name="type" type="xsd:string" default="CONFG" />
+      <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropParameter">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="createAttributeDefinition">
+    <xsd:complexType>
+      <xsd:attribute name="label" type="xsd:string"  use="required"/>
+      <xsd:attribute name="namespace" type="xsd:string"  use="required"/>
+      <xsd:attribute name="name" type="xsd:string"  use="required"/>
+      <xsd:attribute name="component" type="xsd:string"  use="required"/>
+      <xsd:attribute name="active" type="xsd:string"  use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="dropAttributeDefinition">
+    <xsd:complexType>
+      <xsd:attribute name="application" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+      <xsd:attribute name="component" type="xsd:string" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required" />
+      <xsd:attribute name="type" type="xsd:string" default="CONFG" />
+      <xsd:attribute name="operator" type="xsd:string" default="ALLOW" />
+      <xsd:attribute name="description" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+</xsd:schema>

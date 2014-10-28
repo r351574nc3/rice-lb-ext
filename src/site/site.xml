@@ -8,10 +8,24 @@
     </bannerLeft>
 
     <skin>
-      <artifactId>maven-kuali-skin</artifactId>
-      <groupId>org.kuali.maven.skins</groupId>
-      <version>0.0.1</version>
+      <groupId>org.apache.maven.skins</groupId>
+      <artifactId>maven-fluido-skin</artifactId>
+      <version>1.3.1</version>
     </skin>
+
+    
+    <custom>
+      <fluidoSkin>
+	<googlePlusOne />
+	<gitHub>
+          <projectId>r351574nc3/kualigan-maven-plugins</projectId>
+          <ribbonOrientation>right</ribbonOrientation>
+          <ribbonColor>red</ribbonColor>
+	</gitHub>
+	<topBarEnabled>true</topBarEnabled>
+	<sideBarEnabled>true</sideBarEnabled>
+      </fluidoSkin>
+    </custom>
 
     <body>
       <menu name="Rice Liquibase Extensions">
