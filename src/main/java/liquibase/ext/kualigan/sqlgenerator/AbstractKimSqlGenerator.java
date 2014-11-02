@@ -58,7 +58,7 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 	    incrementSequence(database);
 	}
 	final String subQuery = database.supportsSequences() 
-	    ? String.format("%s.NEXTVAL()", getSequenceName()) 
+	    ? String.format("%s.NEXTVAL", getSequenceName())
 	    : String.format("(select max(id) from %s)", getSequenceName());
 
 	return new DatabaseFunction(subQuery);

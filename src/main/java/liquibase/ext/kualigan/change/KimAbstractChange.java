@@ -77,13 +77,14 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
     protected abstract String getSequenceName();
 
 
+		//todo: remove.... all primary key retrievals should happen in sql generators
     protected BigInteger getPrimaryKey(Database database) {
 	try {
 	    final SqlStatement getPermissionId = new RuntimeStatement() {
 		    public Sql[] generate(Database database) {
 			if (database.supportsSequences()) {
 			    return new Sql[]{
-				new UnparsedSql(String.format("SELECT %s.NEXTVAL FROM dual", getSequenceName()))
+						new UnparsedSql(String.format("%s.NEXTVAL", getSequenceName()))
 			    };
 			}
 			incrementSequence(database);
