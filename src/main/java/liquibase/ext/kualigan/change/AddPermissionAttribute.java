@@ -44,7 +44,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-//todo: change bind name to addPermissionAtrribute
+//todo: change bind name
 @DatabaseChange(name="permissionAttribute", description = "Adds an attribute to a KIM permission", priority = EXTENSION_PRIORITY)
 public class AddPermissionAttribute extends KimAbstractChange {
 

@@ -37,7 +37,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="addResponsibilityAttribute", description = "Adds an Attribute to a Responsibility", priority = EXTENSION_PRIORITY)
+//todo: change bind name
+@DatabaseChange(name="responsibilityAttribute", description = "Adds an Attribute to a Responsibility", priority = EXTENSION_PRIORITY)
 public class AddResponsibilityAttribute extends KimAbstractChange implements CustomSqlChange {
     protected String namespace;
     protected String value;
