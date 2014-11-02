@@ -27,179 +27,151 @@ package liquibase.ext.kualigan.statement;
 
 
 import liquibase.statement.AbstractSqlStatement;
-import liquibase.statement.SqlStatement;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
-
-import java.util.List;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
- * 
+ *
  * @author Leo Przybylski
  */
 public class AddPermissionAttributeStatement extends AbstractSqlStatement {
 
-    protected String name;
-    protected String value;
-    protected String namespace;
-    protected String attribute;
-    protected String permission;
-    protected String type;
-    protected String active = "Y";
-    protected String permissionId;
-
-    
-    public AddPermissionAttributeStatement() {
-    }
-
-    public AddPermissionAttributeStatement(final String namespace,
-					   final String name, 
-					   final String value,
-					   final String attribute,
-					   final String permission,
-					   final String type,
-					   final String active) {
-	setNamespace(namespace);
-	setName(name);
-	setValue(value);
-	setAttribute(attribute);
-	setPermission(permission);
-	setType(type);
-	setActive(active);
-    }
+	protected String value;
+	protected String namespace;
+	protected String attributeDef;
+	protected String permission;
+	protected String type;
+	protected String active = "Y";
+	protected String permissionId;
 
 
+	public AddPermissionAttributeStatement() {
+	}
 
-    /**
-     * Get the attribute attribute on this object
-     *
-     * @return attribute value
-     */
-    public String getAttribute() {
-        return this.attribute;
-    }
-
-    /**
-     * Set the attribute attribute on this object
-     *
-     * @param attribute value to set
-     */
-    public void setAttribute(final String attribute) {
-        this.attribute = attribute;
-    }
+	public AddPermissionAttributeStatement(final String namespace,
+	                                       final String value,
+	                                       final String attributeDef,
+	                                       final String permission,
+	                                       final String type,
+	                                       final String active) {
+		setNamespace(namespace);
+		setValue(value);
+		setAttributeDef(attributeDef);
+		setPermission(permission);
+		setType(type);
+		setActive(active);
+	}
 
 
-    /**
-     * Get the name attribute on this object
-     *
-     * @return name value
-     */
-    public String getName() {
-	return this.name;
-    }
+	/**
+	 * Get the attribute attribute on this object
+	 *
+	 * @return attribute value
+	 */
+	public String getAttributeDef() {
+		return this.attributeDef;
+	}
 
-    /**
-     * Set the name attribute on this object
-     *
-     * @param name value to set
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
+	/**
+	 * Set the attribute attribute on this object
+	 *
+	 * @param attributeDef value to set
+	 */
+	public void setAttributeDef(final String attributeDef) {
+		this.attributeDef = attributeDef;
+	}
 
-    /**
-     * Get the type attribute on this object
-     *
-     * @return type value
-     */
-    public String getType() {
-        return this.type;
-    }
+	/**
+	 * Get the type attribute on this object
+	 *
+	 * @return type value
+	 */
+	public String getType() {
+		return this.type;
+	}
 
-    /**
-     * Set the type attribute on this object
-     *
-     * @param type value to set
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
+	/**
+	 * Set the type attribute on this object
+	 *
+	 * @param type value to set
+	 */
+	public void setType(final String type) {
+		this.type = type;
+	}
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
+	/**
+	 * Get the namespace attribute on this object
+	 *
+	 * @return namespace value
+	 */
+	public String getNamespace() {
+		return this.namespace;
+	}
 
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
+	/**
+	 * Set the namespace attribute on this object
+	 *
+	 * @param namespace value to set
+	 */
+	public void setNamespace(final String namespace) {
+		this.namespace = namespace;
+	}
 
-    /**
-     * Get the permission attribute on this object
-     *
-     * @return permission value
-     */
-    public String getPermission() {
-        return this.permission;
-    }
+	/**
+	 * Get the permission attribute on this object
+	 *
+	 * @return permission value
+	 */
+	public String getPermission() {
+		return this.permission;
+	}
 
-    /**
-     * Set the permission attribute on this object
-     *
-     * @param permission value to set
-     */
-    public void setPermission(final String permission) {
-        this.permission = permission;
-    }
+	/**
+	 * Set the permission attribute on this object
+	 *
+	 * @param permission value to set
+	 */
+	public void setPermission(final String permission) {
+		this.permission = permission;
+	}
 
-    /**
-     * Get the value attribute on this object
-     *
-     * @return value value
-     */
-    public String getValue() {
-        return this.value;
-    }
+	/**
+	 * Get the value attribute on this object
+	 *
+	 * @return value value
+	 */
+	public String getValue() {
+		return this.value;
+	}
 
-    /**
-     * Set the value attribute on this object
-     *
-     * @param value value to set
-     */
-    public void setValue(final String value) {
-        this.value = value;
-    }
+	/**
+	 * Set the value attribute on this object
+	 *
+	 * @param value value to set
+	 */
+	public void setValue(final String value) {
+		this.value = value;
+	}
 
-    /**
-     * Get the active attribute on this object
-     *
-     * @return active value
-     */
-    public String getActive() {
-        return this.active;
-    }
+	/**
+	 * Get the active attribute on this object
+	 *
+	 * @return active value
+	 */
+	public String getActive() {
+		return this.active;
+	}
 
-    /**
-     * Set the active attribute on this object
-     *
-     * @param active value to set
-     */
-    public void setActive(final String active) {
-        this.active = active;
-    }
+	/**
+	 * Set the active attribute on this object
+	 *
+	 * @param active value to set
+	 */
+	public void setActive(final String active) {
+		this.active = active;
+	}
 
-    public void setPermissionId(String permissionId) {
-	this.permissionId = permissionId;
-    }
+	public void setPermissionId(String permissionId) {
+		this.permissionId = permissionId;
+	}
 
 }

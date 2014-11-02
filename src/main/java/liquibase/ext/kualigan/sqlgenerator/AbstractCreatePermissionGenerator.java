@@ -50,45 +50,45 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 public abstract class AbstractCreatePermissionGenerator extends AbstractKimSqlGenerator<CreatePermissionStatement> {
 
-    @Override
-    protected String getSequenceName() {
-	return "KRIM_PERM_ID_S";
-    }
+	@Override
+	protected String getSequenceName() {
+		return "KRIM_PERM_ID_S";
+	}
 
-    @Override
-    public ValidationErrors validate(final CreatePermissionStatement statement,
-                                     final Database database, 
-				     final SqlGeneratorChain generators) {
-        final ValidationErrors retval = new ValidationErrors();
-        retval.checkRequiredField("namespace", statement.getNamespace());
-        retval.checkRequiredField("name", statement.getName());
-        retval.checkRequiredField("template", statement.getTemplate());
-        return retval;
-    }
+	@Override
+	public ValidationErrors validate(final CreatePermissionStatement statement,
+	                                 final Database database,
+	                                 final SqlGeneratorChain generators) {
+		final ValidationErrors retval = new ValidationErrors();
+		retval.checkRequiredField("namespace", statement.getNamespace());
+		retval.checkRequiredField("name", statement.getName());
+		retval.checkRequiredField("template", statement.getTemplate());
+		return retval;
+	}
 
-    /**
-     * Generate the actual Sql for the given statement and database.
-     *
-     * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
-     */
-    public Sql[] generateSql(final CreatePermissionStatement statement, 
-			     final Database database, 
-			     final SqlGeneratorChain chain) {
-        final InsertStatement insertPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_perm_t");
+	/**
+	 * Generate the actual Sql for the given statement and database.
+	 *
+	 * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
+	 */
+	public Sql[] generateSql(final CreatePermissionStatement statement,
+	                         final Database database,
+	                         final SqlGeneratorChain chain) {
+		final InsertStatement insertPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_perm_t");
 
-	insertPermission.addColumnValue("perm_id", getPrimaryKey(database));
-	insertPermission.addColumnValue("nmspc_cd", statement.getNamespace());
-	insertPermission.addColumnValue("nm", statement.getName());
-	insertPermission.addColumnValue("desc_txt", statement.getDescription());
-	insertPermission.addColumnValue("actv_ind", statement.getActive());
-	insertPermission.addColumnValue("perm_tmpl_id", getPermissionTemplateForeignKey(database, statement.getTemplate()));
-	insertPermission.addColumnValue("ver_nbr", 1);
-	insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
+		insertPermission.addColumnValue("perm_id", getPrimaryKey(database));
+		insertPermission.addColumnValue("nmspc_cd", statement.getNamespace());
+		insertPermission.addColumnValue("nm", statement.getName());
+		insertPermission.addColumnValue("desc_txt", statement.getDescription());
+		insertPermission.addColumnValue("actv_ind", statement.getActive());
+		insertPermission.addColumnValue("perm_tmpl_id", getPermissionTemplateForeignKey(database, statement.getTemplate()));
+		insertPermission.addColumnValue("ver_nbr", 1);
+		insertPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	final List<SqlStatement> retval = new ArrayList<SqlStatement>();
-	retval.add(insertPermission);
-	retval.addAll(statement.getAttributes());
+		final List<SqlStatement> retval = new ArrayList<SqlStatement>();
+		retval.add(insertPermission);
+		retval.addAll(statement.getAttributes());
 
-	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
-    }
+		return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
+	}
 }

@@ -29,7 +29,6 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
@@ -37,8 +36,6 @@ import liquibase.sql.Sql;
 import liquibase.ext.kualigan.statement.AddPermissionAttributeStatement;
 
 import java.util.UUID;
-
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
  * Generic base class for generators mapped to the {@link AddPermissionAttributeStatement}
@@ -76,7 +73,7 @@ public abstract class AbstractAddPermissionAttributeGenerator extends AbstractKi
 	insertAttribute.addColumnValue("attr_data_id", getPrimaryKey(database));
 	insertAttribute.addColumnValue("perm_id", getPermissionForeignKey(database, statement.getPermission(), statement.getNamespace()));
 	insertAttribute.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType()));
-	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getName()));
+	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getAttributeDef()));
 	insertAttribute.addColumnValue("attr_val", statement.getValue());
 	insertAttribute.addColumnValue("ver_nbr", 1);
 	insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
