@@ -1,5 +1,5 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kim="http://www.liquibase.org/xml/ns/kim-lb-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet id="tst-create-role" author="lb-ext" context="default">
@@ -13,6 +13,6 @@
     </changeSet>
 
     <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
-        <kim:createRole namespace="KUALI" name="Tst Role" description="Description" typeName="Default" active="Y"/>
+        <kim:role namespace="KUALI" name="Tst Role" description="Description" typeName="Default" active="Y"/>
     </changeSet>
 </databaseChangeLog>
