@@ -35,7 +35,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="AddRoleResponsibilityAction", description = "Adds an Action to a Role/Responsibility assignment", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="roleResponsibilityAction", description = "Adds an Action to a Role/Responsibility assignment", priority = EXTENSION_PRIORITY)
 public class AddRoleResponsibilityAction extends KimAbstractChange implements CustomSqlChange {
 
     private String roleName;
