@@ -1,8 +1,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet id="tst-permission-and-perm-attr-cns" author="lb-ext" context="custom-namespace">
+<changeSet id="tst-permission-and-perm-attr-cns" author="lb-ext" context="custom-namespace">
         <kim:permission template="Default" namespace="KFS-TEM" name="lb-ext permission" description="Allows access tst permission" active="Y"/>
         <kim:permissionAttribute permission="lb-ext permission" namespace="KFS-TEM" type="Default" attributeDef="beanName" value="Test Perm Attr" active="Y"/>
     </changeSet>
