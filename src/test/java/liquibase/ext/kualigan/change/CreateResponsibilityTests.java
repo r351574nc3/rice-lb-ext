@@ -1,4 +1,4 @@
-package liquibase.change.ext;
+package liquibase.ext.kualigan.change;
 
 public class CreateResponsibilityTests extends KimChangeBaseTest{
 

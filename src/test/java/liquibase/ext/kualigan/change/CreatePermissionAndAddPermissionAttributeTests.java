@@ -1,4 +1,4 @@
-package liquibase.change.ext;
+package liquibase.ext.kualigan.change;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
