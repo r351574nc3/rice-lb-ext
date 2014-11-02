@@ -1,4 +1,4 @@
-package liquibase.change.ext;
+package liquibase.ext.kualigan.change;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -21,7 +21,7 @@ public abstract class KimChangeBaseTest {
 	public static void bootstrapTestDB() throws Exception {
 		connection = DriverManager.getConnection("jdbc:h2:mem:TEST;MODE=Oracle");
 		database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-		Liquibase liquibase = new Liquibase("org/kuali/rice/liquibase/change/ext/bootstrap.xml", new ClassLoaderResourceAccessor(), database);
+		Liquibase liquibase = new Liquibase("liquibase/ext/kualigan/change//bootstrap.xml", new ClassLoaderResourceAccessor(), database);
 		liquibase.update("");
 	}
 
@@ -55,7 +55,7 @@ public abstract class KimChangeBaseTest {
 
 	private void performUpdateAndRollback(String context) throws Exception {
 		//given
-		Liquibase liquibase = new Liquibase("org/kuali/rice/liquibase/change/ext/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
+		Liquibase liquibase = new Liquibase("liquibase/ext/kualigan/change/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
 		//when
 		liquibase.update(context);
 		//then
