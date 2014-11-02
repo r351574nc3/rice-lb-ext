@@ -45,7 +45,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="addRoleMemberAttribute", description = "Adds an attribute to a Role member.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="roleMemberAttribute", description = "Adds an attribute to a Role member.", priority = EXTENSION_PRIORITY)
 public class AddRoleMemberAttribute extends KimAbstractChange {
 
     protected String type;
