@@ -1,18 +1,18 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kim="http://www.liquibase.org/xml/ns/kim-lb-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-<changeSet id="tst-create-role" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.CreateRole">
+    <changeSet id="tst-create-role" author="lb-ext" context="default">
+        <customChange class="liquibase.ext.kualigan.change.CreateRole">
             <param name="namespace" value="KUALI"/>
             <param name="name" value="Tst Role"/>
             <param name="description" value="Description"/>
-            <param name="type" value="Default"/>
+            <param name="typeName" value="Default"/>
             <param name="active" value="Y"/>
         </customChange>
     </changeSet>
 
     <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
-        <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
+        <kim:createRole namespace="KUALI" name="Tst Role" description="Description" typeName="Default" active="Y"/>
     </changeSet>
 </databaseChangeLog>

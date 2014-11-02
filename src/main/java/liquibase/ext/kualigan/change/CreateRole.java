@@ -15,19 +15,14 @@
  */
 package liquibase.ext.kualigan.change;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.CustomChangeException;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.InsertStatement;
 
 import liquibase.ext.kualigan.statement.CreateRoleStatement;
 
@@ -46,7 +41,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
     private String name;
     private String namespace;
     private String description;
-    private String type;
+    private String typeName;
     private String typeNamespace;
     private String lastUpdated;
     private String active = "Y";
@@ -91,8 +86,8 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         return new SqlStatement[] { new CreateRoleStatement(getNamespace(),
 							    getName(),
 							    getDescription(),
-							    "",
-							    "",
+							    getTypeName(),
+							    getTypeNamespace(),
 							    getLastUpdated(),
 							    getActive(),
 							    memberStatements,
@@ -102,7 +97,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final String typeReference = getTypeForeignKey(database, getType(), getTypeNamespace());
+	final String typeReference = getTypeForeignKey(database, getTypeName(), getTypeNamespace());
 	final DeleteDataChange removeRole = new DeleteDataChange();
 	removeRole.setTableName("KRIM_ROLE_T");
 	removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id = '%s'", getName(), typeReference));
@@ -146,21 +141,21 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
     }
 
     /**
-     * Get the type attribute on this object
+     * Get the typeName attribute on this object
      *
-     * @return type value
+     * @return typeName value
      */
-    public String getType() {
-        return this.type;
+    public String getTypeName() {
+        return this.typeName;
     }
 
     /**
-     * Set the type attribute on this object
+     * Set the typeName attribute on this object
      *
-     * @param type value to set
+     * @param typeName value to set
      */
-    public void setType(final String type) {
-        this.type = type;
+    public void setTypeName(final String typeName) {
+        this.typeName = typeName;
     }
 
     /**
