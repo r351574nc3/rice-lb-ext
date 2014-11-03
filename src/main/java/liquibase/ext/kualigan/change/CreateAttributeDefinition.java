@@ -23,6 +23,8 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
+import liquibase.ext.kualigan.statement.CreateAttributeDefinitionStatement;
+import liquibase.ext.kualigan.statement.CreateRoleStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
@@ -35,7 +37,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="createAttributeDefinition", description = "Creates a KIM Attribute Definition record", priority = EXTENSION_PRIORITY)
+//todo: change binding name back
+@DatabaseChange(name="attributeDefinition", description = "Creates a KIM Attribute Definition record", priority = EXTENSION_PRIORITY)
 public class CreateAttributeDefinition extends KimAbstractChange implements CustomSqlChange {
     protected String label;
     protected String namespace;
@@ -50,7 +53,7 @@ public class CreateAttributeDefinition extends KimAbstractChange implements Cust
 
     @Override
     protected String getSequenceName() {
-	return "krim_attr_defn_id_s";
+			return "krim_attr_defn_id_s";
     }
 
     /**
@@ -60,22 +63,15 @@ public class CreateAttributeDefinition extends KimAbstractChange implements Cust
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement insertDefinition = new InsertStatement(null, database.getDefaultSchemaName(), "krim_attr_defn_t");
+	    return new SqlStatement[] { new CreateAttributeDefinitionStatement(
+					    getLabel(),
+					    getNamespace(),
+					    getName(),
+					    getComponent(),
+					    getActive()
+				    )
+	    };
 
-	final BigInteger id = getPrimaryKey(database);
-
-	insertDefinition.addColumnValue("kim_attr_defn_id", id);
-	insertDefinition.addColumnValue("nmspc_cd", getNamespace());
-	insertDefinition.addColumnValue("nm", getName());
-	insertDefinition.addColumnValue("lbl", getLabel());
-	insertDefinition.addColumnValue("actv_ind", getActive());
-	insertDefinition.addColumnValue("cmpnt_nm", getComponent());
-	insertDefinition.addColumnValue("ver_nbr", 1);
-	insertDefinition.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	return new SqlStatement[]{
-	    insertDefinition
-	};
     }
 
 
