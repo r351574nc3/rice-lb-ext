@@ -15,20 +15,13 @@
  */
 package liquibase.ext.kualigan.change;
 
-import java.math.BigInteger;
-import java.util.UUID;
-
-import liquibase.change.Change;
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
+import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.CustomChangeException;
+import liquibase.ext.kualigan.statement.AddResponsibilityAttributeStatement;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.InsertStatement;
-
-import liquibase.change.core.DeleteDataChange;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -40,16 +33,15 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 //todo: change bind name
 @DatabaseChange(name="responsibilityAttribute", description = "Adds an Attribute to a Responsibility", priority = EXTENSION_PRIORITY)
 public class AddResponsibilityAttribute extends KimAbstractChange implements CustomSqlChange {
-    protected String namespace;
-    protected String value;
-    protected String name;
-    protected String attributeDef;
-    protected String responsibility;
-    protected String type;
-    protected String responsibilityId;
+
+	private String type;
+	private String attributeDef;
+	private String value;
+	private String responsibility;
+	private String responsibilityId;
 
 
-    public AddResponsibilityAttribute() {
+	public AddResponsibilityAttribute() {
         super("responsibilityAttribute", "Adding an attribute to a responsibility to KIM", EXTENSION_PRIORITY);
     }
 
@@ -65,78 +57,25 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_rsp_attr_data_t");
-
-	final BigInteger attributeId = getPrimaryKey(database);
-	if (responsibilityId == null){
-	    responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
-	}
-	final String typeId = getTypeForeignKey(database, getType());
-	final String attributeDefintionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
-
-	insertAttribute.addColumnValue("attr_data_id", attributeId);
-	insertAttribute.addColumnValue("rsp_id", responsibilityId);
-	insertAttribute.addColumnValue("kim_typ_id", typeId);
-	insertAttribute.addColumnValue("kim_attr_defn_id", attributeDefintionId);
-	insertAttribute.addColumnValue("attr_val", getValue());
-	insertAttribute.addColumnValue("ver_nbr", 1);
-	insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	return new SqlStatement[]{
-	    insertAttribute
-	};
+	    return new SqlStatement[]{new AddResponsibilityAttributeStatement(getValue(),
+					    getAttributeDef(),
+					    getType(),
+					    getResponsibility())};
     }
 
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final DeleteDataChange undoAssign = new DeleteDataChange();
-	if (responsibilityId == null){
-	    responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
-	}
-	String typeId = getTypeForeignKey(database, getType());
-	String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
-	undoAssign.setTableName("krim_rsp_attr_data_t");
-	undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", responsibilityId, typeId, defnId));
+	    final DeleteDataChange undoAssign = new DeleteDataChange();
+		  String responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
+	    String typeId = getTypeForeignKey(database, getType());
+	    String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+	    undoAssign.setTableName("krim_rsp_attr_data_t");
+	    undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", responsibilityId, typeId, defnId));
 
-	return undoAssign.generateStatements(database);
+	    return undoAssign.generateStatements(database);
     }
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
-
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
-
-    /**
-     * Get the responsibility attribute on this object
-     *
-     * @return responsibility value
-     */
-    public String getResponsibility() {
-        return this.responsibility;
-    }
-
-    /**
-     * Set the responsibility attribute on this object
-     *
-     * @param responsibility value to set
-     */
-    public void setResponsibility(final String responsibility) {
-        this.responsibility = responsibility;
-    }
 
     /**
      * Get the attributeDef attribute on this object
@@ -156,23 +95,6 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
         this.attributeDef = attributeDef;
     }
 
-    /**
-     * Get the name attribute on this object
-     *
-     * @return name value
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Set the name attribute on this object
-     *
-     * @param name value to set
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
 
     /**
      * Get the type attribute on this object
@@ -210,7 +132,15 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
         this.value = value;
     }
 
-    public void setResponsibilityId(String responsibilityId) {
-	this.responsibilityId = responsibilityId;
-    }
+	public String getResponsibility() {
+		return responsibility;
+	}
+
+	public void setResponsibility(String responsibility) {
+		this.responsibility = responsibility;
+	}
+
+	public void setResponsibilityId(String responsibilityId) {
+		this.responsibilityId = responsibilityId;
+	}
 }

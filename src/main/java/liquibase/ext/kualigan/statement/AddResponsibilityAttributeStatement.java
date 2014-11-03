@@ -27,173 +27,42 @@ package liquibase.ext.kualigan.statement;
 
 
 import liquibase.statement.AbstractSqlStatement;
-import liquibase.statement.SqlStatement;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
-
-import java.util.List;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
- * 
+ *
  * @author Leo Przybylski
  */
 public class AddResponsibilityAttributeStatement extends AbstractSqlStatement {
 
-    protected String namespace;
-    protected String value;
-    protected String name;
-    protected String attributeDef;
-    protected String responsibility;
-    protected String type;
-    protected String responsibilityId;
-    protected String active;
-    
-    public AddResponsibilityAttributeStatement() {
-    }
+	protected String value;
+	protected String attributeDef;
+	protected String type;
+	protected String responsibility;
 
-    public AddResponsibilityAttributeStatement(final String namespace,
-					       final String responsibility,
-					       final String name, 
-					       final String type,
-					       final String value,
-					       final String active,
-					       final List<SqlStatement> attributes) {
-	setNamespace(namespace);
-	setResponsibility(responsibility);
-	setName(name);
-	setType(type);
-	setActive(active);
-	setValue(value);
-    }
+	public AddResponsibilityAttributeStatement() {
+	}
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
+	public AddResponsibilityAttributeStatement(String value, String attributeDef, String type, String responsibility) {
+		this.value = value;
+		this.attributeDef = attributeDef;
+		this.type = type;
+		this.responsibility = responsibility;
+	}
 
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    /**
-     * Get the responsibility attribute on this object
-     *
-     * @return responsibility value
-     */
-    public String getResponsibility() {
-        return this.responsibility;
-    }
+	public String getAttributeDef() {
+		return attributeDef;
+	}
 
-    /**
-     * Set the responsibility attribute on this object
-     *
-     * @param responsibility value to set
-     */
-    public void setResponsibility(final String responsibility) {
-        this.responsibility = responsibility;
-    }
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * Get the attributeDef attribute on this object
-     *
-     * @return attributeDef value
-     */
-    public String getAttributeDef() {
-        return this.attributeDef;
-    }
-
-    /**
-     * Set the attributeDef attribute on this object
-     *
-     * @param attributeDef value to set
-     */
-    public void setAttributeDef(final String attributeDef) {
-        this.attributeDef = attributeDef;
-    }
-
-    /**
-     * Get the name attribute on this object
-     *
-     * @return name value
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Set the name attribute on this object
-     *
-     * @param name value to set
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Get the active attribute on this object
-     *
-     * @return active value
-     */
-    public String getActive() {
-        return this.active;
-    }
-
-    /**
-     * Set the active attribute on this object
-     *
-     * @param active value to set
-     */
-    public void setActive(final String active) {
-        this.active = active;
-    }
-
-    /**
-     * Get the value attribute on ths object
-     *
-     * @return type value
-     */
-    public String getType() {
-        return this.type;
-    }
-
-    /**
-     * Set the type attribute on this object
-     *
-     * @param type value to set
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    /**
-     * Get the value attribute on this object
-     *
-     * @return value value
-     */
-    public String getValue() {
-        return this.value;
-    }
-
-    /**
-     * Set the value attribute on this object
-     *
-     * @param value value to set
-     */
-    public void setValue(final String value) {
-        this.value = value;
-    }
-
-    public void setResponsibilityId(String responsibilityId) {
-	this.responsibilityId = responsibilityId;
-    }
+	public String getResponsibility() {
+		return responsibility;
+	}
 }

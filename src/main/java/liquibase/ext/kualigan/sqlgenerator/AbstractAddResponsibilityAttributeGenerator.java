@@ -29,7 +29,6 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
@@ -37,8 +36,6 @@ import liquibase.sql.Sql;
 import liquibase.ext.kualigan.statement.AddResponsibilityAttributeStatement;
 
 import java.util.UUID;
-
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
  * Generic base class for generators mapped to the {@link CreateTypeStatement}
@@ -57,11 +54,10 @@ public abstract class AbstractAddResponsibilityAttributeGenerator extends Abstra
                                      final Database database, 
 				     final SqlGeneratorChain generators) {
         final ValidationErrors retval = new ValidationErrors();
-        retval.checkRequiredField("namespace", statement.getNamespace());
-        retval.checkRequiredField("name", statement.getName());
-        retval.checkRequiredField("responsibility", statement.getResponsibility());
-        retval.checkRequiredField("value", statement.getValue());
-        retval.checkRequiredField("type", statement.getType());
+	    retval.checkRequiredField("value", statement.getValue());
+	    retval.checkRequiredField("type", statement.getType());
+	    retval.checkRequiredField("attributeDef", statement.getAttributeDef());
+	    retval.checkRequiredField("responsibility", statement.getResponsibility());
         return retval;
     }
 
@@ -78,7 +74,7 @@ public abstract class AbstractAddResponsibilityAttributeGenerator extends Abstra
 	insertAttribute.addColumnValue("attr_data_id", getPrimaryKey(database));
 	insertAttribute.addColumnValue("rsp_id", getResponsibilityForeignKey(database, statement.getResponsibility()));
 	insertAttribute.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType()));
-	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getName()));
+	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getAttributeDef()));
 	insertAttribute.addColumnValue("attr_val", statement.getValue());
 	insertAttribute.addColumnValue("ver_nbr", 1);
 	insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
