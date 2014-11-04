@@ -27,19 +27,16 @@ package liquibase.ext.kualigan.sqlgenerator.oracle;
 
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
-import liquibase.exception.ValidationErrors;
-import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
+import liquibase.ext.kualigan.sqlgenerator.AbstractAddRoleResponsibilityActionGenerator;
 
 import liquibase.ext.kualigan.statement.AddRoleResponsibilityActionStatement;
-import liquibase.ext.kualigan.sqlgenerator.AbstractAddResponsibilityActionGenerator;
 
 /**
  * Generic base class for generators mapped to the {@link CreateTypeStatement}
  *
  * @author Leo Przybylski
  */
-public class AddResponsibilityActionGenerator extends AbstractAddResponsibilityActionGenerator {
+public class AddRoleResponsibilityActionGenerator extends AbstractAddRoleResponsibilityActionGenerator {
     @Override
     public boolean supports(final AddRoleResponsibilityActionStatement statement,
 			    final Database database) {

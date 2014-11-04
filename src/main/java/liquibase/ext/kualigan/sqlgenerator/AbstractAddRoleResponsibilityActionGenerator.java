@@ -29,7 +29,6 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.InsertStatement;
 
@@ -41,14 +40,12 @@ import liquibase.ext.kualigan.statement.AddRoleResponsibilityActionStatement;
 
 import java.util.UUID;
 
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
-
 /**
- * Generic base class for generators mapped to the {@link AddResponsibilityActionStatement}
+ * Generic base class for generators mapped to the {@link AddRoleResponsibilityActionStatement}
  *
  * @author Leo Przybylski
  */
-public abstract class AbstractAddResponsibilityActionGenerator extends AbstractKimSqlGenerator<AddRoleResponsibilityActionStatement> {
+public abstract class AbstractAddRoleResponsibilityActionGenerator extends AbstractKimSqlGenerator<AddRoleResponsibilityActionStatement> {
 
     @Override
     protected String getSequenceName() {
@@ -92,13 +89,13 @@ public abstract class AbstractAddResponsibilityActionGenerator extends AbstractK
 
     protected DatabaseFunction resolveRoleMember(final Database database, final AddRoleResponsibilityActionStatement statement) {
 	return getRoleMemberForeignKey(database, 
-				       getRoleForeignKey(database, statement.getRole(), statement.getRoleNamespace()), 
+				       getRoleForeignKey(database, statement.getRoleName(), statement.getRoleNamespace()),
 				       getPrincipalForeignKey(database, statement.getMember()));
     }
 
     protected DatabaseFunction resolveRoleResponsibility(final Database database, final AddRoleResponsibilityActionStatement statement) {
 	return getRoleResponsibilityForeignKey(database, 
-					       getRoleForeignKey(database, statement.getRole(), statement.getRoleNamespace()),
+					       getRoleForeignKey(database, statement.getRoleName(), statement.getRoleNamespace()),
 					       getResponsibilityForeignKey(database, statement.getResponsibility()));
     }
 }
