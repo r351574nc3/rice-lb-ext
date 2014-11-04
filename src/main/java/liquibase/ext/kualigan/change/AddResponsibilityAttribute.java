@@ -15,13 +15,22 @@
  */
 package liquibase.ext.kualigan.change;
 
+import java.math.BigInteger;
+import java.util.UUID;
+
+import liquibase.change.Change;
 import liquibase.change.DatabaseChange;
-import liquibase.change.core.DeleteDataChange;
+import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
+import liquibase.exception.CustomChangeException;
 import liquibase.ext.kualigan.statement.AddResponsibilityAttributeStatement;
+import liquibase.ext.kualigan.statement.CreatePermissionStatement;
 import liquibase.statement.SqlStatement;
+import liquibase.statement.core.InsertStatement;
+
+import liquibase.change.core.DeleteDataChange;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
