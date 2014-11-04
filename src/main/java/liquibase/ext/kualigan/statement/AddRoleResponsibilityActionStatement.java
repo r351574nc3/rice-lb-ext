@@ -27,11 +27,6 @@ package liquibase.ext.kualigan.statement;
 
 
 import liquibase.statement.AbstractSqlStatement;
-import liquibase.statement.SqlStatement;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
-
-import java.util.List;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
@@ -41,8 +36,7 @@ import java.util.List;
 public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
 
     protected String roleNamespace;
-    protected String role;
-    protected String namespace;
+    protected String roleName;
     protected String responsibility;
     protected String member;
     protected String priority;
@@ -55,8 +49,7 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
     }
 
     public AddRoleResponsibilityActionStatement(final String roleNamespace,
-						final String role,
-						final String namespace, 
+						final String roleName,
 						final String responsibility,
 						final String member,
 						final String priority,
@@ -64,9 +57,8 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
 						final String actionTypeCode,
 						final String actionPolicyCode) {
 	setRoleNamespace(roleNamespace);
-	setRole(role);
+	setRoleName(roleName);
 	setResponsibility(responsibility);
-	setNamespace(namespace);
 	setMember(member);
 	setPriority(priority);
 	setForce(force);
@@ -165,39 +157,21 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
     }
 
     /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
-
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
-
-    /**
      * Get the role attribute on this object
      *
      * @return role value
      */
-    public String getRole() {
-        return this.role;
+    public String getRoleName() {
+        return this.roleName;
     }
 
     /**
      * Set the role attribute on this object
      *
-     * @param role value to set
+     * @param roleName value to set
      */
-    public void setRole(final String role) {
-        this.role = role;
+    public void setRoleName(final String roleName) {
+        this.roleName = roleName;
     }
 
     /**
