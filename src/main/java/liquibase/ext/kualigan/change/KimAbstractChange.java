@@ -43,9 +43,11 @@ import java.util.List;
 
 public abstract class KimAbstractChange extends AbstractChange implements CustomSqlChange, CustomSqlRollback {
 
+		//todo: remove constructor no longer used
     public KimAbstractChange(String changeName, String changeDescription, int priority) {
     }
 
+		//todo: remove unused validate
     @Override
     public final ValidationErrors validate(Database database) {
 	//todo: Default validation calls generateStatements which in turn tries to retrieve foreign key references for parameters not yet initialized
