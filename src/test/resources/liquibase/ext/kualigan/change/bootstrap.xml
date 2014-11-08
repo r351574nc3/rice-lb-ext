@@ -7413,6 +7413,10 @@
         <createSequence sequenceName="KRIM_ATTR_DATA_ID_S" startValue="1000"/>
     </changeSet>
 
+    <changeSet author=" (generated)" id="1376025681922-827">
+        <createSequence sequenceName="KRIM_TYP_ATTR_ID_S" startValue="1000"/>
+    </changeSet>
+
     <!--<changeSet author=" (generated)" id="1376025681922-826">-->
         <!--<createView viewName="krim_grp_mbr_v">select `g`.`NMSPC_CD` AS `NMSPC_CD`,`g`.`GRP_NM` AS `grp_nm`,`g`.`GRP_ID` AS `GRP_ID`,`p`.`PRNCPL_NM` AS `PRNCPL_NM`,`p`.`PRNCPL_ID` AS `PRNCPL_ID`,`mg`.`GRP_NM` AS `mbr_grp_nm`,`mg`.`GRP_ID` AS `mbr_grp_id` from ((((`test`.`krim_grp_mbr_t` `gm` left join `test`.`krim_grp_t` `g` on((`g`.`GRP_ID` = `gm`.`GRP_ID`))) left join `test`.`krim_grp_t` `mg` on(((`mg`.`GRP_ID` = `gm`.`MBR_ID`) and (`gm`.`MBR_TYP_CD` = 'G')))) left join `test`.`krim_prncpl_t` `p` on(((`p`.`PRNCPL_ID` = `gm`.`MBR_ID`) and (`gm`.`MBR_TYP_CD` = 'P')))) left join `test`.`krim_entity_nm_t` `en` on(((`en`.`ENTITY_ID` = `p`.`ENTITY_ID`) and (`en`.`DFLT_IND` = 'Y') and (`en`.`ACTV_IND` = 'Y')))) order by `g`.`NMSPC_CD`,`g`.`GRP_NM`,`p`.`PRNCPL_NM`</createView>-->
     <!--</changeSet>-->
@@ -7458,14 +7462,14 @@
 
     <changeSet author="(generated)" id="bootstrap-data">
         <insert tableName="krim_typ_t">
-            <column name="KIM_TYP_ID" value="1"/>
-            <column name="OBJ_ID" value="5ADF18B6D4827954E0404F8189D85002"/>
-            <column name="VER_NBR" valueNumeric="1"/>
-            <column name="NM" value="Default"/>
-            <column name="SRVC_NM"/>
-            <column name="ACTV_IND" value="Y"/>
-            <column name="NMSPC_CD" value="KUALI"/>
-        </insert>
+        <column name="KIM_TYP_ID" value="1"/>
+        <column name="OBJ_ID" value="5ADF18B6D4827954E0404F8189D85002"/>
+        <column name="VER_NBR" valueNumeric="1"/>
+        <column name="NM" value="Default"/>
+        <column name="SRVC_NM"/>
+        <column name="ACTV_IND" value="Y"/>
+        <column name="NMSPC_CD" value="KUALI"/>
+    </insert>
 
         <insert tableName="krim_perm_tmpl_t">
             <column name="PERM_TMPL_ID" value="1"/>

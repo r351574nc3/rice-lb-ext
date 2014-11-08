@@ -13,6 +13,15 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="assignKimTypeAttribute">
+        <xsd:complexType>
+            <xsd:attribute name="kimTypeNamespace" type="xsd:string"  use="optional"/>
+            <xsd:attribute name="kimTypeName" type="xsd:string"  use="required"/>
+            <xsd:attribute name="attributeDefinition" type="xsd:string"  use="required"/>
+            <xsd:attribute name="active" type="xsd:string"  use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="attributeDefinition">
         <xsd:complexType>
             <xsd:attribute name="label" type="xsd:string"  use="required"/>

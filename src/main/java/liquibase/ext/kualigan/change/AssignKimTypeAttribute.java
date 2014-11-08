@@ -16,21 +16,15 @@
 package liquibase.ext.kualigan.change;
 
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
-import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.CustomChangeException;
+import liquibase.ext.kualigan.statement.AssignKimTypeAttributeStatement;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.InsertStatement;
-import org.apache.commons.lang.StringUtils;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -39,125 +33,117 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="assignKimTypeAttribute", description = "Assigns an attribute to a KIM Type", priority = EXTENSION_PRIORITY)
-public class AssignKimTypeAttribute extends KimAbstractChange implements CustomSqlChange {
+//todo: change bind name
+@DatabaseChange(name = "assignKimTypeAttribute", description = "Assigns an attribute to a KIM Type", priority = EXTENSION_PRIORITY)
+public class AssignKimTypeAttribute  extends KimAbstractChange implements CustomSqlChange {
 
-    protected String namespace;
-    protected String type;
-    protected String attribute;
-    protected String active;
-	   	        
-    
-    public AssignKimTypeAttribute() {
-        super("assignKimTypAttribute", "Assigning a KIM Type Attribute", EXTENSION_PRIORITY);
-    }
+	protected String kimTypeNamespace;
+	protected String kimTypeName;
+	protected String attributeDefinition;
+	protected String active = "Y";
 
-    @Override
-    protected String getSequenceName() {
-	return "KRIM_TYP_ATTR_ID_S";
-    }
 
-    /**
-     * Generates the SQL statements required to run the change.
-     *
-     * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
-     * @return an array of {@link String}s with the statements
-     */
-    public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement assignAttribute = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_TYP_ATTR_T");
-	final BigInteger id      = getPrimaryKey(database);
-	final String attributeId = getAttributeDefinitionForeignKey(database, getAttribute());
-	final String typeId      = getTypeForeignKey(database, getType(), getNamespace());
+	public AssignKimTypeAttribute() {
+		super("assignKimTypAttribute", "Assigning a KIM Type Attribute", EXTENSION_PRIORITY);
+	}
 
-	assignAttribute.addColumnValue("KIM_TYP_ATTR_ID", id);
-	assignAttribute.addColumnValue("KIM_TYP_ID", typeId);
-	assignAttribute.addColumnValue("KIM_ATTR_DEFN_ID", attributeId);
-	assignAttribute.addColumnValue("ACTV_IND", getActive());
-	assignAttribute.addColumnValue("ver_nbr", 1);
-	assignAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
+	@Override
+	protected String getSequenceName() {
+		return "KRIM_TYP_ATTR_ID_S";
+	}
 
-	final List<SqlStatement> results = new ArrayList<SqlStatement>();
-	results.add(assignAttribute);
-	return results.toArray(new SqlStatement[results.size()]);
-    }
+	/**
+	 * Generates the SQL statements required to run the change.
+	 *
+	 * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
+	 * @return an array of {@link String}s with the statements
+	 */
+	public SqlStatement[] generateStatements(final Database database) {
+		return new SqlStatement[]{new AssignKimTypeAttributeStatement(
+						kimTypeNamespace,
+						kimTypeName,
+						attributeDefinition,
+						active)
+		};
+	}
 
-    @Override
-    public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final DropKimTypeAttribute undoAssign = new DropKimTypeAttribute(getNamespace(), getType(), getAttribute());
-	final List<SqlStatement> results = new ArrayList<SqlStatement>();
-	results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
-	return results.toArray(new SqlStatement[results.size()]);
-    }
+	@Override
+	public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
+		final DropKimTypeAttribute undoAssign = new DropKimTypeAttribute(getKimTypeNamespace(), getKimTypeName(), getAttributeDefinition());
+		final List<SqlStatement> results = new ArrayList<SqlStatement>();
+		results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
+		return results.toArray(new SqlStatement[results.size()]);
+	}
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
+	/**
+	 * Get the namespace attribute on this object
+	 *
+	 * @return namespace value
+	 */
+	public String getKimTypeNamespace() {
+		return this.kimTypeNamespace;
+	}
 
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
+	/**
+	 * Set the namespace attribute on this object
+	 *
+	 * @param kimTypeNamespace value to set
+	 */
+	public void setKimTypeNamespace(final String kimTypeNamespace) {
+		this.kimTypeNamespace = kimTypeNamespace;
+	}
 
-    /**
-     * Get the attribute attribute on this object
-     *
-     * @return attribute value
-     */
-    public String getAttribute() {
-        return this.attribute;
-    }
+	/**
+	 * Get the attribute attribute on this object
+	 *
+	 * @return attribute value
+	 */
+	public String getAttributeDefinition() {
+		return this.attributeDefinition;
+	}
 
-    /**
-     * Set the attribute attribute on this object
-     *
-     * @param attribute value to set
-     */
-    public void setAttribute(final String attribute) {
-        this.attribute = attribute;
-    }
+	/**
+	 * Set the attribute attribute on this object
+	 *
+	 * @param attributeDefinition value to set
+	 */
+	public void setAttributeDefinition(final String attributeDefinition) {
+		this.attributeDefinition = attributeDefinition;
+	}
 
-    /**
-     * Get the type attribute on this object
-     *
-     * @return type value
-     */
-    public String getType() {
-        return this.type;
-    }
+	/**
+	 * Get the type attribute on this object
+	 *
+	 * @return type value
+	 */
+	public String getKimTypeName() {
+		return this.kimTypeName;
+	}
 
-    /**
-     * Set the type attribute on this object
-     *
-     * @param type value to set
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
+	/**
+	 * Set the type attribute on this object
+	 *
+	 * @param kimTypeName value to set
+	 */
+	public void setKimTypeName(final String kimTypeName) {
+		this.kimTypeName = kimTypeName;
+	}
 
-    /**
-     * Get the active attribute on this object
-     *
-     * @return active value
-     */
-    public String getActive() {
-        return this.active;
-    }
+	/**
+	 * Get the active attribute on this object
+	 *
+	 * @return active value
+	 */
+	public String getActive() {
+		return this.active;
+	}
 
-    /**
-     * Set the active attribute on this object
-     *
-     * @param active value to set
-     */
-    public void setActive(final String active) {
-        this.active = active;
-    }
+	/**
+	 * Set the active attribute on this object
+	 *
+	 * @param active value to set
+	 */
+	public void setActive(final String active) {
+		this.active = active;
+	}
 }

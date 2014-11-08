@@ -25,13 +25,40 @@
 // or implied, of Leo Przybylski.
 package liquibase.ext.kualigan.statement;
 
-
 import liquibase.statement.AbstractSqlStatement;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
- * 
+ *
  * @author Leo Przybylski
  */
 public class AssignKimTypeAttributeStatement extends AbstractSqlStatement {
+
+	private String typeNamespace;
+	private String typeName;
+	private String attributeDefinition;
+	private String active;
+
+	public AssignKimTypeAttributeStatement(String typeNamespace, String typeName, String attributeDefinition, String active) {
+		this.typeNamespace = typeNamespace;
+		this.typeName = typeName;
+		this.attributeDefinition = attributeDefinition;
+		this.active = active;
+	}
+
+	public String getTypeNamespace() {
+		return typeNamespace;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public String getAttributeDefinition() {
+		return attributeDefinition;
+	}
+
+	public String getActive() {
+		return active;
+	}
 }

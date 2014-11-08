@@ -1,15 +1,14 @@
 package liquibase.ext.kualigan.change;
 
-//todo: implement test
 public class AssignKimTypeAttributeTests extends KimChangeBaseTest {
 
 	@Override
 	protected String entityName() {
-		return null;
+		return "KRIM_TYP_ATTR_T";
 	}
 
 	@Override
 	protected String whereClause() {
-		return null;
+		return "KIM_TYP_ID = '1' AND KIM_ATTR_DEFN_ID = '1'";
 	}
 }

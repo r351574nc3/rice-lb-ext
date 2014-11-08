@@ -73,18 +73,18 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 	}
 
 	protected DatabaseFunction getAttributeDefinitionForeignKey(final Database database, final String attributeDef) {
-		return new DatabaseFunction(String.format("(select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s')", attributeDef));
+			return new DatabaseFunction(String.format("(select KIM_ATTR_DEFN_ID from krim_attr_defn_t where nm = '%s')", attributeDef));
 	}
 
 	protected DatabaseFunction getTypeForeignKey(final Database database, final String kimType) {
 		return new DatabaseFunction(String.format("(select kim_typ_id from krim_typ_t where nm = '%s')", kimType));
 	}
 
-	protected DatabaseFunction getTypeForeignKey(final Database database, final String kimType, final String kimTypeNamespace) {
+	protected DatabaseFunction getTypeForeignKey(final Database database, final String kimTypeName, final String kimTypeNamespace) {
 		if (kimTypeNamespace == null) {
-			return getTypeForeignKey(database, kimType);
+			return getTypeForeignKey(database, kimTypeName);
 		}
-		return new DatabaseFunction(String.format("(select kim_typ_id from krim_typ_t where nm = '%s' and nmspc_cd = '%s')", kimType, kimTypeNamespace));
+		return new DatabaseFunction(String.format("(select kim_typ_id from krim_typ_t where nm = '%s' and nmspc_cd = '%s')", kimTypeName, kimTypeNamespace));
 	}
 
 	protected DatabaseFunction getPermissionForeignKey(final Database database, final String permissionName, final String permissionNameSpace) {
