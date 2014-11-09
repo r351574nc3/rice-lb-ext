@@ -28,14 +28,12 @@ package liquibase.ext.kualigan.change;
 
 import liquibase.change.Change;
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import liquibase.ext.kualigan.statement.CreateTypeStatement;
 
@@ -46,13 +44,13 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="createKimType", description = "Creates a Rice Kim Type Record.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="type", description = "Creates a Rice Kim Type Record.", priority = EXTENSION_PRIORITY)
 public class CreateType extends KimAbstractChange {
 
     protected String application;
     protected String namespace;
     protected String name;
-    protected String service;
+    protected String serviceName;
     protected String active = "Y";
     protected List<AssignKimTypeAttribute> attributes;
     protected String uniqueAttributeDefinitions;
@@ -90,7 +88,7 @@ public class CreateType extends KimAbstractChange {
 
         return new SqlStatement[] { new CreateTypeStatement(getNamespace(),
                                                             getName(),
-                                                            getService(),
+                                                            getServiceName(),
                                                             getActive(), attributeStatements) };
     }
 
@@ -102,7 +100,7 @@ public class CreateType extends KimAbstractChange {
     protected Change[] createInverses() {
         final DeleteDataChange removeType = new DeleteDataChange();
         removeType.setTableName("krim_typ_t");
-        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getService()));
+        removeType.setWhereClause(String.format("nmspc_cd = '%s' AND nm = '%s' AND srvc_nm = '%s'", getNamespace(), getName(), getServiceName()));
 
         return new Change[] {
             removeType
@@ -150,17 +148,17 @@ public class CreateType extends KimAbstractChange {
      *
      * @return service value
      */
-    public String getService() {
-        return this.service;
+    public String getServiceName() {
+        return this.serviceName;
     }
 
     /**
      * Set the service attribute on this object
      *
-     * @param service value to set
+     * @param serviceName value to set
      */
-    public void setService(final String service) {
-        this.service = service;
+    public void setServiceName(final String serviceName) {
+        this.serviceName = serviceName;
     }
 
     /**

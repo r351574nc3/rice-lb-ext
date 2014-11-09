@@ -35,6 +35,7 @@ import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.CustomChangeException;
+import liquibase.ext.kualigan.statement.AssignRolePermissionStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
@@ -47,7 +48,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="assignPermission", description = "Assign a KIM Permission to a KIM Role.", priority = EXTENSION_PRIORITY)
+//todo: implement sql generator
+@DatabaseChange(name="rolePermission", description = "Assign a KIM Permission to a KIM Role.", priority = EXTENSION_PRIORITY)
 public class AssignRolePermission extends KimAbstractChange implements CustomSqlChange {
 
     protected String permission;
@@ -73,23 +75,10 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement assignPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_perm_t");
-	final BigInteger id = getPrimaryKey(database);
-	final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
-	final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
-
-	assignPermission.addColumnValue("role_perm_id", id);
-	assignPermission.addColumnValue("role_id", roleId);
-	assignPermission.addColumnValue("perm_id", permId);
-	assignPermission.addColumnValue("actv_ind", getActive());
-	assignPermission.addColumnValue("ver_nbr", 1);
-	assignPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	return new SqlStatement[]{
-	    assignPermission
-	};
+	    return new SqlStatement[] {
+			    new AssignRolePermissionStatement(permission,permissionNamespace,role,roleNamespace,active)
+	    };
     }
-
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {

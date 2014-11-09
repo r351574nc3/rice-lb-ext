@@ -60,7 +60,7 @@ public abstract class AbstractCreateTypeGenerator extends AbstractKimSqlGenerato
         final ValidationErrors retval = new ValidationErrors();
         retval.checkRequiredField("namespace", statement.getNamespace());
         retval.checkRequiredField("name", statement.getName());
-        retval.checkRequiredField("service", statement.getService());
+        retval.checkRequiredField("serviceName", statement.getService());
         return retval;
     }
 

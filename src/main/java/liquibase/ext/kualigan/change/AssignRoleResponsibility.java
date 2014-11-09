@@ -37,7 +37,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="assignRoleResponsibility", description = "Assigns a KIM Responsibility to a given KIM Role.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="roleResponsibility", description = "Assigns a KIM Responsibility to a given KIM Role.", priority = EXTENSION_PRIORITY)
 public class AssignRoleResponsibility extends KimAbstractChange implements CustomSqlChange {
     protected String application;
     protected String responsibility;

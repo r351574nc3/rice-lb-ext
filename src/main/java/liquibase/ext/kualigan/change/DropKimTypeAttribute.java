@@ -74,7 +74,7 @@ public class DropKimTypeAttribute extends KimAbstractChange implements CustomSql
 	final String typeId      = getTypeForeignKey(database, getType(), getNamespace());
 
 	undoAssign.setTableName("KRIM_TYP_ATTR_T");
-	undoAssign.setWhereClause(String.format("KIM_TYP_ID = '%s' and KIM_ATTR_DEFN_ID = '%s'"));
+	undoAssign.setWhereClause(String.format("KIM_TYP_ID = '%s' and KIM_ATTR_DEFN_ID = '%s'",typeId,attributeId));
 
 	final List<SqlStatement> results = new ArrayList<SqlStatement>();
 	results.addAll(Arrays.asList(undoAssign.generateStatements(database)));

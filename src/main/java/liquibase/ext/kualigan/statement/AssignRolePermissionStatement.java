@@ -23,26 +23,72 @@
 // The views and conclusions contained in the software and documentation are those of the
 // authors and should not be interpreted as representing official policies, either expressed
 // or implied, of Leo Przybylski.
-package liquibase.ext.kualigan.sqlgenerator.oracle;
+package liquibase.ext.kualigan.statement;
 
-import liquibase.database.Database;
-import liquibase.database.core.OracleDatabase;
-import liquibase.exception.ValidationErrors;
-import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-import liquibase.ext.kualigan.statement.CreateTypeStatement;
-import liquibase.ext.kualigan.sqlgenerator.AbstractCreateTypeGenerator;
+import liquibase.statement.AbstractSqlStatement;
+import liquibase.statement.SqlStatement;
+
+import java.util.List;
 
 /**
- * Generic base class for generators mapped to the {@link CreateTypeStatement}
+ * Statement basically exists solely to map and kick-off the sql generator chain
  *
  * @author Leo Przybylski
  */
-public class CreateTypeGenerator extends AbstractCreateTypeGenerator {
-    @Override
-    public boolean supports(final CreateTypeStatement statement,
-			    final Database database) {
-	return database instanceof OracleDatabase;
-    }
+public class AssignRolePermissionStatement extends AbstractSqlStatement {
+
+	private String permissionName;
+	private String permissionNamespace;
+	private String roleName;
+	private String roleNamespace;
+	private String active = "Y";
+
+	public AssignRolePermissionStatement(String permissionName, String permissionNamespace, String roleName, String roleNamespace, String active) {
+		this.permissionName = permissionName;
+		this.permissionNamespace = permissionNamespace;
+		this.roleName = roleName;
+		this.roleNamespace = roleNamespace;
+		this.active = active;
+	}
+
+	public String getPermissionName() {
+		return permissionName;
+	}
+
+	public void setPermissionName(String permissionName) {
+		this.permissionName = permissionName;
+	}
+
+	public String getPermissionNamespace() {
+		return permissionNamespace;
+	}
+
+	public void setPermissionNamespace(String permissionNamespace) {
+		this.permissionNamespace = permissionNamespace;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getRoleNamespace() {
+		return roleNamespace;
+	}
+
+	public void setRoleNamespace(String roleNamespace) {
+		this.roleNamespace = roleNamespace;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
 }

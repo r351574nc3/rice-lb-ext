@@ -40,7 +40,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="createResponsibility", description = "Creates a KIM Responsibility.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="responsibility", description = "Creates a KIM Responsibility.", priority = EXTENSION_PRIORITY)
 public class CreateResponsibility extends KimAbstractChange implements CustomSqlChange {
 
     protected String template;
