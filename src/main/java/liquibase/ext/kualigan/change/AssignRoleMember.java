@@ -16,23 +16,17 @@
 package liquibase.ext.kualigan.change;
 
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.CustomChangeException;
+import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.InsertStatement;
 import org.apache.commons.lang.StringUtils;
 
-import liquibase.ext.kualigan.statement.AssignMemberStatement;
-
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -41,7 +35,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="assignRoleMember", description = "Assigns a member to a role", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="roleMember", description = "Assigns a member to a role", priority = EXTENSION_PRIORITY)
 public class AssignRoleMember extends KimAbstractChange implements CustomSqlChange {
 
     protected String namespace;
@@ -50,8 +44,8 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
     protected String memberNamespace;
     protected String role;
     protected String active;
-    protected List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
-    protected String uniqueAttributeDefinitions;
+		protected String uniqueAttributeDefinitions;
+		protected List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
     protected List<AddRoleResponsibilityAction> actions = new ArrayList<AddRoleResponsibilityAction>();
                         
     
@@ -86,7 +80,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
             }
         }
 
-        return new SqlStatement[] { new AssignMemberStatement(getNamespace(),
+        return new SqlStatement[] { new AssignRoleMemberStatement(getNamespace(),
                                                               getType(),
                                                               getMember(),
                                                               getMemberNamespace(),

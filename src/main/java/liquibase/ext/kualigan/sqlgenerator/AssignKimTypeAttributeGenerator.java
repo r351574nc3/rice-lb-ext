@@ -26,7 +26,6 @@
 package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
-import liquibase.database.core.OracleDatabase;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.kualigan.statement.AssignKimTypeAttributeStatement;
 import liquibase.sql.Sql;
@@ -37,7 +36,7 @@ import liquibase.statement.core.InsertStatement;
 import java.util.UUID;
 
 /**
- * Generic base class for generators mapped to the {@link liquibase.ext.kualigan.statement.AssignMemberStatement}
+ * Generic base class for generators mapped to the {@link liquibase.ext.kualigan.statement.AssignRoleMemberStatement}
  *
  * @author Leo Przybylski
  */
@@ -67,7 +66,7 @@ public class AssignKimTypeAttributeGenerator extends AbstractKimSqlGenerator<Ass
 
 		insertStatement.addColumnValue("KIM_TYP_ATTR_ID", getPrimaryKey(database));
 		insertStatement.addColumnValue("KIM_TYP_ID", getTypeForeignKey(database, statement.getTypeName(), statement.getTypeNamespace()));
-		insertStatement.addColumnValue("KIM_ATTR_DEFN_ID", getAttributeDefinitionForeignKey(database,statement.getAttributeDefinition()));
+		insertStatement.addColumnValue("KIM_ATTR_DEFN_ID", getAttributeDefinitionForeignKey(database, statement.getAttributeDefinition()));
 		insertStatement.addColumnValue("VER_NBR", 1);
 		insertStatement.addColumnValue("OBJ_ID", UUID.randomUUID().toString());
 		insertStatement.addColumnValue("ACTV_IND", statement.getActive());

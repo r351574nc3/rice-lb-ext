@@ -23,26 +23,21 @@
 // The views and conclusions contained in the software and documentation are those of the
 // authors and should not be interpreted as representing official policies, either expressed
 // or implied, of Leo Przybylski.
-package liquibase.ext.kualigan.sqlgenerator.oracle;
+package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
-import liquibase.exception.ValidationErrors;
-import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-import liquibase.ext.kualigan.statement.AssignMemberStatement;
-import liquibase.ext.kualigan.sqlgenerator.AbstractAssignMemberGenerator;
+import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 
 /**
- * Generic base class for generators mapped to the {@link AssignMemberStatement}
+ * Generic base class for generators mapped to the {@link liquibase.ext.kualigan.statement.AssignRoleMemberStatement}
  *
  * @author Leo Przybylski
  */
-public class AssignMemberGenerator extends AbstractAssignMemberGenerator {
+public class DefaultAssignRoleMemberGenerator extends AbstractAssignRoleMemberGenerator {
     @Override
-    public boolean supports(final AssignMemberStatement statement,
-			    final Database database) {
-	return database instanceof OracleDatabase;
+    public boolean supports(final AssignRoleMemberStatement statement, final Database database) {
+				return true;
     }
 }

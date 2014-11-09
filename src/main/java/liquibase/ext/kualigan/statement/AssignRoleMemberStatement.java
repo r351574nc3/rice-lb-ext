@@ -38,7 +38,7 @@ import java.util.List;
  * 
  * @author Leo Przybylski
  */
-public class AssignMemberStatement extends AbstractSqlStatement {
+public class AssignRoleMemberStatement extends AbstractSqlStatement {
 
     protected String namespace;
     protected String type;
@@ -50,17 +50,17 @@ public class AssignMemberStatement extends AbstractSqlStatement {
     protected List<SqlStatement> actions;
     
     
-    public AssignMemberStatement() {
+    public AssignRoleMemberStatement() {
     }
 
-    public AssignMemberStatement(final String namespace,
-				 final String type, 
-				 final String member,
-				 final String memberNamespace,
-				 final String role,	
-				 final String active,
-				 final List<SqlStatement> attributes,
-				 final List<SqlStatement> actions) {
+    public AssignRoleMemberStatement(final String namespace,
+				    final String type,
+				    final String member,
+				    final String memberNamespace,
+				    final String role,
+				    final String active,
+				    final List<SqlStatement> attributes,
+				    final List<SqlStatement> actions) {
 	setNamespace(namespace);
 	setType(type);
 	setMember(member);

@@ -27,29 +27,25 @@ package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
 
-import liquibase.ext.kualigan.statement.AssignMemberStatement;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
-
 /**
- * Generic base class for generators mapped to the {@link AssignMemberStatement}
+ * Generic base class for generators mapped to the {@link liquibase.ext.kualigan.statement.AssignRoleMemberStatement}
  *
  * @author Leo Przybylski
  */
-public abstract class AbstractAssignMemberGenerator extends AbstractKimSqlGenerator<AssignMemberStatement> {
+public abstract class AbstractAssignRoleMemberGenerator extends AbstractKimSqlGenerator<AssignRoleMemberStatement> {
 
     @Override
     protected String getSequenceName() {
@@ -57,7 +53,7 @@ public abstract class AbstractAssignMemberGenerator extends AbstractKimSqlGenera
     }
 
     @Override
-    public ValidationErrors validate(final AssignMemberStatement statement,
+    public ValidationErrors validate(final AssignRoleMemberStatement statement,
                                      final Database database, 
 				     final SqlGeneratorChain generators) {
         final ValidationErrors retval = new ValidationErrors();
@@ -72,7 +68,7 @@ public abstract class AbstractAssignMemberGenerator extends AbstractKimSqlGenera
      *
      * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
      */
-    public Sql[] generateSql(final AssignMemberStatement statement, 
+    public Sql[] generateSql(final AssignRoleMemberStatement statement,
 			     final Database database, 
 			     final SqlGeneratorChain chain) {
 	final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
@@ -92,7 +88,7 @@ public abstract class AbstractAssignMemberGenerator extends AbstractKimSqlGenera
 	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
     }
 
-    protected DatabaseFunction getMemberId(final Database database, final AssignMemberStatement statement) {
+    protected DatabaseFunction getMemberId(final Database database, final AssignRoleMemberStatement statement) {
 	DatabaseFunction memberId;
 	if ("P".equals(statement.getType())){
 	    memberId = getPrincipalForeignKey(database, statement.getMember());

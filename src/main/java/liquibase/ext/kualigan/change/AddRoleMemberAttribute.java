@@ -47,7 +47,6 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  * @author Leo Przybylski
  */
 //todo: change binding name
-//todo: implement uiqueness property constraint
 @DatabaseChange(name="roleMemberAttribute", description = "Adds an attribute to a Role member.", priority = EXTENSION_PRIORITY)
 public class AddRoleMemberAttribute extends KimAbstractChange {
 
