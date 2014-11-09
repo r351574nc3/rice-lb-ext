@@ -35,106 +35,105 @@ import java.util.List;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
- * 
+ *
  * @author Leo Przybylski
  */
 public class AddRoleMemberAttributeStatement extends AbstractSqlStatement {
 
-    protected String type;
-    protected String attributeDef;
-    protected String role;
-    protected String roleNamespace;
-    protected String member;
-    protected String value;
-    protected String unique;
-    protected String roleMemberId;
-    protected String active = "Y";
-    
-    public AddRoleMemberAttributeStatement() {
-    }
+	protected String type;
+	protected String attributeDef;
+	protected String role;
+	protected String roleNamespace;
+	protected String member;
+	protected String value;
+	protected String unique;
+	protected String roleMemberId;
+	protected String active = "Y";
 
-    public AddRoleMemberAttributeStatement(final String type,
-					   final String attributeDef,
-					   final String role,
-					   final String roleNamespace,
-					   final String member, 
-					   final String value,
-					   final String active) {
-	setType(type);
-	setAttributeDef(attributeDef);
-	setRoleNamespace(roleNamespace);
-	setRole(role);
-	setMember(member);
-	setValue(value);
-	setActive(active);
-    }
+	public AddRoleMemberAttributeStatement() {
+	}
+
+	public AddRoleMemberAttributeStatement(final String type,
+					final String attributeDef,
+					final String role,
+					final String roleNamespace,
+					final String member,
+					final String value) {
+		setType(type);
+		setAttributeDef(attributeDef);
+		setRoleNamespace(roleNamespace);
+		setRole(role);
+		setMember(member);
+		setValue(value);
+		setActive(active);
+	}
 
 
-    public String getType() {
-	return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType(String type) {
-	this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public String getAttributeDef() {
-	return attributeDef;
-    }
+	public String getAttributeDef() {
+		return attributeDef;
+	}
 
-    public void setAttributeDef(String attributeDef) {
-	this.attributeDef = attributeDef;
-    }
+	public void setAttributeDef(String attributeDef) {
+		this.attributeDef = attributeDef;
+	}
 
-    public String getRole() {
-	return role;
-    }
+	public String getRole() {
+		return role;
+	}
 
-    public void setRole(String role) {
-	this.role = role;
-    }
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-    public String getRoleNamespace() {
-	return roleNamespace;
-    }
+	public String getRoleNamespace() {
+		return roleNamespace;
+	}
 
-    public void setRoleNamespace(String roleNamespace) {
-	this.roleNamespace = roleNamespace;
-    }
+	public void setRoleNamespace(String roleNamespace) {
+		this.roleNamespace = roleNamespace;
+	}
 
-    public String getMember() {
-	return member;
-    }
+	public String getMember() {
+		return member;
+	}
 
-    public void setMember(String member) {
-	this.member = member;
-    }
+	public void setMember(String member) {
+		this.member = member;
+	}
 
-    public String getActive() {
-	return active;
-    }
+	public String getActive() {
+		return active;
+	}
 
-    public void setActive(String active) {
-	this.active = active;
-    }
+	public void setActive(String active) {
+		this.active = active;
+	}
 
-    public String getValue() {
-	return value;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setValue(String value) {
-	this.value = value;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public boolean isUnique() {
-	return unique!=null?Boolean.valueOf(unique):false;
-    }
+	public boolean isUnique() {
+		return unique != null ? Boolean.valueOf(unique) : false;
+	}
 
-    public void setUnique(String unique) {
-	this.unique = unique;
-    }
+	public void setUnique(String unique) {
+		this.unique = unique;
+	}
 
-    public void setRoleMemberId(String roleMemberId) {
-	this.roleMemberId = roleMemberId;
-    }
+	public void setRoleMemberId(String roleMemberId) {
+		this.roleMemberId = roleMemberId;
+	}
 }

@@ -22,6 +22,7 @@ import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.CustomChangeException;
+import liquibase.ext.kualigan.statement.AddRoleMemberAttributeStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
@@ -45,6 +46,8 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
+//todo: change binding name
+//todo: implement uiqueness property constraint
 @DatabaseChange(name="roleMemberAttribute", description = "Adds an attribute to a Role member.", priority = EXTENSION_PRIORITY)
 public class AddRoleMemberAttribute extends KimAbstractChange {
 
@@ -68,33 +71,9 @@ public class AddRoleMemberAttribute extends KimAbstractChange {
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-        final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_role_mbr_attr_data_t");
-        try {
-            final BigInteger attributeId = getPrimaryKey(database);
-	    final String typeId = getTypeForeignKey(database, getType());
-            final String definitionId = getAttributeDefinitionForeignKey(database, getAttributeDef());
-	    if (roleMemberId == null){
-		String roleId = getRoleForeignKey(database, getRoleName(), getRoleNamespace());
-		final String memberId = getPrincipalForeignKey(database, getMember());
-		roleMemberId = getRoleMemberForeignKey(database, roleId, memberId);
-	    }
-
-            insertAttribute.addColumnValue("attr_data_id", attributeId);
-            insertAttribute.addColumnValue("role_mbr_id", roleMemberId);
-            insertAttribute.addColumnValue("kim_typ_id", typeId);
-            insertAttribute.addColumnValue("kim_attr_defn_id", definitionId);
-            insertAttribute.addColumnValue("attr_val", getValue());
-            insertAttribute.addColumnValue("ver_nbr", 1);
-            insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
-        }
-        catch (Exception e) {
-            throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Role Member Attribute' (role: %s, mbr: %s, val: %s)'",getRoleName(),
-								 getMember(),getValue()), e);
-        }
-
-        return new SqlStatement[] {
-            insertAttribute
-        };
+	    return new SqlStatement[] {
+					    new AddRoleMemberAttributeStatement(type,attributeDef,roleName,roleNamespace,member,value)
+	    };
     }
 
     @Override
