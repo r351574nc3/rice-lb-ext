@@ -3,21 +3,20 @@
                    xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-<changeSet id="tst-assign-role-member" author="lb-ext" context="default">
-        <customChange class="liquibase.ext.kualigan.change.AssignRoleMember">
-            <param name="namespace" value="KUALI"/>
-            <param name="role" value="User2"/>
-            <param name="type" value="P"/>
-            <param name="member" value="kr"/>
-        </customChange>
-    </changeSet>
+    <!--<changeSet id="tst-assign-role-member" author="lb-ext" context="default">-->
+        <!--<customChange class="liquibase.ext.kualigan.change.AssignRoleMember">-->
+            <!--<param name="namespace" value="KUALI"/>-->
+            <!--<param name="role" value="User2"/>-->
+            <!--<param name="type" value="P"/>-->
+            <!--<param name="member" value="kr"/>-->
+        <!--</customChange>-->
+    <!--</changeSet>-->
 
     <changeSet id="tst-assign-role-member-cns" author="lb-ext" context="custom-namespace">
         <kim:roleMember namespace="KUALI" role="User2" type="P" member="kr" uniqueAttributeDefinitions="beanName,beanName2">
             <kim:attribute type="Default" value="Test Role Mbr Attr" attributeDef="beanName"/>
-            <!--<kim:attribute type="Default" value="Unique Value" attributeDef="beanName2" />-->
+            <kim:attribute type="Default" value="Unique Value" attributeDef="beanName2" />
             <kim:action priority="998" actionTypeCode="A" actionPolicyCode="F" force="Y" />
-            <!--<kim:action priority="999" actionTypeCode="B" actionPolicyCode="F" force="Y" />-->
         </kim:roleMember>
     </changeSet>
 
