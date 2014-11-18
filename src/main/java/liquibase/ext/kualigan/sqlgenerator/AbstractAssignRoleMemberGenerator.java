@@ -82,8 +82,8 @@ public abstract class AbstractAssignRoleMemberGenerator extends AbstractKimSqlGe
 
 	final List<SqlStatement> retval = new ArrayList<SqlStatement>();
 	retval.add(assignRole);
-	retval.addAll(statement.getAttributes());
-	retval.addAll(statement.getActions());
+//	retval.addAll(statement.getAttributes());
+//	retval.addAll(statement.getActions());
 	
 	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
     }

@@ -46,8 +46,8 @@ public class AssignRoleMemberStatement extends AbstractSqlStatement {
     protected String memberNamespace;
     protected String role;
     protected String active = "Y";
-    protected List<SqlStatement> attributes;
-    protected List<SqlStatement> actions;
+//    protected List<SqlStatement> attributes;
+//    protected List<SqlStatement> actions;
     
     
     public AssignRoleMemberStatement() {
@@ -58,17 +58,17 @@ public class AssignRoleMemberStatement extends AbstractSqlStatement {
 				    final String member,
 				    final String memberNamespace,
 				    final String role,
-				    final String active,
+				    final String active/*,
 				    final List<SqlStatement> attributes,
-				    final List<SqlStatement> actions) {
+				    final List<SqlStatement> actions*/) {
 	setNamespace(namespace);
 	setType(type);
 	setMember(member);
 	setMemberNamespace(memberNamespace);
 	setRole(role);
 	setActive(active);
-	setAttributes(attributes);
-	setActions(actions);
+//	setAttributes(attributes);
+//	setActions(actions);
     }
 
     /**
@@ -170,18 +170,18 @@ public class AssignRoleMemberStatement extends AbstractSqlStatement {
 	this.memberNamespace = memberNamespace;
     }
 
-    public List<SqlStatement> getAttributes() {
-	return attributes;
-    }
-
-    public void setAttributes(final List<SqlStatement> attributes) {
-	this.attributes = attributes;
-    }
-    public List<SqlStatement> getActions() {
-	return actions;
-    }
-
-    public void setActions(final List<SqlStatement> actions) {
-	this.actions = actions;
-    }
+//    public List<SqlStatement> getAttributes() {
+//	return attributes;
+//    }
+//
+//    public void setAttributes(final List<SqlStatement> attributes) {
+//	this.attributes = attributes;
+//    }
+//    public List<SqlStatement> getActions() {
+//	return actions;
+//    }
+//
+//    public void setActions(final List<SqlStatement> actions) {
+//	this.actions = actions;
+//    }
 }

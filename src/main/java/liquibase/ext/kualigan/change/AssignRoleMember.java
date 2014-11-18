@@ -15,14 +15,12 @@
  */
 package liquibase.ext.kualigan.change;
 
+import liquibase.change.ChangeParameterMetaData;
 import liquibase.change.DatabaseChange;
-import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
-import liquibase.exception.RollbackImpossibleException;
 import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 import liquibase.statement.SqlStatement;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,270 +33,197 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="roleMember", description = "Assigns a member to a role", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name = "roleMember", description = "Assigns a member to a role", priority = EXTENSION_PRIORITY)
 public class AssignRoleMember extends KimAbstractChange implements CustomSqlChange {
 
-    protected String namespace;
-    protected String type;
-    protected String member;
-    protected String memberNamespace;
-    protected String role;
-    protected String active;
-		protected String uniqueAttributeDefinitions;
-		protected List<AddRoleMemberAttribute> attributes = new ArrayList<AddRoleMemberAttribute>();
-    protected List<AddRoleResponsibilityAction> actions = new ArrayList<AddRoleResponsibilityAction>();
-                        
-    
-    public AssignRoleMember() {
-        super("roleMember", "Assigning a KIM role", EXTENSION_PRIORITY);
-    }
-
-    @Override
-    protected String getSequenceName() {
-        return "KRIM_ROLE_MBR_ID_S";
-    }
-
-    /**
-     * Generates the SQL statements required to run the change.
-     *
-     * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
-     * @return an array of {@link String}s with the statements
-     */
-    public SqlStatement[] generateStatements(final Database database) {
-        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
-        
-        for (final AddRoleMemberAttribute member : getAttributes()) {
-            for (final SqlStatement statement : member.generateStatements(database)) {
-                attributeStatements.add(statement);
-            }
-        }
-
-        final List<SqlStatement> actionStatements = new ArrayList<SqlStatement>();
-        for (final AddRoleResponsibilityAction member : getActions()) {
-            for (final SqlStatement statement : member.generateStatements(database)) {
-                actionStatements.add(statement);
-            }
-        }
-
-        return new SqlStatement[] { new AssignRoleMemberStatement(getNamespace(),
-                                                              getType(),
-                                                              getMember(),
-                                                              getMemberNamespace(),
-                                                              getRole(),
-                                                              getActive(),
-                                                              attributeStatements,
-                                                              actionStatements) };
-    }
-
-    private String getMemberId(Database database) {
-        String memberId;
-        if ("P".equals(getType())){
-            memberId = getPrincipalForeignKey(database, getMember());
-        }else if ("R".equals(getType())){
-            memberId = getRoleForeignKey(database, getMember(), getMemberNamespace()!=null?getMemberNamespace():getNamespace());
-        }
-        else{
-            throw new RuntimeException(String.format("Role type '%s' not supported!", getType()));
-        }
-        return memberId;
-    }
+	private String namespace;
+	private String type;
+	private String member;
+	private String memberNamespace;
+	private String role;
+	private String active;
+	private String uniqueAttributeDefinitions;
+	private List<AddRoleMemberAttribute> attribute = new ArrayList<AddRoleMemberAttribute>();
+	private List<AddRoleResponsibilityAction> action = new ArrayList<AddRoleResponsibilityAction>();
 
 
-    @Override
-    public SqlStatement[] generateRollbackStatements(Database database) throws RollbackImpossibleException {
-        final DeleteDataChange undoAssign = new DeleteDataChange();
-        final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
-        String memberId = getMemberId(database);
-        List<String> uniqueAttributeValues = null;
-        if (StringUtils.isNotBlank(uniqueAttributeDefinitions)){
-            uniqueAttributeValues = getUniqueAttributeValues(attributes, uniqueAttributeDefinitions);
-        }
-        final String rolMemberId = getRoleMemberForeignKey(database,roleId,memberId,uniqueAttributeValues);
-        undoAssign.setTableName("KRIM_ROLE_MBR_T");
-        undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, memberId));
+	@Override
+	protected ChangeParameterMetaData createChangeParameterMetadata(String parameterName) {
+		return super.createChangeParameterMetadata(parameterName);    //To change body of overridden methods use File | Settings | File Templates.
+	}
 
-        List<SqlStatement> results = new ArrayList<SqlStatement>();
-        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-            addRoleMemberAttribute.setRoleMemberId(rolMemberId);
-            results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
-        }
-        for (AddRoleResponsibilityAction action : actions){
-            action.setRoleMemberId(rolMemberId);
-            results.addAll(Arrays.asList(action.generateRollbackStatements(database)));
-        }
-        results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
-        return results.toArray(new SqlStatement[results.size()]);
-    }
+	public AssignRoleMember() {
+		super("roleMember", "Assigning a KIM role", EXTENSION_PRIORITY);
+	}
 
-    private List<String> getUniqueAttributeValues(List<AddRoleMemberAttribute> attributes, String uniqueAttributeDefinitions) {
-        List<String> uniqueTokens = Arrays.asList(uniqueAttributeDefinitions.split(","));
-        List<String> result = new ArrayList<String>();
-        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-            if (uniqueTokens.contains(addRoleMemberAttribute.getAttributeDef())){
-                result.add(addRoleMemberAttribute.getValue());
-            }
-            else{
-                throw new IllegalArgumentException(String.format("Attribute definition '%s' defined as unique but not part or attributes list", addRoleMemberAttribute.getAttributeDef()));
-            }
-        }
-        if (uniqueTokens.size() > result.size()){
-            throw new IllegalArgumentException(String.format("Unique Attribute definitions do not match attributes defined '%s<%s'",result.size(),uniqueTokens.size()));
-        }
-        return result;
-    }
+	@Override
+	protected String getSequenceName() {
+		return "KRIM_ROLE_MBR_ID_S";
+	}
 
-    /**
-     * Get the member attribute on this object
-     *
-     * @return member value
-     */
-    public String getMember() {
-        return this.member;
-    }
+	/**
+	 * Generates the SQL statements required to run the change.
+	 *
+	 * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
+	 * @return an array of {@link String}s with the statements
+	 */
+	public SqlStatement[] generateStatements(final Database database) {
+		List<SqlStatement> statements = new ArrayList<SqlStatement>();
+		statements.add(new AssignRoleMemberStatement(namespace,type, member,	memberNamespace, role,active));
+		statements.addAll(generateRoleReponsibilityActionStatements(database));
+		statements.addAll(generateAddRoleMemberAttributeStatements(database));
+		return statements.toArray(new SqlStatement[statements.size()]);
+	}
 
-    /**
-     * Set the member attribute on this object
-     *
-     * @param member value to set
-     */
-    public void setMember(final String member) {
-        this.member = member;
-    }
+	private List<SqlStatement> generateAddRoleMemberAttributeStatements(Database database) {
+		final List<SqlStatement> statements = new ArrayList<SqlStatement>();
+		for (final AddRoleMemberAttribute addAttribute : getAttribute()) {
+			addAttribute.setMember(member);
+			addAttribute.setRoleName(role);
+			addAttribute.setRoleNamespace(namespace);
+			statements.addAll(Arrays.asList(addAttribute.generateStatements(database)));
+		}
+		return statements;
+	}
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
-
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
-
-    /**
-     * Get the role attribute on this object
-     *
-     * @return role value
-     */
-    public String getRole() {
-        return this.role;
-    }
-
-    /**
-     * Set the role attribute on this object
-     *
-     * @param role value to set
-     */
-    public void setRole(final String role) {
-        this.role = role;
-    }
-
-    /**
-     * Get the type attribute on this object
-     *
-     * @return type value
-     */
-    public String getType() {
-        return this.type;
-    }
-
-    /**
-     * Set the type attribute on this object
-     *
-     * @param type value to set
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    /**
-     * Get the active attribute on this object
-     *
-     * @return active value
-     */
-    public String getActive() {
-        return this.active;
-    }
-
-    /**
-     * Set the active attribute on this object
-     *
-     * @param active value to set
-     */
-    public void setActive(final String active) {
-        this.active = active;
-    }
-
-    /**
-     * Get the attributes attribute on this object
-     *
-     * @return attributes value
-     */
-    public List<AddRoleMemberAttribute> getAttributes() {
-        return this.attributes;
-    }
-
-    /**
-     * Set the attributes attribute on this object
-     *
-     * @param attributes value to set
-     */
-    public void setAttributes(final List<AddRoleMemberAttribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    /**
-     * Get the actions attribute on this object
-     *
-     * @return actions value
-     */
-    public List<AddRoleResponsibilityAction> getActions() {
-        return this.actions;
-    }
-
-    /**
-     * Set the actions attribute on this object
-     *
-     * @param actions value to set
-     */
-    public void setActions(final List<AddRoleResponsibilityAction> actions) {
-        this.actions = actions;
-    }
+	private List<SqlStatement> generateRoleReponsibilityActionStatements(Database database) {
+		final List<SqlStatement> statements = new ArrayList<SqlStatement>();
+		for (final AddRoleResponsibilityAction addRoleResponsibilityAction : getAction()) {
+			addRoleResponsibilityAction.setMember(member);
+			addRoleResponsibilityAction.setRoleName(role);
+			addRoleResponsibilityAction.setRoleNamespace(namespace);
+			statements.addAll(Arrays.asList(addRoleResponsibilityAction.generateStatements(database)));
+		}
+		return statements;
+	}
 
 
-    public String getMemberNamespace() {
-        return memberNamespace;
-    }
+	@Override
+	public boolean supportsRollback(Database database) {
+		return false;
+	}
+//
+//	@Override
+//    public SqlStatement[] generateRollbackStatements(Database database) throws RollbackImpossibleException {
+//        final DeleteDataChange undoAssign = new DeleteDataChange();
+//        final String roleId = getRoleForeignKey(database, getRole(),getNamespace());
+//        String memberId = getMemberId(database);
+//        List<String> uniqueAttributeValues = null;
+//        if (StringUtils.isNotBlank(uniqueAttributeDefinitions)){
+//            uniqueAttributeValues = getUniqueAttributeValues(attributes, uniqueAttributeDefinitions);
+//        }
+//        final String rolMemberId = getRoleMemberForeignKey(database,roleId,memberId,uniqueAttributeValues);
+//        undoAssign.setTableName("KRIM_ROLE_MBR_T");
+//        undoAssign.setWhereClause(String.format("role_id = '%s' and mbr_id = '%s'", roleId, memberId));
+//
+//        List<SqlStatement> results = new ArrayList<SqlStatement>();
+//        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+//            addRoleMemberAttribute.setRoleMemberId(rolMemberId);
+//            results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
+//        }
+//        for (AddRoleResponsibilityAction action1 : action){
+//            action1.setRoleMemberId(rolMemberId);
+//            results.addAll(Arrays.asList(action1.generateRollbackStatements(database)));
+//        }
+//        results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
+//        return results.toArray(new SqlStatement[results.size()]);
+//    }
 
-    public void setMemberNamespace(String memberNamespace) {
-        this.memberNamespace = memberNamespace;
-    }
+//    private List<String> getUniqueAttributeValues(List<AddRoleMemberAttribute> attributes, String uniqueAttributeDefinitions) {
+//        List<String> uniqueTokens = Arrays.asList(uniqueAttributeDefinitions.split(","));
+//        List<String> result = new ArrayList<String>();
+//        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
+//            if (uniqueTokens.contains(addRoleMemberAttribute.getAttributeDef())){
+//                result.add(addRoleMemberAttribute.getValue());
+//            }
+//            else{
+//                throw new IllegalArgumentException(String.format("Attribute definition '%s' defined as unique but not part or attributes list", addRoleMemberAttribute.getAttributeDef()));
+//            }
+//        }
+//        if (uniqueTokens.size() > result.size()){
+//            throw new IllegalArgumentException(String.format("Unique Attribute definitions do not match attributes defined '%s<%s'",result.size(),uniqueTokens.size()));
+//        }
+//        return result;
+//    }
 
-    public String getUniqueAttributeDefinitions() {
-	return uniqueAttributeDefinitions;
-    }
+//	private String getMemberId(Database database) {
+//		String memberId;
+//		if ("P".equals(type)) {
+//			memberId = getPrincipalForeignKey(database, member);
+//		} else if ("R".equals(type)) {
+//			memberId = getRoleForeignKey(database, member, memberNamespace != null ? memberNamespace : namespace);
+//		} else {
+//			throw new RuntimeException(String.format("Role type '%s' not supported!", type));
+//		}
+//		return memberId;
+//	}
 
-    public void setUniqueAttributeDefinitions(String uniqueAttributeDefinitions) {
-	this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
-    }
 
-    public AddRoleMemberAttribute createAttribute(){
-	AddRoleMemberAttribute addRoleMemberAttribute = new AddRoleMemberAttribute();
-	this.attributes.add(addRoleMemberAttribute);
-	return addRoleMemberAttribute;
-    }
+//	@DatabaseChangeProperty(serializationType = SerializationType.NESTED_OBJECT, isChangeProperty = true)
+	public List<AddRoleMemberAttribute> getAttribute() {
+		return this.attribute;
+	}
 
-    public AddRoleResponsibilityAction createAction(){
-	AddRoleResponsibilityAction addRoleResponsibilityAction = new AddRoleResponsibilityAction();
-	this.actions.add(addRoleResponsibilityAction);
-	return addRoleResponsibilityAction;
-    }
+	public void setAttribute(final List<AddRoleMemberAttribute> attributes) {
+		this.attribute = attributes;
+	}
+
+	public void setAction(final List<AddRoleResponsibilityAction> actions) {
+		this.action = actions;
+	}
+
+//	@DatabaseChangeProperty(serializationType = SerializationType.NESTED_OBJECT, isChangeProperty = true)
+	public List<AddRoleResponsibilityAction> getAction() {
+		return this.action;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getMember() {
+		return member;
+	}
+
+	public void setMember(String member) {
+		this.member = member;
+	}
+
+	public String getMemberNamespace() {
+		return memberNamespace;
+	}
+
+	public void setMemberNamespace(String memberNamespace) {
+		this.memberNamespace = memberNamespace;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
+
+
 }

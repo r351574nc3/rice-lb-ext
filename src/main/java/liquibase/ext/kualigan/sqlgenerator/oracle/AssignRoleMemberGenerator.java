@@ -40,6 +40,6 @@ public class AssignRoleMemberGenerator extends AbstractAssignRoleMemberGenerator
     @Override
     public boolean supports(final AssignRoleMemberStatement statement,
 			    final Database database) {
-	return database instanceof OracleDatabase;
+				return true;
     }
 }
