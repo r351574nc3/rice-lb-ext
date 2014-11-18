@@ -26,6 +26,7 @@
 package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.*;
 import liquibase.executor.ExecutorService;
 import liquibase.sql.Sql;
@@ -38,7 +39,9 @@ import liquibase.statement.SqlStatement;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.util.*;
 
 /**
  * Generic base class for generators mapped to the {@link CreateTypeStatement}
@@ -62,6 +65,21 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 						: String.format("(select max(id) from %s)", getSequenceName());
 
 		return new DatabaseFunction(subQuery);
+	}
+
+	protected boolean tableExists(final Database database, String tableName) throws UnexpectedLiquibaseException {
+		JdbcConnection connection = (JdbcConnection) database.getConnection();
+		try {
+			DatabaseMetaData databaseMetaData = connection.getMetaData();
+
+			final ResultSet tableResults = databaseMetaData.getTables(connection.getCatalog(), null, tableName, new String[] { "TABLE" });
+			boolean result = tableResults.next();
+			tableResults.close();
+			return result;
+		}
+		catch (Exception e) {
+			throw new UnexpectedLiquibaseException("Unable to determine table exists: " + e.getMessage(), e);
+		}
 	}
 
 	protected DatabaseFunction getPermissionTemplateForeignKey(final Database database, final String templateName) {
@@ -106,7 +124,12 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 	}
 
 	protected DatabaseFunction getPrincipalForeignKey(final Database database, final String memberName) {
-		return new DatabaseFunction(String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s')", memberName));
+		if (tableExists(database, "KRIM_PRNCPL_T")){
+			return new DatabaseFunction(String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s')", memberName));
+		}
+		else{
+			return new DatabaseFunction("(" + memberName + ")");
+		}
 	}
 
 	protected DatabaseFunction getResponsibilityForeignKey(final Database database, final String responsibilityName) {
