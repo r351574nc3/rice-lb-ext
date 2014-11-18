@@ -4,6 +4,9 @@ import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.RollbackFailedException;
+import liquibase.exception.RollbackImpossibleException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,7 +24,7 @@ public abstract class KimChangeBaseTest {
 	public static void bootstrapTestDB() throws Exception {
 		connection = DriverManager.getConnection("jdbc:h2:mem:TEST;MODE=Oracle");
 		database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-		Liquibase liquibase = new Liquibase("liquibase/ext/kualigan/change//bootstrap.xml", new ClassLoaderResourceAccessor(), database);
+		Liquibase liquibase = new Liquibase("liquibase/ext/kualigan/change/bootstrap.xml", new ClassLoaderResourceAccessor(), database);
 		liquibase.update("");
 	}
 
@@ -61,10 +64,19 @@ public abstract class KimChangeBaseTest {
 		//then
 		assertInsert(whereClause());
 
-		//when
-		liquibase.rollback(1, context);
-		//then
-		assertRollback(whereClause());
+		try {
+			//when
+			liquibase.rollback(1, context);
+			//then
+			assertRollback(whereClause());
+		} catch (RollbackFailedException e) {
+			if (e.getCause() instanceof RollbackImpossibleException){
+				System.err.println("Rollback not supported");
+			}
+			else{
+				throw e;
+			}
+		}
 	}
 
 	private ResultSet getEntityResultSet(String whereClause) throws SQLException {
