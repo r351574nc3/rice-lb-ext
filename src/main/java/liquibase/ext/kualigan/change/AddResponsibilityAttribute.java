@@ -47,8 +47,7 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 	private String attributeDef;
 	private String value;
 	private String responsibility;
-	private String responsibilityId;
-
+	//todo: add responsibility namespace
 
 	public AddResponsibilityAttribute() {
         super("responsibilityAttribute", "Adding an attribute to a responsibility to KIM", EXTENSION_PRIORITY);
@@ -149,7 +148,4 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 		this.responsibility = responsibility;
 	}
 
-	public void setResponsibilityId(String responsibilityId) {
-		this.responsibilityId = responsibilityId;
-	}
 }

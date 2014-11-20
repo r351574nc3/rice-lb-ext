@@ -44,7 +44,6 @@ public class CreateResponsibilityStatement extends AbstractSqlStatement {
     protected String name;
     protected String description;
     protected String active = "Y";
-    protected List<SqlStatement> attributes;
     protected String uniqueAttributeDefinitions;
     
     public CreateResponsibilityStatement() {
@@ -54,14 +53,12 @@ public class CreateResponsibilityStatement extends AbstractSqlStatement {
 					 final String namespace,
 					 final String name, 
 					 final String description,
-					 final String active,
-					 final List<SqlStatement> attributes) {
+					 final String active) {
 	setTemplate(template);
 	setNamespace(namespace);
 	setName(name);
 	setDescription(description);
 	setActive(active);
-	setAttributes(attributes);
     }
 
     /**
@@ -152,11 +149,4 @@ public class CreateResponsibilityStatement extends AbstractSqlStatement {
 	this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
     }
 
-    public void setAttributes(final List<SqlStatement> attributes) {
-	this.attributes = attributes;
-    }
-
-    public List<SqlStatement> getAttributes() {
-	return this.attributes;
-    }
 }

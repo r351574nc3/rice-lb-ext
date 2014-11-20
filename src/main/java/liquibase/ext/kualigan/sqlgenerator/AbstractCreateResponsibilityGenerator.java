@@ -87,7 +87,6 @@ public abstract class AbstractCreateResponsibilityGenerator extends AbstractKimS
 
 	final List<SqlStatement> retval = new ArrayList<SqlStatement>();
 	retval.add(insertResponsibility);
-	retval.addAll(statement.getAttributes());
 
 	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
     }

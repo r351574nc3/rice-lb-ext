@@ -22,6 +22,7 @@ import liquibase.change.core.DeleteDataChange;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
+import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
@@ -40,163 +41,157 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="responsibility", description = "Creates a KIM Responsibility.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name = "responsibility", description = "Creates a KIM Responsibility.", priority = EXTENSION_PRIORITY)
 public class CreateResponsibility extends KimAbstractChange implements CustomSqlChange {
 
-    protected String template;
-    protected String namespace;
-    protected String name;
-    protected String description;
-    protected String active = "Y";
+	private String template;
+	private String namespace;
+	private String name;
+	private String description;
+	private String active = "Y";
+	private List<AddResponsibilityAttribute> attribute = new ArrayList<AddResponsibilityAttribute>();
 
-    protected List<AddResponsibilityAttribute> attributes = new ArrayList<AddResponsibilityAttribute>();
-
-    public CreateResponsibility() {
-        super("responsibility", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
-    }
-
-    @Override
-    protected String getSequenceName() {
-	return "krim_rsp_id_s";
-    }
-
-    /**
-     * Generates the SQL statements required to run the change.
-     *
-     * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
-     * @return an array of {@link String}s with the statements
-     */
-    public SqlStatement[] generateStatements(Database database) {
-
-        final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
-        
-        for (final AddResponsibilityAttribute attribute : getAttributes()) {
-            for (final SqlStatement statement : attribute.generateStatements(database)) {
-                attributeStatements.add(statement);
-            }
-        }
-
-        return new SqlStatement[] { new CreateResponsibilityStatement(getTemplate(),
-								      getNamespace(),
-								      getName(),
-								      getDescription(),
-								      getActive(), 
-								      attributeStatements) };
-
-    }
-
-
-    @Override
-    public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	List<SqlStatement> result = new ArrayList<SqlStatement>();
-	String responsibilityId = getResponsibilityForeignKey(database, getName(),getNamespace());
-
-	final DeleteDataChange removeResponsibility = new DeleteDataChange();
-	removeResponsibility.setTableName("krim_rsp_t");
-	removeResponsibility.setWhereClause(String.format("rsp_id = '%s'", responsibilityId));
-
-	for (AddResponsibilityAttribute attribute : attributes){
-	    attribute.setResponsibilityId(responsibilityId);
-	    result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
+	public CreateResponsibility() {
+		super("responsibility", "Adding a Responsibility to KIM", EXTENSION_PRIORITY);
 	}
 
-	result.addAll(Arrays.asList(removeResponsibility.generateStatements(database)));
-	return result.toArray(new SqlStatement[result.size()]);
+	@Override
+	protected String getSequenceName() {
+		return "krim_rsp_id_s";
+	}
 
-    }
+	/**
+	 * Generates the SQL statements required to run the change.
+	 *
+	 * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
+	 * @return an array of {@link String}s with the statements
+	 */
+	public SqlStatement[] generateStatements(Database database) {
+		List<SqlStatement> statements = new ArrayList<SqlStatement>();
+		statements.add(new CreateResponsibilityStatement(getTemplate(),
+						getNamespace(),
+						getName(),
+						getDescription(),
+						getActive()));
+		statements.addAll(generateReponsibilityAttributeStatements(database));
+		return statements.toArray(new SqlStatement[statements.size()]);
 
-    /**
-     * Get the template attribute on this object
-     *
-     * @return template value
-     */
-    public String getTemplate() {
-        return this.template;
-    }
+	}
 
-    /**
-     * Set the template attribute on this object
-     *
-     * @param template value to set
-     */
-    public void setTemplate(final String template) {
-        this.template = template;
-    }
+	private List<SqlStatement> generateReponsibilityAttributeStatements(Database database) {
+		final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
+		for (final AddResponsibilityAttribute attribute : getAttribute()) {
+			attribute.setResponsibility(this.name);
+			attributeStatements.addAll(Arrays.asList(attribute.generateStatements(database)));
+		}
+		return attributeStatements;
+	}
 
-    /**
-     * Get the namespace attribute on this object
-     *
-     * @return namespace value
-     */
-    public String getNamespace() {
-        return this.namespace;
-    }
 
-    /**
-     * Set the namespace attribute on this object
-     *
-     * @param namespace value to set
-     */
-    public void setNamespace(final String namespace) {
-        this.namespace = namespace;
-    }
+	@Override
+	public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
+		List<SqlStatement> result = new ArrayList<SqlStatement>();
+		String responsibilityId = getResponsibilityForeignKey(database, getName(), getNamespace());
 
-    /**
-     * Get the name attribute on this object
-     *
-     * @return name value
-     */
-    public String getName() {
-        return this.name;
-    }
+		final DeleteDataChange removeResponsibility = new DeleteDataChange();
+		removeResponsibility.setTableName("krim_rsp_t");
+		removeResponsibility.setWhereClause(String.format("rsp_id = '%s'", responsibilityId));
 
-    /**
-     * Set the name attribute on this object
-     *
-     * @param name value to set
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
+		for (AddResponsibilityAttribute attribute : getAttribute()) {
+			attribute.setResponsibility(responsibilityId);
+			result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
+		}
 
-    /**
-     * Get the active attribute on this object
-     *
-     * @return active value
-     */
-    public String getActive() {
-        return this.active;
-    }
+		result.addAll(Arrays.asList(removeResponsibility.generateStatements(database)));
+		return result.toArray(new SqlStatement[result.size()]);
 
-    /**
-     * Set the active attribute on this object
-     *
-     * @param active value to set
-     */
-    public void setActive(final String active) {
-        this.active = active;
-    }
+	}
 
-    public String getDescription() {
-	return description;
-    }
+	/**
+	 * Get the template attribute on this object
+	 *
+	 * @return template value
+	 */
+	public String getTemplate() {
+		return this.template;
+	}
 
-    public void setDescription(String description) {
-	this.description = description;
-    }
+	/**
+	 * Set the template attribute on this object
+	 *
+	 * @param template value to set
+	 */
+	public void setTemplate(final String template) {
+		this.template = template;
+	}
 
-    public List<AddResponsibilityAttribute> getAttributes() {
-	return attributes;
-    }
+	/**
+	 * Get the namespace attribute on this object
+	 *
+	 * @return namespace value
+	 */
+	public String getNamespace() {
+		return this.namespace;
+	}
 
-    public void setAttributes(final List<AddResponsibilityAttribute> attributes) {
-	this.attributes = attributes;
-    }
+	/**
+	 * Set the namespace attribute on this object
+	 *
+	 * @param namespace value to set
+	 */
+	public void setNamespace(final String namespace) {
+		this.namespace = namespace;
+	}
 
-    public AddResponsibilityAttribute createAttribute() {
-	AddResponsibilityAttribute attribute = new AddResponsibilityAttribute();
-	this.getAttributes().add(attribute);
-	return attribute;
-    }
+	/**
+	 * Get the name attribute on this object
+	 *
+	 * @return name value
+	 */
+	public String getName() {
+		return this.name;
+	}
 
+	/**
+	 * Set the name attribute on this object
+	 *
+	 * @param name value to set
+	 */
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Get the active attribute on this object
+	 *
+	 * @return active value
+	 */
+	public String getActive() {
+		return this.active;
+	}
+
+	/**
+	 * Set the active attribute on this object
+	 *
+	 * @param active value to set
+	 */
+	public void setActive(final String active) {
+		this.active = active;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<AddResponsibilityAttribute> getAttribute() {
+		return attribute;
+	}
+
+	public void setAttribute(List<AddResponsibilityAttribute> attribute) {
+		this.attribute = attribute;
+	}
 }

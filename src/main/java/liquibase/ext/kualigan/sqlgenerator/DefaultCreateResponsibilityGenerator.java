@@ -42,6 +42,6 @@ public class DefaultCreateResponsibilityGenerator extends AbstractCreateResponsi
     @Override
     public boolean supports(final CreateResponsibilityStatement statement,
 			    final Database database) {
-	return !(database instanceof OracleDatabase);
+			return true;
     }
 }
