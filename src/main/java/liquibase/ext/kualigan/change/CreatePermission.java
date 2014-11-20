@@ -22,6 +22,7 @@ import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
 import liquibase.ext.kualigan.statement.CreatePermissionStatement;
+import liquibase.ext.kualigan.statement.CreateResponsibilityStatement;
 import liquibase.statement.SqlStatement;
 
 import java.util.ArrayList;
@@ -44,35 +45,33 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	protected String name;
 	protected String description;
 	protected String active = "Y";
-	protected List<AddPermissionAttribute> attributes = new ArrayList<AddPermissionAttribute>();
+	protected List<AddPermissionAttribute> attribute = new ArrayList<AddPermissionAttribute>();
 
 
 	public CreatePermission() {
 		super("permission", "Adding a Permission to KIM", EXTENSION_PRIORITY);
 	}
 
-	/**
-	 * Generates the SQL statements required to run the change.
-	 *
-	 * @param database databasethe target {@link liquibase.database.Database} associated to this change's statements
-	 * @return an array of {@link String}s with the statements
-	 */
-	public SqlStatement[] generateStatements(final Database database) {
-
-		final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
-
-		for (final AddPermissionAttribute attribute : getAttributes()) {
-			for (final SqlStatement statement : attribute.generateStatements(database)) {
-				attributeStatements.add(statement);
-			}
-		}
-
-		return new SqlStatement[]{new CreatePermissionStatement(getTemplate(),
+	public SqlStatement[] generateStatements(Database database) {
+		List<SqlStatement> statements = new ArrayList<SqlStatement>();
+		statements.add(new CreatePermissionStatement(getTemplate(),
 						getNamespace(),
 						getName(),
 						getDescription(),
-						getActive(),
-						attributeStatements)};
+						getActive()));
+		statements.addAll(generatePermissionAttributeStatements(database));
+		return statements.toArray(new SqlStatement[statements.size()]);
+
+	}
+
+	private List<SqlStatement> generatePermissionAttributeStatements(Database database) {
+		final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
+		for (final AddPermissionAttribute attribute : getAttribute()) {
+			attribute.setPermission(this.name);
+			attribute.setNamespace(this.namespace);
+			attributeStatements.addAll(Arrays.asList(attribute.generateStatements(database)));
+		}
+		return attributeStatements;
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 		removePerm.setTableName("krim_perm_t");
 		removePerm.setWhereClause(String.format("perm_id = '%s'", permissionId));
 
-		for (AddPermissionAttribute attribute : attributes) {
+		for (AddPermissionAttribute attribute : getAttribute()) {
 			result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
 		}
 
@@ -187,29 +186,12 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 		this.active = active;
 	}
 
-	/**
-	 * Get the attributes attribute on this object
-	 *
-	 * @return attributes value
-	 */
-	public List<AddPermissionAttribute> getAttributes() {
-		return this.attributes;
+
+	public List<AddPermissionAttribute> getAttribute() {
+		return attribute;
 	}
 
-	/**
-	 * Set the attributes attribute on this object
-	 *
-	 * @param attributes value to set
-	 */
-	public void setAttributes(final List<AddPermissionAttribute> attributes) {
-		this.attributes = attributes;
+	public void setAttribute(List<AddPermissionAttribute> attribute) {
+		this.attribute = attribute;
 	}
-
-
-	public AddPermissionAttribute createAttribute() {
-		AddPermissionAttribute permissionAttribute = new AddPermissionAttribute();
-		this.attributes.add(permissionAttribute);
-		return permissionAttribute;
-	}
-
 }

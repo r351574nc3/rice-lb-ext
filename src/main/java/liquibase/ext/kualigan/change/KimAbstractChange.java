@@ -244,20 +244,20 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 	}
     }
 
-    protected String getResponsibilityForeignKey(Database database, final String responsibilityName) {
-	try {
-	    final SqlStatement getResponsibilityId = new RuntimeStatement() {
-		    public Sql[] generate(Database database) {
-			return new Sql[]{
-			    new UnparsedSql(String.format("select rsp_id from krim_rsp_t where nm = '%s'", responsibilityName))
+	protected String getResponsibilityForeignKey(Database database, final String responsibilityName) {
+		try {
+			final SqlStatement getResponsibilityId = new RuntimeStatement() {
+				public Sql[] generate(Database database) {
+					return new Sql[]{
+									new UnparsedSql(String.format("select rsp_id from krim_rsp_t where nm = '%s'", responsibilityName))
+					};
+				}
 			};
-		    }
-		};
-	    return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, String.class);
-	} catch (DatabaseException e) {
-	    throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility' (%s)", responsibilityName), e);
+			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, String.class);
+		} catch (DatabaseException e) {
+			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility' (%s)", responsibilityName), e);
+		}
 	}
-    }
 
     protected String getResponsibilityForeignKey(Database database, final String responsibilityName, final String responsibilityNamespace) {
 	if (responsibilityNamespace == null){

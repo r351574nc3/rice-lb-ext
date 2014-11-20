@@ -44,24 +44,18 @@ public class CreatePermissionStatement extends AbstractSqlStatement {
     protected String name;
     protected String description;
     protected String active = "Y";
-    protected List<SqlStatement> attributes;
     protected String uniqueAttributeDefinitions;
-    
-    public CreatePermissionStatement() {
-    }
 
     public CreatePermissionStatement(final String template,
 				     final String namespace,
 				     final String name, 
 				     final String description,
-				     final String active,
-				     final List<SqlStatement> attributes) {
+				     final String active) {
 	setTemplate(template);
 	setNamespace(namespace);
 	setName(name);
 	setDescription(description);
 	setActive(active);
-	setAttributes(attributes);
     }
 
     /**
@@ -152,11 +146,4 @@ public class CreatePermissionStatement extends AbstractSqlStatement {
 	this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
     }
 
-    public void setAttributes(final List<SqlStatement> attributes) {
-	this.attributes = attributes;
-    }
-
-    public List<SqlStatement> getAttributes() {
-	return this.attributes;
-    }
 }

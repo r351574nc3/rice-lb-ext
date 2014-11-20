@@ -42,6 +42,6 @@ public class DefaultCreatePermissionGenerator extends AbstractCreatePermissionGe
     @Override
     public boolean supports(final CreatePermissionStatement statement,
 			    final Database database) {
-	return !(database instanceof OracleDatabase);
+			return true;
     }
 }

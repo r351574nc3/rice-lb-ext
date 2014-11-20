@@ -87,7 +87,6 @@ public abstract class AbstractCreatePermissionGenerator extends AbstractKimSqlGe
 
 		final List<SqlStatement> retval = new ArrayList<SqlStatement>();
 		retval.add(insertPermission);
-		retval.addAll(statement.getAttributes());
 
 		return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
 	}
