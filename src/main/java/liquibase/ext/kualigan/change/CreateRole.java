@@ -41,7 +41,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
     private String name;
     private String namespace;
     private String description;
-    private String typeName;
+    private String type;
     private String typeNamespace;
     private String lastUpdated;
     private String active = "Y";
@@ -86,7 +86,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         return new SqlStatement[] { new CreateRoleStatement(getNamespace(),
 							    getName(),
 							    getDescription(),
-							    getTypeName(),
+							    getType(),
 							    getTypeNamespace(),
 							    getLastUpdated(),
 							    getActive(),
@@ -97,7 +97,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final String typeReference = getTypeForeignKey(database, getTypeName(), getTypeNamespace());
+	final String typeReference = getTypeForeignKey(database, getType(), getTypeNamespace());
 	final DeleteDataChange removeRole = new DeleteDataChange();
 	removeRole.setTableName("KRIM_ROLE_T");
 	removeRole.setWhereClause(String.format("role_nm = '%s' and kim_typ_id = '%s'", getName(), typeReference));
@@ -140,25 +140,15 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         this.name = name;
     }
 
-    /**
-     * Get the typeName attribute on this object
-     *
-     * @return typeName value
-     */
-    public String getTypeName() {
-        return this.typeName;
-    }
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * Set the typeName attribute on this object
-     *
-     * @param typeName value to set
-     */
-    public void setTypeName(final String typeName) {
-        this.typeName = typeName;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    /**
+	/**
      * Get the description attribute on this object
      *
      * @return description value

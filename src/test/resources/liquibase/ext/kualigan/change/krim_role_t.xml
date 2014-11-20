@@ -14,6 +14,6 @@
     </changeSet>
 
     <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
-        <kim:role namespace="KUALI" name="Tst Role" description="Description" typeName="Default" active="Y"/>
+        <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y"/>
     </changeSet>
 </databaseChangeLog>

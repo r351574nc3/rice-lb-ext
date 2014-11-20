@@ -42,6 +42,6 @@ public class DefaultCreateTypeGenerator extends AbstractCreateTypeGenerator {
     @Override
     public boolean supports(final CreateTypeStatement statement,
 			    final Database database) {
-	return !(database instanceof OracleDatabase);
+				return true;
     }
 }
