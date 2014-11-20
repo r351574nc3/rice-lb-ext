@@ -253,6 +253,7 @@ public abstract class KimAbstractChange extends AbstractChange implements Custom
 					};
 				}
 			};
+
 			return (String) ExecutorService.getInstance().getExecutor(database).queryForObject(getResponsibilityId, String.class);
 		} catch (DatabaseException e) {
 			throw new UnexpectedLiquibaseException(String.format("Unable to retrieve foreign key for 'Responsibility' (%s)", responsibilityName), e);
