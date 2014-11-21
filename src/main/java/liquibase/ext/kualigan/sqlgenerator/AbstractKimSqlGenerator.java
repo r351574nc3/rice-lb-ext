@@ -83,11 +83,11 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 	}
 
 	protected DatabaseFunction getPermissionTemplateForeignKey(final Database database, final String templateName) {
-		return new DatabaseFunction(String.format("select PERM_TMPL_ID from KRIM_PERM_TMPL_T where NM = '%s'", templateName));
+		return new DatabaseFunction(String.format("(select PERM_TMPL_ID from KRIM_PERM_TMPL_T where NM = '%s')", templateName));
 	}
 
 	protected DatabaseFunction getResponsibilityTemplateForeignKey(final Database database, final String templateName) {
-		return new DatabaseFunction(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s'", templateName));
+		return new DatabaseFunction(String.format("(select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s')", templateName));
 	}
 
 	protected DatabaseFunction getAttributeDefinitionForeignKey(final Database database, final String attributeDef) {
