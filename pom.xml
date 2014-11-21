@@ -195,6 +195,9 @@
           <version>${maven-surefire-plugin.version}</version>
           <configuration>
             <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+            <includes>
+              <include>**/*Tests.java</include>
+            </includes>
           </configuration>
 	</plugin>
 	<plugin>
@@ -273,7 +276,7 @@
     <ecl.license.url>http://maven.kuali.org/external/org/opensource/ecl/2.0/ecl-2.0.txt</ecl.license.url>
     <gpg.phase>install</gpg.phase>
     <github.global.server>github</github.global.server>
-    <junit.version>4.8.2</junit.version>
+    <junit.version>4.11</junit.version>
     <h2.version>1.3.168</h2.version>
     <kualigan-lb-extensions.version>2.0.1</kualigan-lb-extensions.version>
     <liquibase.version>3.2.0</liquibase.version>
