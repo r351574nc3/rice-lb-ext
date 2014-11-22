@@ -7,7 +7,7 @@
 
 
     <changeSet id="tst-role-mbr-attr-data" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.AddRoleMemberAttribute">
+        <customChange class="liquibase.ext.kualigan.change.AddRoleMemberAttribute">
             <param name="type" value="Default"/>
             <param name="attributeDef" value="beanName"/>
             <param name="roleName" value="User"/>

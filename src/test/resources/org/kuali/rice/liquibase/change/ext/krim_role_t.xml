@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 <changeSet id="tst-create-role" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.CreateRole">
+        <customChange class="liquibase.ext.kualigan.change.CreateRole">
             <param name="namespace" value="KUALI"/>
             <param name="name" value="Tst Role"/>
             <param name="description" value="Description"/>

@@ -6,7 +6,7 @@
                    http://www.liquibase.org/xml/ns/changelog-ext http://www.liquibase.org/xml/ns/changelog-ext">
 
     <changeSet id="tst-role-resp-action" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.AddRoleResponsibilityAction">
+        <customChange class="liquibase.ext.kualigan.change.AddRoleResponsibilityAction">
             <param name="roleName" value="User"/>
             <param name="responsibilityName" value="Line Manager"/>
             <param name="roleNamespace" value="KUALI"/>

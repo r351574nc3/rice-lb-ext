@@ -6,7 +6,7 @@
                    http://www.liquibase.org/xml/ns/changelog-ext http://www.liquibase.org/xml/ns/changelog-ext">
 
     <changeSet id="create-type" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.CreateType">
+        <customChange class="liquibase.ext.kualigan.change.CreateType">
             <param name="namespace" value="KFS-TEM"/>
             <param name="name" value="lb=ext Type"/>
             <param name="serviceName" value="Amend Service Name"/>

@@ -63,7 +63,7 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
 
     @Override
     protected String getSequenceName() {
-	return "krim_role_perm_id_s";
+        return "krim_role_perm_id_s";
     }
 
     /**
@@ -73,32 +73,32 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement assignPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_perm_t");
-	final BigInteger id = getPrimaryKey(database);
-	final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
-	final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
-
-	assignPermission.addColumnValue("role_perm_id", id);
-	assignPermission.addColumnValue("role_id", roleId);
-	assignPermission.addColumnValue("perm_id", permId);
-	assignPermission.addColumnValue("actv_ind", getActive());
-	assignPermission.addColumnValue("ver_nbr", 1);
-	assignPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
-
-	return new SqlStatement[]{
-	    assignPermission
-	};
+        final InsertStatement assignPermission = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_perm_t");
+        final BigInteger id = getPrimaryKey(database);
+        final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+        final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
+        
+        assignPermission.addColumnValue("role_perm_id", id);
+        assignPermission.addColumnValue("role_id", roleId);
+        assignPermission.addColumnValue("perm_id", permId);
+        assignPermission.addColumnValue("actv_ind", getActive());
+        assignPermission.addColumnValue("ver_nbr", 1);
+        assignPermission.addColumnValue("obj_id", UUID.randomUUID().toString());
+        
+        return new SqlStatement[]{
+            assignPermission
+        };
     }
 
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final DeleteDataChange undoAssign = new DeleteDataChange();
-	final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
-	final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
-	undoAssign.setTableName("krim_role_perm_t");
-	undoAssign.setWhereClause(String.format("role_id = '%s' and perm_id = '%s'", roleId, permId));
-	return undoAssign.generateStatements(database);
+        final DeleteDataChange undoAssign = new DeleteDataChange();
+        final String roleId = getRoleForeignKey(database, getRole(), getRoleNamespace());
+        final String permId = getPermissionForeignKey(database, getPermission(), getPermissionNamespace());
+        undoAssign.setTableName("krim_role_perm_t");
+        undoAssign.setWhereClause(String.format("role_id = '%s' and perm_id = '%s'", roleId, permId));
+        return undoAssign.generateStatements(database);
     }
 
     /**
@@ -174,10 +174,10 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     }
 
     public String getRoleNamespace() {
-	return roleNamespace;
+        return roleNamespace;
     }
 
     public void setRoleNamespace(String roleNamespace) {
-	this.roleNamespace = roleNamespace;
+        this.roleNamespace = roleNamespace;
     }
 }
