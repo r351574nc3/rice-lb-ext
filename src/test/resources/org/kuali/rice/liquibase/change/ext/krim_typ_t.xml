@@ -1,9 +1,10 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:kim="http://r351574nc3.github.io/xml/ns/changelog-ext"
+                   xmlns:kim="http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-                   http://r351574nc3.github.io/xml/ns/changelog-ext http://r351574nc3.github.io/xml/ns/changelog-ext">
+                   http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext
+                   http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext/changelog-ext.xsd">
 
     <changeSet id="create-type" author="lb-ext" context="default">
         <customChange class="liquibase.ext.kualigan.change.CreateType">
