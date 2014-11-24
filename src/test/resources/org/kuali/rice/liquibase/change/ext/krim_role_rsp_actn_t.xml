@@ -1,12 +1,13 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
+                   xmlns:kim="http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
-                   http://www.liquibase.org/xml/ns/changelog-ext http://www.liquibase.org/xml/ns/changelog-ext">
+                   http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext
+                   http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext/changelog-ext.xsd">
 
     <changeSet id="tst-role-resp-action" author="lb-ext" context="default">
-        <customChange class="liquibase.change.ext.AddRoleResponsibilityAction">
+        <customChange class="liquibase.ext.kualigan.change.AddRoleResponsibilityAction">
             <param name="roleName" value="User"/>
             <param name="responsibilityName" value="Line Manager"/>
             <param name="roleNamespace" value="KUALI"/>
