@@ -29,7 +29,7 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
+import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
@@ -37,8 +37,6 @@ import liquibase.sql.Sql;
 import liquibase.ext.kualigan.statement.AddRoleMemberAttributeStatement;
 
 import java.util.UUID;
-
-import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
 /**
  * Generic base class for generators mapped to the {@link CreateTypeStatement}
@@ -57,10 +55,12 @@ public abstract class AbstractAddMemberAttributeGenerator extends AbstractKimSql
                                      final Database database, 
 				     final SqlGeneratorChain generators) {
         final ValidationErrors retval = new ValidationErrors();
-        retval.checkRequiredField("role", statement.getRole());
-        retval.checkRequiredField("member", statement.getMember());
         retval.checkRequiredField("attributeDef", statement.getAttributeDef());
         retval.checkRequiredField("type", statement.getType());
+		    if (statement.getMemberFkSeq() == null){
+			    retval.checkRequiredField("role", statement.getRole());
+			    retval.checkRequiredField("member", statement.getMember());
+		    }
         return retval;
     }
 
@@ -75,9 +75,7 @@ public abstract class AbstractAddMemberAttributeGenerator extends AbstractKimSql
         final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_role_mbr_attr_data_t");
 	
 	insertAttribute.addColumnValue("attr_data_id", getPrimaryKey(database));
-	insertAttribute.addColumnValue("role_mbr_id", getRoleMemberForeignKey(database, 
-									      getRoleForeignKey(database, statement.getRole(), statement.getRoleNamespace()), 
-									      getPrincipalForeignKey(database, statement.getMember())));
+	insertAttribute.addColumnValue("role_mbr_id", getRoleMemberForeignKey(statement, database));
 	insertAttribute.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType()));
 	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getAttributeDef()));
 	insertAttribute.addColumnValue("attr_val", statement.getValue());
@@ -86,4 +84,15 @@ public abstract class AbstractAddMemberAttributeGenerator extends AbstractKimSql
 	
 	return SqlGeneratorFactory.getInstance().generateSql(insertAttribute, database);
     }
+
+	private DatabaseFunction getRoleMemberForeignKey(AddRoleMemberAttributeStatement statement, Database database) {
+		if (statement.getMemberFkSeq() != null){
+			return getForeignKeySequenceCurrentValue(database,statement.getMemberFkSeq());
+		}
+		return getRoleMemberForeignKey(database,
+										      getRoleForeignKey(database, statement.getRole(), statement.getRoleNamespace()),
+										      getPrincipalForeignKey(database, statement.getMember()));
+	}
+
+
 }

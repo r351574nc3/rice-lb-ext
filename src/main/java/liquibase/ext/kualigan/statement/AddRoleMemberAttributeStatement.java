@@ -27,11 +27,6 @@ package liquibase.ext.kualigan.statement;
 
 
 import liquibase.statement.AbstractSqlStatement;
-import liquibase.statement.SqlStatement;
-import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
-
-import java.util.List;
 
 /**
  * Statement basically exists solely to map and kick-off the sql generator chain
@@ -46,19 +41,15 @@ public class AddRoleMemberAttributeStatement extends AbstractSqlStatement {
 	protected String roleNamespace;
 	protected String member;
 	protected String value;
-	protected String unique;
-	protected String roleMemberId;
 	protected String active = "Y";
-
-	public AddRoleMemberAttributeStatement() {
-	}
+	private String memberFkSeq;
 
 	public AddRoleMemberAttributeStatement(final String type,
 					final String attributeDef,
+					final String value,
 					final String role,
 					final String roleNamespace,
-					final String member,
-					final String value) {
+					final String member) {
 		setType(type);
 		setAttributeDef(attributeDef);
 		setRoleNamespace(roleNamespace);
@@ -66,6 +57,17 @@ public class AddRoleMemberAttributeStatement extends AbstractSqlStatement {
 		setMember(member);
 		setValue(value);
 		setActive(active);
+	}
+
+	public AddRoleMemberAttributeStatement(final String type,
+					final String attributeDef,
+					final String value,
+					final String memberFkSeq) {
+		setType(type);
+		setAttributeDef(attributeDef);
+		setValue(value);
+		setActive(active);
+		setMemberFkSeq(memberFkSeq);
 	}
 
 
@@ -125,15 +127,11 @@ public class AddRoleMemberAttributeStatement extends AbstractSqlStatement {
 		this.value = value;
 	}
 
-	public boolean isUnique() {
-		return unique != null ? Boolean.valueOf(unique) : false;
+	public String getMemberFkSeq() {
+		return memberFkSeq;
 	}
 
-	public void setUnique(String unique) {
-		this.unique = unique;
-	}
-
-	public void setRoleMemberId(String roleMemberId) {
-		this.roleMemberId = roleMemberId;
+	public void setMemberFkSeq(String memberFkSeq) {
+		this.memberFkSeq = memberFkSeq;
 	}
 }

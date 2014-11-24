@@ -166,6 +166,12 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 		return new DatabaseFunction(String.format("(select rm.role_mbr_id  from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL IN ('%s'))", roleId, memberId, StringUtils.join(uniqueAttributeValues, "', '")));
 	}
 
+	protected DatabaseFunction getForeignKeySequenceCurrentValue(Database database, String memberFkSeq){
+		return new DatabaseFunction(database.supportsSequences()
+						? String.format("%s.CURRVAL", memberFkSeq)
+						: String.format("(select max(id) from %s)", memberFkSeq));
+	}
+
 	protected void incrementSequence(final Database database) {
 		try {
 			final SqlStatement incrementSequenceStatement = new RuntimeStatement() {
