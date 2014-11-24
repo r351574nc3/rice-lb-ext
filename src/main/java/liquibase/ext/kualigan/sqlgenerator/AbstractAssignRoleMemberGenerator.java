@@ -26,6 +26,8 @@
 package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.kualigan.statement.AssignRoleMemberStatement;
 import liquibase.sqlgenerator.SqlGeneratorChain;
@@ -36,6 +38,9 @@ import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -71,21 +76,20 @@ public abstract class AbstractAssignRoleMemberGenerator extends AbstractKimSqlGe
     public Sql[] generateSql(final AssignRoleMemberStatement statement,
 			     final Database database, 
 			     final SqlGeneratorChain chain) {
-	final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
 
-	assignRole.addColumnValue("role_mbr_id", getPrimaryKey(database));
-	assignRole.addColumnValue("role_id", getRoleForeignKey(database, statement.getRole(), statement.getNamespace()));
-	assignRole.addColumnValue("mbr_id", getMemberId(database, statement));
-	assignRole.addColumnValue("mbr_typ_cd", statement.getType());
-	assignRole.addColumnValue("ver_nbr", 1);
-	assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+					final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
 
-	final List<SqlStatement> retval = new ArrayList<SqlStatement>();
-	retval.add(assignRole);
-//	retval.addAll(statement.getAttributes());
-//	retval.addAll(statement.getActions());
-	
-	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
+					assignRole.addColumnValue("role_mbr_id", getPrimaryKey(database));
+					assignRole.addColumnValue("role_id", getRoleForeignKey(database, statement.getRole(), statement.getNamespace()));
+					assignRole.addColumnValue("mbr_id", getMemberId(database, statement));
+					assignRole.addColumnValue("mbr_typ_cd", statement.getType());
+					assignRole.addColumnValue("ver_nbr", 1);
+					assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+					final List<SqlStatement> retval = new ArrayList<SqlStatement>();
+					retval.add(assignRole);
+
+				return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
     }
 
     protected DatabaseFunction getMemberId(final Database database, final AssignRoleMemberStatement statement) {

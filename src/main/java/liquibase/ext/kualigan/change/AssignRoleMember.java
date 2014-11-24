@@ -78,9 +78,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	private List<SqlStatement> generateAddRoleMemberAttributeStatements(Database database) {
 		final List<SqlStatement> statements = new ArrayList<SqlStatement>();
 		for (final AddRoleMemberAttribute addAttribute : getAttribute()) {
-			addAttribute.setMember(member);
-			addAttribute.setRoleName(role);
-			addAttribute.setRoleNamespace(namespace);
+			addAttribute.setMemberFkSeq(getSequenceName());
 			statements.addAll(Arrays.asList(addAttribute.generateStatements(database)));
 		}
 		return statements;
@@ -89,9 +87,7 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 	private List<SqlStatement> generateRoleReponsibilityActionStatements(Database database) {
 		final List<SqlStatement> statements = new ArrayList<SqlStatement>();
 		for (final AddRoleResponsibilityAction addRoleResponsibilityAction : getAction()) {
-			addRoleResponsibilityAction.setMember(member);
-			addRoleResponsibilityAction.setRoleName(role);
-			addRoleResponsibilityAction.setRoleNamespace(namespace);
+			addRoleResponsibilityAction.setMemberFkSeq(getSequenceName());
 			statements.addAll(Arrays.asList(addRoleResponsibilityAction.generateStatements(database)));
 		}
 		return statements;
@@ -118,11 +114,11 @@ public class AssignRoleMember extends KimAbstractChange implements CustomSqlChan
 //
 //        List<SqlStatement> results = new ArrayList<SqlStatement>();
 //        for (AddRoleMemberAttribute addRoleMemberAttribute : attributes){
-//            addRoleMemberAttribute.setRoleMemberId(rolMemberId);
+//            addRoleMemberAttribute.setMemberFkSeq(rolMemberId);
 //            results.addAll(Arrays.asList(addRoleMemberAttribute.generateRollbackStatements(database)));
 //        }
 //        for (AddRoleResponsibilityAction action1 : action){
-//            action1.setRoleMemberId(rolMemberId);
+//            action1.setMemberFkSeq(rolMemberId);
 //            results.addAll(Arrays.asList(action1.generateRollbackStatements(database)));
 //        }
 //        results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
