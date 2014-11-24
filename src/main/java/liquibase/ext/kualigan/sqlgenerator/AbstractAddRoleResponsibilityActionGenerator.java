@@ -88,9 +88,12 @@ public abstract class AbstractAddRoleResponsibilityActionGenerator extends Abstr
 
 
     protected DatabaseFunction resolveRoleMember(final Database database, final AddRoleResponsibilityActionStatement statement) {
-	return getRoleMemberForeignKey(database, 
-				       getRoleForeignKey(database, statement.getRoleName(), statement.getRoleNamespace()),
-				       getPrincipalForeignKey(database, statement.getMember()));
+			if (statement.getMemberFkSeq() != null){
+				return getForeignKeySequenceCurrentValue(database, statement.getMemberFkSeq());
+			}
+	    return getRoleMemberForeignKey(database,
+						       getRoleForeignKey(database, statement.getRoleName(), statement.getRoleNamespace()),
+						       getPrincipalForeignKey(database, statement.getMember()));
     }
 
     protected DatabaseFunction resolveRoleResponsibility(final Database database, final AddRoleResponsibilityActionStatement statement) {

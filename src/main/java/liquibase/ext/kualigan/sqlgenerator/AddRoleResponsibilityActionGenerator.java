@@ -27,18 +27,19 @@ package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
+import liquibase.ext.kualigan.sqlgenerator.AbstractAddRoleResponsibilityActionGenerator;
 
 import liquibase.ext.kualigan.statement.AddRoleResponsibilityActionStatement;
 
 /**
- * Generic base class for generators mapped to the {@link AddResponsibilityActionStatement}
+ * Generic base class for generators mapped to the {@link CreateTypeStatement}
  *
  * @author Leo Przybylski
  */
-public class DefaultAddRoleResponsibilityActionGenerator extends AbstractAddRoleResponsibilityActionGenerator {
+public class AddRoleResponsibilityActionGenerator extends AbstractAddRoleResponsibilityActionGenerator {
     @Override
     public boolean supports(final AddRoleResponsibilityActionStatement statement,
 			    final Database database) {
-	return !(database instanceof OracleDatabase);
+				return true;
     }
 }

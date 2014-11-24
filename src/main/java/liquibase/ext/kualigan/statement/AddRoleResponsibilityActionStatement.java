@@ -43,28 +43,30 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
     protected String force;
     protected String actionTypeCode;
     protected String actionPolicyCode;
-    protected String roleMemberId;
+    protected String memberFkSeq;
 
-    public AddRoleResponsibilityActionStatement() {
+    public AddRoleResponsibilityActionStatement(final String responsibility, final String priority, final String force, final String actionTypeCode, final String actionPolicyCode, final String roleNamespace,
+				    final String roleName,
+				    final String member) {
+			setRoleNamespace(roleNamespace);
+			setRoleName(roleName);
+			setResponsibility(responsibility);
+			setMember(member);
+			setPriority(priority);
+			setForce(force);
+			setActionTypeCode(actionTypeCode);
+			setActionPolicyCode(actionPolicyCode);
     }
 
-    public AddRoleResponsibilityActionStatement(final String roleNamespace,
-						final String roleName,
-						final String responsibility,
-						final String member,
-						final String priority,
-						final String force,
-						final String actionTypeCode,
-						final String actionPolicyCode) {
-	setRoleNamespace(roleNamespace);
-	setRoleName(roleName);
-	setResponsibility(responsibility);
-	setMember(member);
-	setPriority(priority);
-	setForce(force);
-	setActionTypeCode(actionTypeCode);
-	setActionPolicyCode(actionPolicyCode);
-    }
+	public AddRoleResponsibilityActionStatement(final String responsibility, final String priority, final String force, final String actionTypeCode, final String actionPolicyCode,
+		final String memberFkSeq) {
+		setResponsibility(responsibility);
+		setPriority(priority);
+		setForce(force);
+		setActionTypeCode(actionTypeCode);
+		setActionPolicyCode(actionPolicyCode);
+		setMemberFkSeq(memberFkSeq);
+	}
 
     /**
      * Get the roleNamespace attribute on this object
@@ -197,10 +199,14 @@ public class AddRoleResponsibilityActionStatement extends AbstractSqlStatement {
     }
 
     public void setMember(String member) {
-	this.member = member;
+			this.member = member;
     }
 
-    public void setRoleMemberId(String roleMemberId) {
-	this.roleMemberId = roleMemberId;
+    public void setMemberFkSeq(String memberFkSeq) {
+			this.memberFkSeq = memberFkSeq;
     }
+
+	public String getMemberFkSeq() {
+		return memberFkSeq;
+	}
 }
