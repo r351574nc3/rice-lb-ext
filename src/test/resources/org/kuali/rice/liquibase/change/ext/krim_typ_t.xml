@@ -10,13 +10,13 @@
         <customChange class="liquibase.ext.kualigan.change.CreateType">
             <param name="namespace" value="KFS-TEM"/>
             <param name="name" value="lb=ext Type"/>
-            <param name="serviceName" value="Amend Service Name"/>
+            <param name="service" value="Amend Service Name"/>
             <param name="active" value="Y"/>
         </customChange>
     </changeSet>
 
     <changeSet id="create-type:custom-ns" author="lb-ext" context="custom-namespace">
-        <kim:type namespace="KFS-TEM" name="lb=ext Type" serviceName="Amend Service" active="Y"/>
+        <kim:type namespace="KFS-TEM" name="lb=ext Type" service="Amend Service" active="Y"/>
     </changeSet>
 
 
