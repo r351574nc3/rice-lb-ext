@@ -44,7 +44,7 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 	private String force;
 	private String actionTypeCode;
 	private String actionPolicyCode;
-	private String roleMemberId;
+	private String memberFkSeq;
 
 
 	public AddRoleResponsibilityAction() {
@@ -63,28 +63,29 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 	 * @return an array of {@link String}s with the statements
 	 */
 	public SqlStatement[] generateStatements(final Database database) {
-		return new SqlStatement[]{new AddRoleResponsibilityActionStatement(
-						getRoleNamespace(),
-						getRoleName(),
-						getResponsibilityName(),
-						getMember(),
-						getPriority(),
-						getForce(),
-						getActionTypeCode(),
-						getActionPolicyCode())
-		};
+		AddRoleResponsibilityActionStatement statement;
+		if (memberFkSeq != null){
+			statement = new AddRoleResponsibilityActionStatement(	getResponsibilityName(), getPriority(), getForce(), getActionTypeCode(), getActionPolicyCode(), memberFkSeq);
+		}
+		else{
+			statement = new AddRoleResponsibilityActionStatement(
+							getResponsibilityName(), getPriority(), getForce(), getActionTypeCode(), getActionPolicyCode(), getRoleNamespace(),
+							getRoleName(),
+							getMember());
+		}
+		return new SqlStatement[]{statement};
 	}
 
 	@Override
 	public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
 		final String roleRespId = resolveRoleResponsibility(database);
-		if (roleMemberId == null) {
-			roleMemberId = resolveRoleMember(database);
+		if (memberFkSeq == null) {
+			memberFkSeq = resolveRoleMember(database);
 		}
 
 		final DeleteDataChange undoAssign = new DeleteDataChange();
 		undoAssign.setTableName("krim_role_rsp_actn_t");
-		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '%s'", roleRespId, roleMemberId));
+		undoAssign.setWhereClause(String.format("role_rsp_id = '%s' and role_mbr_id = '%s'", roleRespId, memberFkSeq));
 		return undoAssign.generateStatements(database);
 	}
 
@@ -222,8 +223,8 @@ public class AddRoleResponsibilityAction extends KimAbstractChange implements Cu
 		this.member = member;
 	}
 
-	public void setRoleMemberId(String roleMemberId) {
-		this.roleMemberId = roleMemberId;
+	public void setMemberFkSeq(String memberFkSeq) {
+		this.memberFkSeq = memberFkSeq;
 	}
 
 
