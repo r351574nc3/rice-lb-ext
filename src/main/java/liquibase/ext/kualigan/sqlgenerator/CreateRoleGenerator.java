@@ -23,7 +23,7 @@
 // The views and conclusions contained in the software and documentation are those of the
 // authors and should not be interpreted as representing official policies, either expressed
 // or implied, of Leo Przybylski.
-package liquibase.ext.kualigan.sqlgenerator.oracle;
+package liquibase.ext.kualigan.sqlgenerator;
 
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
@@ -43,6 +43,6 @@ public class CreateRoleGenerator extends AbstractCreateRoleGenerator {
     @Override
     public boolean supports(final CreateRoleStatement statement,
 			    final Database database) {
-	return database instanceof OracleDatabase;
+			return true;
     }
 }
