@@ -20,14 +20,8 @@ import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.DeleteDataChange;
 import liquibase.database.Database;
 import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.ext.kualigan.statement.AddPermissionAttributeStatement;
-import liquibase.ext.kualigan.statement.CreateRoleStatement;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.InsertStatement;
-
-import java.math.BigInteger;
-import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
 
@@ -57,7 +51,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	protected String permission;
 	protected String type;
 	protected String active = "Y";
-	protected String permissionId;
+	protected String permissionFkSeq;
 
 	public AddPermissionAttribute() {
 		super("permissionAttribute", "Adding an attribute to a permission to KIM", EXTENSION_PRIORITY);
@@ -70,12 +64,13 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	 * @return an array of {@link String}s with the statements
 	 */
 	public SqlStatement[] generateStatements(final Database database) {
-		return new SqlStatement[] { new AddPermissionAttributeStatement(getNamespace(),
-						getValue(),
-						getAttributeDef(),
-						getPermission(),
-						getType(),
-						getActive())
+		AddPermissionAttributeStatement addPermissionAttributeStatement;
+		if (permissionFkSeq != null){
+			addPermissionAttributeStatement = new AddPermissionAttributeStatement(getValue(), getAttributeDef(), getType(), getActive(), getPermissionFkSeq());
+		}
+		addPermissionAttributeStatement = new AddPermissionAttributeStatement(getValue(), getAttributeDef(), getType(), getActive(), getPermission(), getNamespace());
+		return new SqlStatement[] {
+				addPermissionAttributeStatement
 		};
 	}
 
@@ -89,15 +84,15 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
 		final DeleteDataChange removeAttribute = new DeleteDataChange();
 		removeAttribute.setTableName("krim_perm_attr_data_t");
-		if (permissionId == null) {
-			permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+		if (permissionFkSeq == null) {
+			permissionFkSeq = getPermissionForeignKey(database, getPermission(), getNamespace());
 		}
 		final String typeId = getTypeForeignKey(database, getType());
 		final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
 		final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
 
 		removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
-						permissionId, typeId, definitionId));
+						permissionFkSeq, typeId, definitionId));
 		return removeAttribute.generateStatements(database);
 	}
 
@@ -235,5 +230,11 @@ public class AddPermissionAttribute extends KimAbstractChange {
 		this.active = active;
 	}
 
+	public String getPermissionFkSeq() {
+		return permissionFkSeq;
+	}
 
+	public void setPermissionFkSeq(String permissionFkSeq) {
+		this.permissionFkSeq = permissionFkSeq;
+	}
 }

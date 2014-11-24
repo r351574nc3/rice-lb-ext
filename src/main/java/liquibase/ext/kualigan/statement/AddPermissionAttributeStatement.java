@@ -41,24 +41,23 @@ public class AddPermissionAttributeStatement extends AbstractSqlStatement {
 	protected String permission;
 	protected String type;
 	protected String active = "Y";
-	protected String permissionId;
+	protected String permissionFkSeq;
 
-
-	public AddPermissionAttributeStatement() {
-	}
-
-	public AddPermissionAttributeStatement(final String namespace,
-	                                       final String value,
-	                                       final String attributeDef,
-	                                       final String permission,
-	                                       final String type,
-	                                       final String active) {
+	public AddPermissionAttributeStatement(final String value, final String attributeDef, final String type, final String active, final String permission, final String namespace) {
 		setNamespace(namespace);
 		setValue(value);
 		setAttributeDef(attributeDef);
 		setPermission(permission);
 		setType(type);
 		setActive(active);
+	}
+
+	public AddPermissionAttributeStatement(final String value, final String attributeDef, final String type, final String active, final String permissionFkSeq) {
+		setValue(value);
+		setAttributeDef(attributeDef);
+		setType(type);
+		setActive(active);
+		setPermissionFkSeq(permissionFkSeq);
 	}
 
 
@@ -170,8 +169,11 @@ public class AddPermissionAttributeStatement extends AbstractSqlStatement {
 		this.active = active;
 	}
 
-	public void setPermissionId(String permissionId) {
-		this.permissionId = permissionId;
+	public void setPermissionFkSeq(String permissionFkSeq) {
+		this.permissionFkSeq = permissionFkSeq;
 	}
 
+	public String getPermissionFkSeq() {
+		return permissionFkSeq;
+	}
 }

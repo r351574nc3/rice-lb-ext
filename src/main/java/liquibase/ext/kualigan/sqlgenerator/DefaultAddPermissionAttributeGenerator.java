@@ -42,6 +42,6 @@ public class DefaultAddPermissionAttributeGenerator extends AbstractAddPermissio
     @Override
     public boolean supports(final AddPermissionAttributeStatement statement,
 			    final Database database) {
-	return !(database instanceof OracleDatabase);
+			return true;
     }
 }

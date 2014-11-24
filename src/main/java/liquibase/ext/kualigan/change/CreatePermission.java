@@ -67,8 +67,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	private List<SqlStatement> generatePermissionAttributeStatements(Database database) {
 		final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
 		for (final AddPermissionAttribute attribute : getAttribute()) {
-			attribute.setPermission(this.name);
-			attribute.setNamespace(this.namespace);
+			attribute.setPermissionFkSeq(this.getSequenceName());
 			attributeStatements.addAll(Arrays.asList(attribute.generateStatements(database)));
 		}
 		return attributeStatements;
