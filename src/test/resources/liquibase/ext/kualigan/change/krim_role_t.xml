@@ -8,7 +8,7 @@
             <param name="namespace" value="KUALI"/>
             <param name="name" value="Tst Role"/>
             <param name="description" value="Description"/>
-            <param name="typeName" value="Default"/>
+            <param name="type" value="Default"/>
             <param name="active" value="Y"/>
         </customChange>
     </changeSet>
