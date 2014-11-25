@@ -67,8 +67,9 @@ public class AddPermissionAttribute extends KimAbstractChange {
 		AddPermissionAttributeStatement addPermissionAttributeStatement;
 		if (permissionFkSeq != null){
 			addPermissionAttributeStatement = new AddPermissionAttributeStatement(getValue(), getAttributeDef(), getType(), getActive(), getPermissionFkSeq());
+		} else{
+			addPermissionAttributeStatement = new AddPermissionAttributeStatement(getValue(), getAttributeDef(), getType(), getActive(), getPermission(), getNamespace());
 		}
-		addPermissionAttributeStatement = new AddPermissionAttributeStatement(getValue(), getAttributeDef(), getType(), getActive(), getPermission(), getNamespace());
 		return new SqlStatement[] {
 				addPermissionAttributeStatement
 		};
