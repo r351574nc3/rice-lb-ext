@@ -55,7 +55,7 @@ public abstract class KimChangeBaseTest {
 
     private void performUpdateAndRollback(String context) throws Exception{
         //given
-        Liquibase liquibase = new Liquibase("org/kuali/rice/liquibase/change/ext/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/ext/kualigan/change/" + entityName() + ".xml", new ClassLoaderResourceAccessor(), database);
         //when
         liquibase.update(context);
         //then
@@ -68,7 +68,10 @@ public abstract class KimChangeBaseTest {
     }
 
     private ResultSet getEntityResultSet(String whereClause) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(String.format("select * from %s where %s", entityName(), whereClause));
+        final String query = String.format("select * from %s where %s", entityName(), whereClause);
+        System.out.println("Using query " + query);
+        
+        final PreparedStatement ps = connection.prepareStatement(query);
         return ps.executeQuery();
     }
 }
