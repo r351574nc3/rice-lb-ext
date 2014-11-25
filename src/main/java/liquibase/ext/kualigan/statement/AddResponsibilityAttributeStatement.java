@@ -39,6 +39,7 @@ public class AddResponsibilityAttributeStatement extends AbstractSqlStatement {
 	protected String attributeDef;
 	protected String type;
 	protected String responsibility;
+	private String responsibilityFkSeq;
 
 	public AddResponsibilityAttributeStatement() {
 	}
@@ -64,5 +65,13 @@ public class AddResponsibilityAttributeStatement extends AbstractSqlStatement {
 
 	public String getResponsibility() {
 		return responsibility;
+	}
+
+	public String getResponsibilityFkSeq() {
+		return responsibilityFkSeq;
+	}
+
+	public void setResponsibilityFkSeq(String responsibilityFkSeq) {
+		this.responsibilityFkSeq = responsibilityFkSeq;
 	}
 }

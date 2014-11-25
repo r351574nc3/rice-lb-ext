@@ -81,7 +81,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	private List<SqlStatement> generateReponsibilityAttributeStatements(Database database) {
 		final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
 		for (final AddResponsibilityAttribute attribute : getAttribute()) {
-			attribute.setResponsibility(this.name);
+			attribute.setResponsibilityFkSeq(getSequenceName());
 			attributeStatements.addAll(Arrays.asList(attribute.generateStatements(database)));
 		}
 		return attributeStatements;

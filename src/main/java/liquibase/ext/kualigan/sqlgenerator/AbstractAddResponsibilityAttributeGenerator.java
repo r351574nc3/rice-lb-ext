@@ -29,6 +29,7 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
+import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
@@ -72,7 +73,7 @@ public abstract class AbstractAddResponsibilityAttributeGenerator extends Abstra
 	final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_rsp_attr_data_t");
 
 	insertAttribute.addColumnValue("attr_data_id", getPrimaryKey(database));
-	insertAttribute.addColumnValue("rsp_id", getResponsibilityForeignKey(database, statement.getResponsibility()));
+	insertAttribute.addColumnValue("rsp_id", getResponsibilityForeignKey(statement, database));
 	insertAttribute.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType()));
 	insertAttribute.addColumnValue("kim_attr_defn_id", getAttributeDefinitionForeignKey(database, statement.getAttributeDef()));
 	insertAttribute.addColumnValue("attr_val", statement.getValue());
@@ -81,4 +82,11 @@ public abstract class AbstractAddResponsibilityAttributeGenerator extends Abstra
 
 	return SqlGeneratorFactory.getInstance().generateSql(insertAttribute, database);
     }
+
+	private DatabaseFunction getResponsibilityForeignKey(AddResponsibilityAttributeStatement statement, Database database) {
+		if (statement.getResponsibilityFkSeq() != null){
+			return getForeignKeySequenceCurrentValue(database, statement.getResponsibilityFkSeq());
+		}
+		return getResponsibilityForeignKey(database, statement.getResponsibility());
+	}
 }

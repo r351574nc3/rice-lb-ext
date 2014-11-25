@@ -48,6 +48,7 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 	private String value;
 	private String responsibility;
 	//todo: add responsibility namespace
+	private String responsibilityFkSeq;
 
 	public AddResponsibilityAttribute() {
         super("responsibilityAttribute", "Adding an attribute to a responsibility to KIM", EXTENSION_PRIORITY);
@@ -65,10 +66,12 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	    return new SqlStatement[]{new AddResponsibilityAttributeStatement(getValue(),
+	    AddResponsibilityAttributeStatement addResponsibilityAttributeStatement = new AddResponsibilityAttributeStatement(getValue(),
 					    getAttributeDef(),
 					    getType(),
-					    getResponsibility())};
+					    getResponsibility());
+	    addResponsibilityAttributeStatement.setResponsibilityFkSeq(responsibilityFkSeq);
+	    return new SqlStatement[]{addResponsibilityAttributeStatement};
     }
 
 
@@ -148,4 +151,11 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
 		this.responsibility = responsibility;
 	}
 
+	public String getResponsibilityFkSeq() {
+		return responsibilityFkSeq;
+	}
+
+	public void setResponsibilityFkSeq(String responsibilityFkSeq) {
+		this.responsibilityFkSeq = responsibilityFkSeq;
+	}
 }
