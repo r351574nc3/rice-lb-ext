@@ -51,15 +51,15 @@ public class CreateTypeStatement extends AbstractSqlStatement {
     }
 
     public CreateTypeStatement(final String namespace,
-			       final String name, 
-			       final String service,
-			       final String active,
-			       final List<SqlStatement> attributes) {
-	setNamespace(namespace);
-	setName(name);
-	setService(service);
-	setActive(active);
-	setAttributes(attributes);
+                               final String name, 
+                               final String service,
+                               final String active,
+                               final List<SqlStatement> attributes) {
+        setNamespace(namespace);
+        setName(name);
+        setService(service);
+        setActive(active);
+        setAttributes(attributes);
     }
 
 
@@ -155,18 +155,18 @@ public class CreateTypeStatement extends AbstractSqlStatement {
 
 
     public String getUniqueAttributeDefinitions() {
-	return uniqueAttributeDefinitions;
+        return uniqueAttributeDefinitions;
     }
 
     public void setUniqueAttributeDefinitions(final String uniqueAttributeDefinitions) {
-	this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
+        this.uniqueAttributeDefinitions = uniqueAttributeDefinitions;
     }
 
     public void setAttributes(final List<SqlStatement> attributes) {
-	this.attributes = attributes;
+        this.attributes = attributes;
     }
 
     public List<SqlStatement> getAttributes() {
-	return this.attributes;
+        return this.attributes;
     }
 }

@@ -54,7 +54,7 @@ public class AssignKimTypeAttribute extends KimAbstractChange implements CustomS
 
     @Override
     protected String getSequenceName() {
-	return "KRIM_TYP_ATTR_ID_S";
+        return "KRIM_TYP_ATTR_ID_S";
     }
 
     /**
@@ -64,29 +64,29 @@ public class AssignKimTypeAttribute extends KimAbstractChange implements CustomS
      * @return an array of {@link String}s with the statements
      */
     public SqlStatement[] generateStatements(final Database database) {
-	final InsertStatement assignAttribute = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_TYP_ATTR_T");
-	final BigInteger id      = getPrimaryKey(database);
-	final String attributeId = getAttributeDefinitionForeignKey(database, getAttribute());
-	final String typeId      = getTypeForeignKey(database, getType(), getNamespace());
+        final InsertStatement assignAttribute = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_TYP_ATTR_T");
+        final BigInteger id      = getPrimaryKey(database);
+        final String attributeId = getAttributeDefinitionForeignKey(database, getAttribute());
+        final String typeId      = getTypeForeignKey(database, getType(), getNamespace());
 
-	assignAttribute.addColumnValue("KIM_TYP_ATTR_ID", id);
-	assignAttribute.addColumnValue("KIM_TYP_ID", typeId);
-	assignAttribute.addColumnValue("KIM_ATTR_DEFN_ID", attributeId);
-	assignAttribute.addColumnValue("ACTV_IND", getActive());
-	assignAttribute.addColumnValue("ver_nbr", 1);
-	assignAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
+        assignAttribute.addColumnValue("KIM_TYP_ATTR_ID", id);
+        assignAttribute.addColumnValue("KIM_TYP_ID", typeId);
+        assignAttribute.addColumnValue("KIM_ATTR_DEFN_ID", attributeId);
+        assignAttribute.addColumnValue("ACTV_IND", getActive());
+        assignAttribute.addColumnValue("ver_nbr", 1);
+        assignAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	final List<SqlStatement> results = new ArrayList<SqlStatement>();
-	results.add(assignAttribute);
-	return results.toArray(new SqlStatement[results.size()]);
+        final List<SqlStatement> results = new ArrayList<SqlStatement>();
+        results.add(assignAttribute);
+        return results.toArray(new SqlStatement[results.size()]);
     }
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final DropKimTypeAttribute undoAssign = new DropKimTypeAttribute(getNamespace(), getType(), getAttribute());
-	final List<SqlStatement> results = new ArrayList<SqlStatement>();
-	results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
-	return results.toArray(new SqlStatement[results.size()]);
+        final DropKimTypeAttribute undoAssign = new DropKimTypeAttribute(getNamespace(), getType(), getAttribute());
+        final List<SqlStatement> results = new ArrayList<SqlStatement>();
+        results.addAll(Arrays.asList(undoAssign.generateStatements(database)));
+        return results.toArray(new SqlStatement[results.size()]);
     }
 
     /**

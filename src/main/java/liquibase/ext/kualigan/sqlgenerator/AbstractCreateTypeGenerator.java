@@ -49,14 +49,14 @@ public abstract class AbstractCreateTypeGenerator extends AbstractKimSqlGenerato
 
 
     @Override
-    protected String getSequenceName() {
-	return "krim_typ_id_s";
+        protected String getSequenceName() {
+        return "krim_typ_id_s";
     }
 
     @Override
-    public ValidationErrors validate(final CreateTypeStatement statement,
-                                     final Database database, 
-				     final SqlGeneratorChain generators) {
+        public ValidationErrors validate(final CreateTypeStatement statement,
+                                         final Database database, 
+                                         final SqlGeneratorChain generators) {
         final ValidationErrors retval = new ValidationErrors();
         retval.checkRequiredField("namespace", statement.getNamespace());
         retval.checkRequiredField("name", statement.getName());
@@ -70,17 +70,17 @@ public abstract class AbstractCreateTypeGenerator extends AbstractKimSqlGenerato
      * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
      */
     public Sql[] generateSql(final CreateTypeStatement statement, 
-			     final Database database, 
-			     final SqlGeneratorChain chain) {
-	final InsertStatement insertType = new InsertStatement(null, database.getDefaultSchemaName(), "krim_typ_t");
-	insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
-	insertType.addColumnValue("nmspc_cd", statement.getNamespace());
-	insertType.addColumnValue("nm", statement.getName());
-	insertType.addColumnValue("srvc_nm", statement.getService());
-	insertType.addColumnValue("actv_ind", statement.getActive());
-	insertType.addColumnValue("ver_nbr", 1);
-	insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
+                             final Database database, 
+                             final SqlGeneratorChain chain) {
+        final InsertStatement insertType = new InsertStatement(null, database.getDefaultSchemaName(), "krim_typ_t");
+        insertType.addColumnValue("kim_typ_id", getPrimaryKey(database));
+        insertType.addColumnValue("nmspc_cd", statement.getNamespace());
+        insertType.addColumnValue("nm", statement.getName());
+        insertType.addColumnValue("srvc_nm", statement.getService());
+        insertType.addColumnValue("actv_ind", statement.getActive());
+        insertType.addColumnValue("ver_nbr", 1);
+        insertType.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	return SqlGeneratorFactory.getInstance().generateSql(insertType, database);
+        return SqlGeneratorFactory.getInstance().generateSql(insertType, database);
     }
 }

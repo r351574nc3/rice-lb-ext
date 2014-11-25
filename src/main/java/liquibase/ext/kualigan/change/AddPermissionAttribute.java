@@ -68,14 +68,14 @@ public class AddPermissionAttribute extends KimAbstractChange {
      */
     public SqlStatement[] generateStatements(final Database database) {
         final InsertStatement insertAttribute = new InsertStatement("", database.getDefaultSchemaName(), "krim_perm_attr_data_t");
-	final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
+        final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
         try {
             final BigInteger attributeId = getPrimaryKey(database);
-	    if (permissionId == null){
-		permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
-	    }
+            if (permissionId == null){
+                permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+            }
 
-	    final String typeId = getTypeForeignKey(database, getType());
+            final String typeId = getTypeForeignKey(database, getType());
             final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
 
             insertAttribute.addColumnValue("attr_data_id", attributeId);
@@ -86,9 +86,9 @@ public class AddPermissionAttribute extends KimAbstractChange {
             insertAttribute.addColumnValue("ver_nbr", 1);
             insertAttribute.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	    return new SqlStatement[] {
-		insertAttribute
-	    };
+            return new SqlStatement[] {
+                insertAttribute
+            };
         }
         catch (Exception e) {
             throw new UnexpectedLiquibaseException(String.format("Unable to generate sql statements for 'Permission Attribute' (perm: %s, name: %s, attr_def: %s)'", getPermission(), getValue(), attrName), e);
@@ -97,24 +97,24 @@ public class AddPermissionAttribute extends KimAbstractChange {
 
     @Override
     protected String getSequenceName() {
-	return "KRIM_ATTR_DATA_ID_S";
+        return "KRIM_ATTR_DATA_ID_S";
     }
 
 
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
-	final DeleteDataChange removeAttribute = new DeleteDataChange();
-	removeAttribute.setTableName("krim_perm_attr_data_t");
-	if (permissionId == null){
-	    permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
-	}
-	final String typeId = getTypeForeignKey(database, getType());
-	final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
-	final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
+        final DeleteDataChange removeAttribute = new DeleteDataChange();
+        removeAttribute.setTableName("krim_perm_attr_data_t");
+        if (permissionId == null){
+            permissionId = getPermissionForeignKey(database, getPermission(), getNamespace());
+        }
+        final String typeId = getTypeForeignKey(database, getType());
+        final String attrName = getAttributeDef() != null ? getAttributeDef() : getName();
+        final String definitionId = getAttributeDefinitionForeignKey(database, attrName);
 
-	removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
-						     permissionId, typeId, definitionId));
-	return removeAttribute.generateStatements(database);
+        removeAttribute.setWhereClause(String.format("perm_id = '%s' AND kim_typ_id = '%s' AND kim_attr_defn_id = '%s'",
+                                                     permissionId, typeId, definitionId));
+        return removeAttribute.generateStatements(database);
     }
 
 
@@ -143,7 +143,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
      * @return name value
      */
     public String getName() {
-	return this.name;
+        return this.name;
     }
 
     /**
@@ -252,7 +252,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
     }
 
     public void setPermissionId(String permissionId) {
-	this.permissionId = permissionId;
+        this.permissionId = permissionId;
     }
 
 }

@@ -81,7 +81,7 @@ public class CreateType extends KimAbstractChange {
     public SqlStatement[] generateStatements(final Database database) {
         
         final List<SqlStatement> attributeStatements = new ArrayList<SqlStatement>();
-        
+
         for (final AssignKimTypeAttribute attribute : getAttributes()) {
             for (final SqlStatement statement : attribute.generateStatements(database)) {
                 attributeStatements.add(statement);
