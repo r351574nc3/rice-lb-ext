@@ -196,7 +196,7 @@
           <configuration>
             <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
             <includes>
-              <include>**/*Tests.java</include>
+              <include>**/*Test.java</include>
             </includes>
           </configuration>
 	</plugin>
