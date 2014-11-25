@@ -50,26 +50,26 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 
 
     protected DatabaseFunction getPrimaryKey(final Database database) {
-	return database.supportsSequences() ? getPrimaryKey(database, false) : getPrimaryKey(database, true);
+        return database.supportsSequences() ? getPrimaryKey(database, false) : getPrimaryKey(database, true);
     }
 
     protected DatabaseFunction getPrimaryKey(final Database database, final boolean shouldIncrement) {
-	if (shouldIncrement) {
-	    incrementSequence(database);
-	}
-	final String subQuery = database.supportsSequences() 
-	    ? String.format("%s.NEXTVAL()", getSequenceName()) 
-	    : String.format("(select max(id) from %s)", getSequenceName());
+        if (shouldIncrement) {
+            incrementSequence(database);
+        }
+        final String subQuery = database.supportsSequences() 
+            ? String.format("%s.NEXTVAL", getSequenceName()) 
+            : String.format("(select max(id) from %s)", getSequenceName());
 
-	return new DatabaseFunction(subQuery);
+        return new DatabaseFunction(subQuery);
     }
 
     protected DatabaseFunction getPermissionTemplateForeignKey(final Database database, final String templateName) {
-	return new DatabaseFunction(String.format("select PERM_TMPL_ID from KRIM_PERM_TMPL_T where NM = '%s'", templateName));
+        return new DatabaseFunction(String.format("select PERM_TMPL_ID from KRIM_PERM_TMPL_T where NM = '%s'", templateName));
     }
 
     protected DatabaseFunction getResponsibilityTemplateForeignKey(final Database database, final String templateName) {
-	return new DatabaseFunction(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s'", templateName));
+        return new DatabaseFunction(String.format("select RSP_TMPL_ID from KRIM_RSP_TMPL_T where nm = '%s'", templateName));
     }
 
     protected DatabaseFunction getAttributeDefinitionForeignKey(final Database database, final String attributeDef){
@@ -88,7 +88,7 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
     }
 
     protected DatabaseFunction getPermissionForeignKey(final Database database, final String permissionName, final String permissionNameSpace){
-	return new DatabaseFunction(String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s')", permissionName, permissionNameSpace));
+        return new DatabaseFunction(String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s')", permissionName, permissionNameSpace));
     }
 
     protected DatabaseFunction getPermissionForeignKey(final Database database, final String permissionName, final String permissionNameSpace, final String permissionTemplate){
@@ -96,51 +96,51 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
             return getPermissionForeignKey(database,permissionName,permissionNameSpace);
         }
 
-	final DatabaseFunction permissionTemplateId = getPermissionTemplateForeignKey(database,permissionTemplate);
-	return new DatabaseFunction(String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s' and perm_tmpl_id IN '%s')", permissionName, permissionNameSpace, permissionTemplateId));
+        final DatabaseFunction permissionTemplateId = getPermissionTemplateForeignKey(database,permissionTemplate);
+        return new DatabaseFunction(String.format("(select PERM_ID from KRIM_PERM_T where nm = '%s' and NMSPC_CD = '%s' and perm_tmpl_id IN '%s')", permissionName, permissionNameSpace, permissionTemplateId));
     }
 
 
     protected DatabaseFunction getRoleForeignKey(final Database database, final String roleName, final String namespaceCode) {
-	return new DatabaseFunction(String.format("(eselect ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", roleName, namespaceCode));
+        return new DatabaseFunction(String.format("(eselect ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", roleName, namespaceCode));
     }
 
     protected DatabaseFunction getPrincipalForeignKey(final Database database, final String memberName) {
-	return new DatabaseFunction(String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s')", memberName));
+        return new DatabaseFunction(String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s')", memberName));
     }
 
     protected DatabaseFunction getResponsibilityForeignKey(final Database database, final String responsibilityName) {
-	return new DatabaseFunction(String.format("(select rsp_id from krim_rsp_t where nm = '%s')", responsibilityName));
+        return new DatabaseFunction(String.format("(select rsp_id from krim_rsp_t where nm = '%s')", responsibilityName));
     }
     
     protected DatabaseFunction getResponsibilityForeignKey(final Database database, final String responsibilityName, final String responsibilityNamespace) {
         if (responsibilityNamespace == null){
             return getResponsibilityForeignKey(database,responsibilityName);
         }
-	return new DatabaseFunction(String.format("(select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s')", responsibilityName, responsibilityNamespace));
+        return new DatabaseFunction(String.format("(select rsp_id from krim_rsp_t where nm = '%s' and nmspc_cd = '%s')", responsibilityName, responsibilityNamespace));
     }
 
     protected DatabaseFunction getRoleResponsibilityForeignKey(final Database database, final String roleId , final String responsibilityId) {
-	return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s')", roleId, responsibilityId));
+        return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id = '%s' and rsp_id = '%s')", roleId, responsibilityId));
     }
 
     protected DatabaseFunction getRoleResponsibilityForeignKey(final Database database, final DatabaseFunction roleId , final DatabaseFunction responsibilityId) {
-	return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id IN '%s' and rsp_id IN '%s')", roleId, responsibilityId));
+        return new DatabaseFunction(String.format("(select role_rsp_id from krim_role_rsp_t where role_id IN '%s' and rsp_id IN '%s')", roleId, responsibilityId));
     }
 
     protected DatabaseFunction getRoleMemberForeignKey(final Database database, final String roleId , final String memberId) {
-	return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id = '%s' and mbr_id = '%s')", roleId, memberId));
+        return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id = '%s' and mbr_id = '%s')", roleId, memberId));
     }
 
     protected DatabaseFunction getRoleMemberForeignKey(final Database database, final DatabaseFunction roleId , final DatabaseFunction memberId) {
-	return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id IN '%s' and mbr_id IN '%s')", roleId, memberId));
+        return new DatabaseFunction(String.format("(select role_mbr_id from krim_role_mbr_t where role_id IN '%s' and mbr_id IN '%s')", roleId, memberId));
     }
 
     protected DatabaseFunction getRoleMemberForeignKey(final Database database, final String roleId , final String memberId, final List<String> uniqueAttributeValues) {
         if (uniqueAttributeValues == null){
             return getRoleMemberForeignKey(database,roleId,memberId);
         }
-	return new DatabaseFunction(String.format("(select rm.role_mbr_id  from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL IN ('%s'))", roleId, memberId, StringUtils.join(uniqueAttributeValues, "', '")));
+        return new DatabaseFunction(String.format("(select rm.role_mbr_id  from krim_role_mbr_t rm left join krim_role_mbr_attr_data_t rma on rma.ROLE_MBR_ID = rm.ROLE_MBR_ID where rm.role_id = '%s' and rm.mbr_id = '%s' and rma.ATTR_VAL IN ('%s'))", roleId, memberId, StringUtils.join(uniqueAttributeValues, "', '")));
     }
 
     protected void incrementSequence(final Database database) {
