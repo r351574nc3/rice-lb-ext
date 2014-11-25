@@ -102,7 +102,7 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 
 
     protected DatabaseFunction getRoleForeignKey(final Database database, final String roleName, final String namespaceCode) {
-        return new DatabaseFunction(String.format("(eselect ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", roleName, namespaceCode));
+        return new DatabaseFunction(String.format("(select ROLE_ID from KRIM_ROLE_T where ROLE_NM = '%s' and NMSPC_CD = '%s')", roleName, namespaceCode));
     }
 
     protected DatabaseFunction getPrincipalForeignKey(final Database database, final String memberName) {

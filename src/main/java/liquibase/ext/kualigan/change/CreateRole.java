@@ -84,7 +84,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      */
     public SqlStatement[] generateStatements(final Database database) {
         final List<SqlStatement> memberStatements = new ArrayList<SqlStatement>();
-        
+
         for (final AssignRoleMember member : getMembers()) {
             for (final SqlStatement statement : member.generateStatements(database)) {
                 memberStatements.add(statement);

@@ -73,38 +73,38 @@ public abstract class AbstractAssignMemberGenerator extends AbstractKimSqlGenera
      * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
      */
     public Sql[] generateSql(final AssignMemberStatement statement, 
-			     final Database database, 
-			     final SqlGeneratorChain chain) {
-	final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
+                             final Database database, 
+                             final SqlGeneratorChain chain) {
+        final InsertStatement assignRole = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_mbr_t");
 
-	assignRole.addColumnValue("role_mbr_id", getPrimaryKey(database));
-	assignRole.addColumnValue("role_id", getRoleForeignKey(database, statement.getRole(), statement.getNamespace()));
-	assignRole.addColumnValue("mbr_id", getMemberId(database, statement));
-	assignRole.addColumnValue("mbr_typ_cd", statement.getType());
-	assignRole.addColumnValue("ver_nbr", 1);
-	assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+        assignRole.addColumnValue("role_mbr_id", getPrimaryKey(database));
+        assignRole.addColumnValue("role_id", getRoleForeignKey(database, statement.getRole(), statement.getNamespace()));
+        assignRole.addColumnValue("mbr_id", getMemberId(database, statement));
+        assignRole.addColumnValue("mbr_typ_cd", statement.getType());
+        assignRole.addColumnValue("ver_nbr", 1);
+        assignRole.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	final List<SqlStatement> retval = new ArrayList<SqlStatement>();
-	retval.add(assignRole);
-	retval.addAll(statement.getAttributes());
-	retval.addAll(statement.getActions());
+        final List<SqlStatement> retval = new ArrayList<SqlStatement>();
+        retval.add(assignRole);
+        retval.addAll(statement.getAttributes());
+        retval.addAll(statement.getActions());
 	
-	return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
+        return SqlGeneratorFactory.getInstance().generateSql(retval.toArray(new SqlStatement[retval.size()]), database);
     }
 
     protected DatabaseFunction getMemberId(final Database database, final AssignMemberStatement statement) {
-	DatabaseFunction memberId;
-	if ("P".equals(statement.getType())){
-	    memberId = getPrincipalForeignKey(database, statement.getMember());
-	}
-	else if ("R".equals(statement.getType())){
-	    memberId = getRoleForeignKey(database, statement.getMember(), statement.getMemberNamespace() != null 
-					 ? statement.getMemberNamespace() 
-					 : statement.getNamespace());
-	}
-	else {
-	    throw new RuntimeException(String.format("Role type '%s' not supported!", statement.getType()));
-	}
-	return memberId;
+        DatabaseFunction memberId;
+        if ("P".equals(statement.getType())){
+            memberId = getPrincipalForeignKey(database, statement.getMember());
+        }
+        else if ("R".equals(statement.getType())){
+            memberId = getRoleForeignKey(database, statement.getMember(), statement.getMemberNamespace() != null 
+                                         ? statement.getMemberNamespace() 
+                                         : statement.getNamespace());
+        }
+        else {
+            throw new RuntimeException(String.format("Role type '%s' not supported!", statement.getType()));
+        }
+        return memberId;
     }
 }

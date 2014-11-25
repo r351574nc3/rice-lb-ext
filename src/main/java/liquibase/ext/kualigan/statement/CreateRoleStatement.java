@@ -52,28 +52,28 @@ public class CreateRoleStatement extends AbstractSqlStatement {
     protected List<SqlStatement> types; // There's only one really
     
     public CreateRoleStatement() {
-	types = new ArrayList<SqlStatement>();
-	members = new ArrayList<SqlStatement>();
+        types = new ArrayList<SqlStatement>();
+        members = new ArrayList<SqlStatement>();
     }
 
     public CreateRoleStatement(final String namespace,
-			       final String name, 
-			       final String description,
-			       final String type,
-			       final String typeNamespace,
-			       final String lastUpdated,
-			       final String active,
-			       final List<SqlStatement> members,
-			       final List<SqlStatement> types) {
-	setNamespace(namespace);
-	setName(name);
-	setDescription(description);
-	setActive(active);
-	setType(type);
-	setTypeNamespace(typeNamespace);
-	setLastUpdated(lastUpdated);
-	setMembers(members);
-	setTypes(types);
+                               final String name, 
+                               final String description,
+                               final String type,
+                               final String typeNamespace,
+                               final String lastUpdated,
+                               final String active,
+                               final List<SqlStatement> members,
+                               final List<SqlStatement> types) {
+        setNamespace(namespace);
+        setName(name);
+        setDescription(description);
+        setActive(active);
+        setType(type);
+        setTypeNamespace(typeNamespace);
+        setLastUpdated(lastUpdated);
+        setMembers(members);
+        setTypes(types);
     }
 
     /**
@@ -185,26 +185,26 @@ public class CreateRoleStatement extends AbstractSqlStatement {
     }
 
     public String getTypeNamespace() {
-	return typeNamespace;
+        return typeNamespace;
     }
 
     public void setTypeNamespace(String typeNamespace) {
-	this.typeNamespace = typeNamespace;
+        this.typeNamespace = typeNamespace;
     }
 
     public List<SqlStatement> getTypes() {
-	return types;
+        return types;
     }
 
     public void setTypes(final List<SqlStatement> types) {
-	this.types = types;
+        this.types = types;
     }   
 
     public List<SqlStatement> getMembers() {
-	return members;
+        return members;
     }
 
     public void setMembers(final List<SqlStatement> members) {
-	this.members = members;
+        this.members = members;
     }   
 }

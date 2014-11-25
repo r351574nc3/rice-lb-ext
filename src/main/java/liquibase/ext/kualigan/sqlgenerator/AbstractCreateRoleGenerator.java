@@ -70,23 +70,23 @@ public abstract class AbstractCreateRoleGenerator extends AbstractKimSqlGenerato
      * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
      */
     public Sql[] generateSql(final CreateRoleStatement statement, 
-			     final Database database, 
-			     final SqlGeneratorChain chain) {
+                             final Database database, 
+                             final SqlGeneratorChain chain) {
 
-	final InsertStatement insertRole = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_ROLE_T");
+        final InsertStatement insertRole = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_ROLE_T");
 
-	insertRole.addColumnValue("role_id", getPrimaryKey(database));
-	insertRole.addColumnValue("nmspc_cd", statement.getNamespace());
-	insertRole.addColumnValue("role_nm", statement.getName());
-	insertRole.addColumnValue("actv_ind", statement.getActive());
-	insertRole.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType(), statement.getTypeNamespace()));
-	insertRole.addColumnValue("ver_nbr", 1);
-	insertRole.addColumnValue("desc_txt", statement.getDescription());
-	if (statement.getLastUpdated() != null) {
-	    insertRole.addColumnValue("LAST_UPDT_DT", statement.getLastUpdated());
-	}
-	insertRole.addColumnValue("obj_id", UUID.randomUUID().toString());
+        insertRole.addColumnValue("role_id", getPrimaryKey(database));
+        insertRole.addColumnValue("nmspc_cd", statement.getNamespace());
+        insertRole.addColumnValue("role_nm", statement.getName());
+        insertRole.addColumnValue("actv_ind", statement.getActive());
+        insertRole.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType(), statement.getTypeNamespace()));
+        insertRole.addColumnValue("ver_nbr", 1);
+        insertRole.addColumnValue("desc_txt", statement.getDescription());
+        if (statement.getLastUpdated() != null) {
+            insertRole.addColumnValue("LAST_UPDT_DT", statement.getLastUpdated());
+        }
+        insertRole.addColumnValue("obj_id", UUID.randomUUID().toString());
 
-	return SqlGeneratorFactory.getInstance().generateSql(insertRole, database);
+        return SqlGeneratorFactory.getInstance().generateSql(insertRole, database);
     }
 }

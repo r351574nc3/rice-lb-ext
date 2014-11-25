@@ -3397,11 +3397,6 @@
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-215">
         <createSequence sequenceName="krim_role_rsp_id_s" startValue="1000"/>
-        <createTable tableName="krim_role_rsp_id_s">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-        </createTable>
     </changeSet>
     <changeSet author=" (generated)" id="1376025681922-216">
         <createTable tableName="krim_role_rsp_t">
