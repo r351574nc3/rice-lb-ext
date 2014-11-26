@@ -34,11 +34,11 @@
 			http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 			http://www.liquibase.org/xml/ns/rice-lb-ext http://r351574nc3.github.io/rice-lb-ext/rice-lb-ext.xsd">
 
-  <changeSet id="create-role" author="lb-ext">
-    <kualiext:createRole namespace="KR-NS" name="Namespace">
+  <changeSet id="create-type" author="lb-ext">
+    <kualiext:createKimType namespace="KR-NS" service="namespacePermissionTypeServiceTest" name="Namespace">
       <!--
 	      <kualiext:attribute label="Test" namespace="KR-NS" name="namespaceCode" component="org.kuali.rice.kim.bo.impl.KimAttributes" />
       -->
-    </kualiext:createRole>
+    </kualiext:createKimType>
   </changeSet>
 </databaseChangeLog>

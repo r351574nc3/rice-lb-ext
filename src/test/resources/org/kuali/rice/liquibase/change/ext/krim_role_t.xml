@@ -18,6 +18,10 @@
     </changeSet>
     -->
 
+    <changeSet id="tst-create-role-cns" author="lb-ext" context="default">
+        <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
+    </changeSet>
+
     <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
         <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
     </changeSet>
