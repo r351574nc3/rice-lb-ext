@@ -167,7 +167,7 @@
   <xsd:element name="dropResponsibilityAssignment">
     <xsd:complexType>
       <xsd:attribute name="role" type="xsd:string" use="required" />
-      <xsd:attribute name="responsibility" type="xsd:string" use=""required" />
+      <xsd:attribute name="responsibility" type="xsd:string" use="required" />
       <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
     </xsd:complexType>
   </xsd:element>
