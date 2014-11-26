@@ -68,22 +68,29 @@ public abstract class AbstractAddRoleResponsibilityActionGenerator extends Abstr
      *
      * @see liquibase.sqlgenerator#generateSql(StatementType, Database, SqlGeneratorChain)
      */
-    public Sql[] generateSql(final AddRoleResponsibilityActionStatement statement, 
-			     final Database database, 
-			     final SqlGeneratorChain chain) {
-	final InsertStatement insertAction = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
+    public Sql[] generateSql(final AddRoleResponsibilityActionStatement statement,
+                             final Database database,
+                             final SqlGeneratorChain chain) {
+        final InsertStatement insertAction = new InsertStatement(null, database.getDefaultSchemaName(), "krim_role_rsp_actn_t");
 
-	insertAction.addColumnValue("role_rsp_actn_id", getPrimaryKey(database));
-	insertAction.addColumnValue("actn_typ_cd", statement.getActionTypeCode());
-	insertAction.addColumnValue("actn_plcy_cd", statement.getActionPolicyCode());
-	insertAction.addColumnValue("frc_actn", statement.getForce());
-	insertAction.addColumnValue("role_rsp_id", StringUtils.isBlank(statement.getResponsibility()) || "*".equals(statement.getResponsibility()) ? "*" : resolveRoleResponsibility(database, statement));
-	insertAction.addColumnValue("priority_nbr", statement.getPriority());
-	insertAction.addColumnValue("role_mbr_id", StringUtils.isBlank(statement.getMember()) ? "*" : resolveRoleMember(database, statement));
-	insertAction.addColumnValue("ver_nbr", 1);
-	insertAction.addColumnValue("obj_id", UUID.randomUUID().toString());
+        insertAction.addColumnValue("role_rsp_actn_id", getPrimaryKey(database));
+        insertAction.addColumnValue("actn_typ_cd", statement.getActionTypeCode());
+        insertAction.addColumnValue("actn_plcy_cd", statement.getActionPolicyCode());
+        insertAction.addColumnValue("frc_actn", statement.getForce());
+        insertAction.addColumnValue("role_rsp_id", StringUtils.isBlank(statement.getResponsibility()) || "*".equals(statement.getResponsibility()) ? "*" : resolveRoleResponsibility(database, statement));
+        insertAction.addColumnValue("priority_nbr", statement.getPriority());
 
-	return SqlGeneratorFactory.getInstance().generateSql(insertAction, database);
+        DatabaseFunction roleMbrId = new DatabaseFunction("'*'");
+
+        if (!StringUtils.isBlank(statement.getMember()) || !StringUtils.isBlank(statement.getMemberFkSeq())) {
+            roleMbrId = resolveRoleMember(database, statement);
+        }
+
+        insertAction.addColumnValue("role_mbr_id", roleMbrId);
+        insertAction.addColumnValue("ver_nbr", 1);
+        insertAction.addColumnValue("obj_id", UUID.randomUUID().toString());
+
+        return SqlGeneratorFactory.getInstance().generateSql(insertAction, database);
     }
 
 

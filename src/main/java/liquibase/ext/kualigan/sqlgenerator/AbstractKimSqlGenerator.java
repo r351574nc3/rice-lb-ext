@@ -128,7 +128,7 @@ public abstract class AbstractKimSqlGenerator<T extends SqlStatement> extends Ab
 			return new DatabaseFunction(String.format("(select PRNCPL_ID from KRIM_PRNCPL_T where PRNCPL_NM = '%s')", memberName));
 		}
 		else{
-			return new DatabaseFunction("(" + memberName + ")");
+			return new DatabaseFunction(memberName);
 		}
 	}
 
