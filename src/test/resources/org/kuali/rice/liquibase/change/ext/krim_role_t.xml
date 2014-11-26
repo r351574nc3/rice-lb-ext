@@ -5,8 +5,6 @@
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
                    http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext
                    http://r351574nc3.github.io/rice-lb-ext/xml/ns/changelog-ext/changelog-ext.xsd">
-
-  <!--
   <changeSet id="tst-create-role" author="lb-ext" context="default">
         <customChange class="liquibase.ext.kualigan.change.CreateRole">
             <param name="namespace" value="KUALI"/>
@@ -15,14 +13,8 @@
             <param name="type" value="Default"/>
             <param name="active" value="Y"/>
         </customChange>
-    </changeSet>
-    -->
-
-    <changeSet id="tst-create-role-cns" author="lb-ext" context="default">
-        <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
-    </changeSet>
-
-    <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
-        <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
-    </changeSet>
+  </changeSet>
+  <changeSet id="tst-create-role-cns" author="lb-ext" context="custom-namespace">
+    <kim:role namespace="KUALI" name="Tst Role" description="Description" type="Default" active="Y" />
+  </changeSet>
 </databaseChangeLog>

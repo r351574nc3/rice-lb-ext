@@ -46,7 +46,7 @@
   <xsd:element name="createRole">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="type" minOccurs="0" maxOccurs="1">
+        <xsd:element name="type" minOccurs="1" maxOccurs="1">
 	      <xsd:complexType>
 	        <xsd:sequence>
               <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
@@ -68,13 +68,12 @@
 	      </xsd:complexType>
 	    </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="namespace" type="xsd:string" default="KUALI"/>
+      <xsd:attribute name="namespace" type="xsd:string" default="KUALI" />
       <xsd:attribute name="name" type="xsd:string" use="required" />
-      <xsd:attribute name="active" type="xsd:string" />
+      <xsd:attribute name="active" type="xsd:string" default="Y" />
       <xsd:attribute name="description" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
-  
 
   <xsd:element name="dropRole">
     <xsd:complexType>

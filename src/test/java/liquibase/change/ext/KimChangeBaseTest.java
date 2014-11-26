@@ -69,7 +69,6 @@ public abstract class KimChangeBaseTest {
 
     private ResultSet getEntityResultSet(String whereClause) throws SQLException {
         final String query = String.format("select * from %s where %s", entityName(), whereClause);
-        System.out.println("Using query " + query);
         
         final PreparedStatement ps = connection.prepareStatement(query);
         return ps.executeQuery();

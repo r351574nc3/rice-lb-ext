@@ -59,8 +59,6 @@ public class CreateRoleStatement extends AbstractSqlStatement {
     public CreateRoleStatement(final String namespace,
                                final String name, 
                                final String description,
-                               final String type,
-                               final String typeNamespace,
                                final String lastUpdated,
                                final String active,
                                final List<SqlStatement> members,

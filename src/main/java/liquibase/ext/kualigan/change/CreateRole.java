@@ -101,8 +101,6 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         return new SqlStatement[] { new CreateRoleStatement(getNamespace(),
                                                             getName(),
                                                             getDescription(),
-                                                            "",
-                                                            "",
                                                             getLastUpdated(),
                                                             getActive(),
                                                             memberStatements,
@@ -124,6 +122,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return namespace value
      */
+    @DatabaseChangeProperty
     public String getNamespace() {
         return this.namespace;
     }
@@ -142,6 +141,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return name value
      */
+    @DatabaseChangeProperty
     public String getName() {
         return this.name;
     }
@@ -160,6 +160,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return type value
      */
+    @DatabaseChangeProperty
     public String getType() {
         return this.type;
     }
@@ -178,6 +179,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return description value
      */
+    @DatabaseChangeProperty
     public String getDescription() {
         return this.description;
     }
@@ -196,6 +198,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return lastUpdated value
      */
+    @DatabaseChangeProperty
     public String getLastUpdated() {
         return this.lastUpdated;
     }
@@ -214,6 +217,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
      *
      * @return active value
      */
+    @DatabaseChangeProperty
     public String getActive() {
         return this.active;
     }
@@ -227,6 +231,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         this.active = active;
     }
 
+    @DatabaseChangeProperty
     public String getTypeNamespace() {
         return typeNamespace;
     }
@@ -235,6 +240,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         this.typeNamespace = typeNamespace;
     }
 
+    @DatabaseChangeProperty
     public List<CreateType> getTypes() {
         return types;
     }
@@ -243,6 +249,7 @@ public class CreateRole extends KimAbstractChange implements CustomSqlChange {
         this.types = types;
     }   
 
+    @DatabaseChangeProperty
     public List<AssignRoleMember> getMembers() {
         return members;
     }

@@ -46,7 +46,7 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  *
  * @author Leo Przybylski
  */
-@DatabaseChange(name="createKimType", description = "Creates a Rice Kim Type Record.", priority = EXTENSION_PRIORITY)
+@DatabaseChange(name="type", description = "Creates a Rice Kim Type Record.", priority = EXTENSION_PRIORITY)
 public class CreateType extends KimAbstractChange {
 
     protected String application;

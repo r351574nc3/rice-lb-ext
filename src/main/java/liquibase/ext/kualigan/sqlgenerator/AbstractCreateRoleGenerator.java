@@ -30,12 +30,15 @@ import liquibase.exception.ValidationErrors;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
+import liquibase.statement.SqlStatement;
 import liquibase.statement.core.InsertStatement;
 
 import liquibase.sql.Sql;
 
 import liquibase.ext.kualigan.statement.CreateRoleStatement;
+import liquibase.ext.kualigan.statement.CreateTypeStatement;
 
+import java.util.List;
 import java.util.UUID;
 
 import static liquibase.ext.Constants.EXTENSION_PRIORITY;
@@ -47,16 +50,21 @@ import static liquibase.ext.Constants.EXTENSION_PRIORITY;
  */
 public abstract class AbstractCreateRoleGenerator extends AbstractKimSqlGenerator<CreateRoleStatement> {
 
+    @Override
+    public int getPriority() {
+        return EXTENSION_PRIORITY;
+    }
+
 
     @Override
     protected String getSequenceName() {
-	return "krim_role_id_s";
+        return "krim_role_id_s";
     }
 
     @Override
     public ValidationErrors validate(final CreateRoleStatement statement,
-                                     final Database database, 
-				     final SqlGeneratorChain generators) {
+                                         final Database database, 
+                                         final SqlGeneratorChain generators) {
         final ValidationErrors retval = new ValidationErrors();
         retval.checkRequiredField("namespace", statement.getNamespace());
         retval.checkRequiredField("name", statement.getName());
@@ -72,6 +80,14 @@ public abstract class AbstractCreateRoleGenerator extends AbstractKimSqlGenerato
     public Sql[] generateSql(final CreateRoleStatement statement, 
                              final Database database, 
                              final SqlGeneratorChain chain) {
+        
+        String type = "";
+        String typeNamespace = "";
+        for (final SqlStatement stmt : statement.getTypes()) {
+            final CreateTypeStatement createTypeStatement = (CreateTypeStatement) stmt;
+            type = createTypeStatement.getName();
+            typeNamespace = createTypeStatement.getNamespace();
+        }
 
         final InsertStatement insertRole = new InsertStatement(null, database.getDefaultSchemaName(), "KRIM_ROLE_T");
 
@@ -79,7 +95,7 @@ public abstract class AbstractCreateRoleGenerator extends AbstractKimSqlGenerato
         insertRole.addColumnValue("nmspc_cd", statement.getNamespace());
         insertRole.addColumnValue("role_nm", statement.getName());
         insertRole.addColumnValue("actv_ind", statement.getActive());
-        insertRole.addColumnValue("kim_typ_id", getTypeForeignKey(database, statement.getType(), statement.getTypeNamespace()));
+        insertRole.addColumnValue("kim_typ_id", getTypeForeignKey(database, type, typeNamespace));
         insertRole.addColumnValue("ver_nbr", 1);
         insertRole.addColumnValue("desc_txt", statement.getDescription());
         if (statement.getLastUpdated() != null) {

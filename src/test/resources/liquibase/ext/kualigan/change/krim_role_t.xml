@@ -35,10 +35,12 @@
 			http://www.liquibase.org/xml/ns/rice-lb-ext http://r351574nc3.github.io/rice-lb-ext/rice-lb-ext.xsd">
 
   <changeSet id="create-role" author="lb-ext">
-    <kualiext:createRole namespace="KR-NS" name="Namespace">
+    <kualiext:createRole namespace="KR-NS" name="Namespace" active="Y">
       <!--
-	      <kualiext:attribute label="Test" namespace="KR-NS" name="namespaceCode" component="org.kuali.rice.kim.bo.impl.KimAttributes" />
       -->
+      <kualiext:type namespace="KR-NS" name="Namespace" active="Y" service="namespaceService">
+	    <kualiext:attribute label="Test" namespace="KR-NS" name="namespaceCode" component="org.kuali.rice.kim.bo.impl.KimAttributes" value="test" />
+      </kualiext:type>
     </kualiext:createRole>
   </changeSet>
 </databaseChangeLog>
