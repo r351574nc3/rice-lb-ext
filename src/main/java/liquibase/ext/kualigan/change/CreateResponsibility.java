@@ -98,7 +98,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 		removeResponsibility.setWhereClause(String.format("rsp_id = '%s'", responsibilityId));
 
 		for (AddResponsibilityAttribute attribute : getAttribute()) {
-			attribute.setResponsibility(responsibilityId);
+			attribute.setResponsibilityFkSeq(responsibilityId);
 			result.addAll(Arrays.asList(attribute.generateRollbackStatements(database)));
 		}
 

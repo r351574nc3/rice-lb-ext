@@ -4,7 +4,7 @@ public class AssignKimTypeAttributeTests extends KimChangeBaseTest {
 
 	@Override
 	protected String entityName() {
-		return "KRIM_TYP_ATTR_T";
+		return "krim_typ_attr_t";
 	}
 
 	@Override

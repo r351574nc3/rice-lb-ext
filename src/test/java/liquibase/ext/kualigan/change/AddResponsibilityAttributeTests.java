@@ -9,6 +9,6 @@ public class AddResponsibilityAttributeTests extends KimChangeBaseTest{
 
 	@Override
 	protected String whereClause() {
-		return "attr_val = 'Test Responsibility Attr'";
+		return "attr_val = 'Test Responsibility Attr Again'";
 	}
 }

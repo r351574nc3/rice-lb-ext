@@ -78,12 +78,11 @@ public class AddResponsibilityAttribute extends KimAbstractChange implements Cus
     @Override
     public SqlStatement[] generateRollbackStatements(final Database database) throws RollbackImpossibleException {
 	    final DeleteDataChange undoAssign = new DeleteDataChange();
-		  String responsibilityId = getResponsibilityForeignKey(database, getResponsibility());
-	    String typeId = getTypeForeignKey(database, getType());
-	    String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
+        final String responsibilityId = getResponsibilityFkSeq();
+	    final String typeId = getTypeForeignKey(database, getType());
+	    final String defnId = getAttributeDefinitionForeignKey(database, getAttributeDef());
 	    undoAssign.setTableName("krim_rsp_attr_data_t");
 	    undoAssign.setWhereClause(String.format("rsp_id = '%s' and kim_typ_id = '%s' and kim_attr_defn_id = '%s'", responsibilityId, typeId, defnId));
-
 	    return undoAssign.generateStatements(database);
     }
 
