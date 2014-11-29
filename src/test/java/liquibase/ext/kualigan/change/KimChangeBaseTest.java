@@ -52,7 +52,6 @@ public abstract class KimChangeBaseTest {
 	protected void assertRollback(String whereClause) throws SQLException {
 		ResultSet r = getEntityResultSet(whereClause);
 		if (r.next()) {
-            System.out.println("RSP ID: " + r.getString("RSP_ID"));
 			fail("Rollback failed!");
 		}
 	}
