@@ -27,8 +27,8 @@
    or implied, of Leo Przybylski.
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.liquibase.org/xml/ns/rice-lb-ext"
-            xmlns="http://www.liquibase.org/xml/ns/rice-lb-ext"
+            targetNamespace="http://www.liquibase.org/xml/ns/rice-kim-lb-ext"
+            xmlns="http://www.liquibase.org/xml/ns/rice-kim-lb-ext"
             elementFormDefault="qualified">
 
   <xsd:element name="createKimType">
