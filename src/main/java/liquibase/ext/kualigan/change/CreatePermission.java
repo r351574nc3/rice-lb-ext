@@ -44,7 +44,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	protected String namespace;
 	protected String name;
 	protected String description;
-	protected String active = "Y";
+	protected String active;
 	protected List<AddPermissionAttribute> attribute = new ArrayList<AddPermissionAttribute>();
 
 
@@ -173,7 +173,7 @@ public class CreatePermission extends KimAbstractChange implements CustomSqlChan
 	 * @return active value
 	 */
 	public String getActive() {
-		return this.active;
+		return this.active == null ? "Y" : this.active;
 	}
 
 	/**

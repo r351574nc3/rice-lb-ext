@@ -43,7 +43,7 @@ public class CreateResponsibilityStatement extends AbstractSqlStatement {
     protected String namespace;
     protected String name;
     protected String description;
-    protected String active = "Y";
+    protected String active;
     protected String uniqueAttributeDefinitions;
     
     public CreateResponsibilityStatement() {
@@ -121,7 +121,7 @@ public class CreateResponsibilityStatement extends AbstractSqlStatement {
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

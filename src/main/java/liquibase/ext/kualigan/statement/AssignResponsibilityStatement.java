@@ -43,7 +43,7 @@ public class AssignResponsibilityStatement extends AbstractSqlStatement {
     protected String responsibility;
     protected String namespace;
     protected String role;
-    protected String active = "Y";
+    protected String active;
     
     public AssignResponsibilityStatement() {
     }
@@ -119,7 +119,7 @@ public class AssignResponsibilityStatement extends AbstractSqlStatement {
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

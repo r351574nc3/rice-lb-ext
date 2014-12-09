@@ -43,7 +43,7 @@ public class CreatePermissionStatement extends AbstractSqlStatement {
     protected String namespace;
     protected String name;
     protected String description;
-    protected String active = "Y";
+    protected String active;
     protected String uniqueAttributeDefinitions;
 
     public CreatePermissionStatement(final String template,
@@ -118,7 +118,7 @@ public class CreatePermissionStatement extends AbstractSqlStatement {
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

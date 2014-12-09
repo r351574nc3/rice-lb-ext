@@ -56,7 +56,7 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
     protected String permissionNamespace;
     protected String role;
     protected String roleNamespace;
-    protected String active = "Y";
+    protected String active;
     
     
     public AssignRolePermission() {
@@ -150,7 +150,7 @@ public class AssignRolePermission extends KimAbstractChange implements CustomSql
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

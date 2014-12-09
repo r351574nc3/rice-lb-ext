@@ -43,7 +43,7 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
     protected String responsibility;
     protected String namespace;
     protected String role;
-    protected String active = "Y";
+    protected String active;
 
 
     public AssignRoleResponsibility() {
@@ -139,7 +139,7 @@ public class AssignRoleResponsibility extends KimAbstractChange implements Custo
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

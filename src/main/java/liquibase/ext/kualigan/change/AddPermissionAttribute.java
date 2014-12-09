@@ -50,7 +50,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	protected String attributeDef;
 	protected String permission;
 	protected String type;
-	protected String active = "Y";
+	protected String active;
 	protected String permissionFkSeq;
 
 	public AddPermissionAttribute() {
@@ -218,7 +218,7 @@ public class AddPermissionAttribute extends KimAbstractChange {
 	 * @return active value
 	 */
 	public String getActive() {
-		return this.active;
+        return this.active == null ? "Y" : this.active;
 	}
 
 	/**

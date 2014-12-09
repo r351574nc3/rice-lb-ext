@@ -48,7 +48,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	private String namespace;
 	private String name;
 	private String description;
-	private String active = "Y";
+	private String active;
 	private List<AddResponsibilityAttribute> attribute = new ArrayList<AddResponsibilityAttribute>();
 
 	public CreateResponsibility() {
@@ -167,7 +167,7 @@ public class CreateResponsibility extends KimAbstractChange implements CustomSql
 	 * @return active value
 	 */
 	public String getActive() {
-		return this.active;
+		return this.active == null ? "Y" : this.active;
 	}
 
 	/**

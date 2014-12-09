@@ -44,7 +44,7 @@ public class AssignPermissionStatement extends AbstractSqlStatement {
     protected String permissionNamespace;
     protected String role;
     protected String roleNamespace;
-    protected String active = "Y";
+    protected String active;
         
     public AssignPermissionStatement() {
     }
@@ -121,7 +121,7 @@ public class AssignPermissionStatement extends AbstractSqlStatement {
      * @return active value
      */
     public String getActive() {
-        return this.active;
+        return this.active == null ? "Y" : this.active;
     }
 
     /**

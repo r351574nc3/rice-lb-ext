@@ -40,7 +40,7 @@ public class AddPermissionAttributeStatement extends AbstractSqlStatement {
 	protected String attributeDef;
 	protected String permission;
 	protected String type;
-	protected String active = "Y";
+	protected String active;
 	protected String permissionFkSeq;
 
 	public AddPermissionAttributeStatement(final String value, final String attributeDef, final String type, final String active, final String permission, final String namespace) {
@@ -157,7 +157,7 @@ public class AddPermissionAttributeStatement extends AbstractSqlStatement {
 	 * @return active value
 	 */
 	public String getActive() {
-		return this.active;
+        return this.active == null ? "Y" : this.active;
 	}
 
 	/**
