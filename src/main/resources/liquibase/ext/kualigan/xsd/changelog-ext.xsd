@@ -186,4 +186,11 @@
 		<xsd:attribute name="actionPolicyCode" type="xsd:string"  use="required"/>
 	</xsd:attributeGroup>
 
+    <xsd:element name="importWorkflow">
+        <xsd:complexType>
+            <xsd:attribute name="fileName" type="xsd:string"/>
+            <!--<xsd:attribute name="directoryName" type="xsd:string"/>-->
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>
