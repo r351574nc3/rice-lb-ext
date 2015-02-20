@@ -1,0 +1,19 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:kim="http://www.liquibase.org/xml/ns/changelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+<changeSet id="tst-assign-role-responsibility" author="lb-ext" context="default">
+        <customChange class="liquibase.ext.kualigan.change.AssignRoleResponsibility">
+            <param name="namespace" value="KUALI"/>
+            <param name="role" value="User"/>
+            <param name="responsibility" value="Line Manager"/>
+            <param name="active" value="Y"/>
+        </customChange>
+    </changeSet>
+
+    <changeSet id="tst-assign-role-responsibility-cns" author="lb-ext" context="custom-namespace">
+        <kim:roleResponsibility namespace="KUALI" role="User" responsibility="Line Manager"/>
+    </changeSet>
+
+</databaseChangeLog>
