@@ -20,8 +20,8 @@ import java.util.*;
 @DatabaseChange(name = "importWorkflow", description = "Import Workflow XML", priority = ChangeMetaData.PRIORITY_DEFAULT)
 public class ImportWorkflowChange extends AbstractChange {
 
-	private String fileName;
-	private String directoryName;
+	private String file;
+	private String directory;
 
 	@Override
 	public boolean supports(Database database) {
@@ -31,45 +31,41 @@ public class ImportWorkflowChange extends AbstractChange {
 	@Override
 	public ValidationErrors validate(Database database) {
 		ValidationErrors validationErrors = super.validate(database);
-		if (fileName == null && directoryName == null) {
-			validationErrors.addError("You must specify a fileName or a directoryName for the importWorkflow task.");
-		} else if (fileName != null && directoryName != null) {
-			validationErrors.addError("You may only specify one of fileName and directoryName on the importWorkflow task.");
-		} else if (fileName != null && fileExists()) {
-			validationErrors.addError(String.format("File '%s' does not exist", fileName));
+		if (file == null && directory == null) {
+			validationErrors.addError("You must specify a file or a directory for the importWorkflow task.");
+		} else if (file != null && directory != null) {
+			validationErrors.addError("You may only specify one of file and directory on the importWorkflow task.");
+		} else if (file != null && !fileExists()) {
+			validationErrors.addError(String.format("File '%s' does not exist", file));
+		} else if (directory != null) {
+			try {
+				if (listFiles(directory).isEmpty()) {
+					validationErrors.addError("Directory " + directory + " contained no files.");
+				}
+			} catch (IOException e) {
+				validationErrors.addError("Unable to read directory: " + directory);
+				e.printStackTrace();
+			}
 		}
-		//todo: implement dir support
-//		else if (directoryName != null) {
-//			try {
-//				if (getDirectoryFileNames().isEmpty()) {
-//					validationErrors.addError("Directory " + directoryName + " contained no files.");
-//				}
-//			} catch (IOException e) {
-//				validationErrors.addError("Unable to read directory: " + directoryName);
-//				e.printStackTrace();
-//			}
-//		}
 		return validationErrors;
 	}
 
 
 	@Override
 	public CheckSum generateCheckSum() {
-		if (fileName != null) {
-			return generateCheckSum(fileName);
+		if (file != null) {
+			return generateCheckSum(file);
 		} else {
-			//todo: implement directory support
-			throw new UnsupportedOperationException("Directories not yet supported");
-//			try {
-//				StringBuilder checkSumString = new StringBuilder();
-//				for (String fileName : getDirectoryFileNames()) {
-//					checkSumString.append(generateCheckSum(fileName).toString());
-//				}
-//				// now, checksum the filename/checksum combos
-//				return CheckSum.compute(checkSumString.toString());
-//			} catch (IOException ex) {
-//				throw new UnexpectedLiquibaseException("Error obtaining workflow XML files from " + directoryName, ex);
-//			}
+			try {
+				StringBuilder checkSumString = new StringBuilder();
+				for (String fileName : listFiles(directory)) {
+					checkSumString.append(generateCheckSum(fileName).toString());
+				}
+				// now, checksum the filename/checksum combos
+				return CheckSum.compute(checkSumString.toString());
+			} catch (IOException ex) {
+				throw new UnexpectedLiquibaseException("Error obtaining workflow XML files from " + directory, ex);
+			}
 		}
 	}
 
@@ -79,14 +75,14 @@ public class ImportWorkflowChange extends AbstractChange {
 		if (ExecutorService.getInstance().getExecutor(database).updatesDatabase()) {
 			return generateStatementsUsingLocalWorkflowEngine(database);
 		} else {
-			return generateStatementsUsingZip(database);
+			return generateStatementsUsingSqlZip(database);
 		}
 	}
 
-	private SqlStatement[] generateStatementsUsingZip(Database database) {
+	private SqlStatement[] generateStatementsUsingSqlZip(Database database) {
 		Path tempDirectory = prepareTempWorkingDir();
 		StringBuilder sb = new StringBuilder();
-		Collection<File> files = FileUtils.listFiles(tempDirectory.toFile(), new String[]{"xml","zip"}, false);
+		Collection<File> files = FileUtils.listFiles(tempDirectory.toFile(), new String[]{"xml", "zip"}, false);
 		Iterator<File> filesIter = files.iterator();
 		while (filesIter.hasNext()) {
 			try {
@@ -95,70 +91,73 @@ public class ImportWorkflowChange extends AbstractChange {
 			} catch (IOException e) {
 				throw new UnexpectedLiquibaseException(e);
 			}
-			sb.append("-- Automated workflow ingestion on server will import workflow XML file: ").append(fileName).append("\n");
+			sb.append("-- Automated workflow ingestion on server will import workflow XML file: ").append(file).append("\n");
 		}
 		return new SqlStatement[]{new RawSqlStatement(sb.toString())};
 	}
 
 	private SqlStatement[] generateStatementsUsingLocalWorkflowEngine(Database database) {
-		throw new UnsupportedOperationException("Running updates not yet supported");
-//				// execute here - pull the connection information from the database object
-//				List<String> args = new ArrayList<String>();
-//				args.add("-Dworkflow.dir=" + tempDirectory.toString().replace('\\', '/'));
-//				args.add("-Ddatasource.url=" + database.getConnection().getURL());
-//				args.add("-Ddatasource.username=" + database.getConnection().getConnectionUserName());
-//				args.add("-Ddatasource.password=" + getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.database.password"));
-//				args.add("-Drice.server.datasource.url=" + database.getConnection().getURL());
-//				args.add("-Drice.server.datasource.username=" + database.getConnection().getConnectionUserName());
-//				args.add("-Drice.server.datasource.password=" + getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.database.password"));
-//				args.add("-Djava.awt.headless=true");
+		try {
+			Path tempDirectory = prepareTempWorkingDir();
 
+			List<String> args = new ArrayList<String>();
+			args.add("-Dworkflow.dir=" + tempDirectory.toString().replace('\\', '/'));
+			args.add("-Ddatasource.url=" + database.getConnection().getURL());
+			args.add("-Ddatasource.username=" + database.getConnection().getConnectionUserName());
+			args.add("-Ddatasource.password=" + getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.database.password"));
+			args.add("-Drice.server.datasource.url=" + database.getConnection().getURL());
+			args.add("-Drice.server.datasource.username=" + database.getConnection().getConnectionUserName());
+			args.add("-Drice.server.datasource.password=" + getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.database.password"));
+			args.add("-Djava.awt.headless=true");
+			args.add("-Dbuild.environment=wfimport");
+			args.add("-Dkfs.home=" + System.getProperty("user.dir") + "/target/kuali/kfs/");
 
-//				args.add("-Dbuild.environment=wfimport");
-//				// just to speed things up if we have multiple workflow to run
-//				Object value = getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.clean-already-run");
-//				if (value == null) {
-//					args.add("clean-all");
-//					getChangeSet().getChangeLog().getChangeLogParameters().set("import.workflow.clean-already-run", Boolean.TRUE);
-//				}
-//				args.add("import-workflow-xml");
+			execJavaProcess("za.org.kuali.kfs.sys.util.WorkflowImporter", tempDirectory.toString().replace('\\', '/'), (String) getChangeSet().getChangeLog().getChangeLogParameters().getValue
+							("mavenClasspath"), args, Arrays.asList(new String[]{tempDirectory.toString().replace('\\', '/')}));
 
-		//todo: implement delegation to java process for inline processing
-//				JavaProcess.exec("za.org.kuali.kfs.sys.util.WorkflowImporter",
-//								tempDirectory.toString().replace('\\', '/'),
-//								getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.classpath").toString(),
-//			return new SqlStatement[0];
+			// just to speed things up if we have multiple workflow to run
+			Object value = getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.clean-already-run");
+			if (value == null) {
+				args.add("clean-all");
+				getChangeSet().getChangeLog().getChangeLogParameters().set("import.workflow.clean-already-run", Boolean.TRUE);
+			}
 
+			return new SqlStatement[]{new RawSqlStatement("select 1 from dual")};
+		} catch (Exception e) {
+			throw new UnexpectedLiquibaseException("Unable to generate statements using inline workflow engine", e);
+		}
 	}
 
 	private Path prepareTempWorkingDir() {
-		Path tempDirectory = null;
 		try {
-			tempDirectory = Files.createTempDirectory("liquibase-workflow");
-			if (directoryName != null) {
-				FileUtils.copyDirectory(new File(directoryName), tempDirectory.toFile().getAbsoluteFile());
-			} else {
-				InputStream fileInputStream = null;
-				try {
-					fileInputStream = getFileInputStream(fileName);
-					FileUtils.copyInputStreamToFile(fileInputStream, new File(tempDirectory.toFile(), fileName));
-				} finally {
-					IOUtils.closeQuietly(fileInputStream);
-				}
+			Path tempDirectory = Files.createTempDirectory("liquibase-workflow");
+			List<String> files = directory != null ? listFiles(directory) : Arrays.asList(file);
+			for (String fileName : files) {
+				copyFileToTempDir(tempDirectory, fileName);
 			}
+			return tempDirectory;
 		} catch (Exception e) {
 			throw new UnexpectedLiquibaseException(e);
 		}
-		return tempDirectory;
+	}
+
+	private void copyFileToTempDir(Path tempDirectory, String theFile) throws IOException {
+		InputStream fileInputStream = null;
+		try {
+			fileInputStream = getFileInputStream(theFile);
+			FileUtils.copyInputStreamToFile(fileInputStream, new File(tempDirectory.toFile(), theFile));
+		} finally {
+			IOUtils.closeQuietly(fileInputStream);
+		}
 	}
 
 
 	@Override
 	public String getConfirmationMessage() {
-		if (fileName != null) {
-			return "Imported Workflow from File: " + fileName;
+		if (file != null) {
+			return "Imported Workflow from File: " + file;
 		} else {
-			return "Imported Workflow from Directory: " + directoryName;
+			return "Imported Workflow from Directory: " + directory;
 		}
 	}
 
@@ -203,7 +202,7 @@ public class ImportWorkflowChange extends AbstractChange {
 	private boolean fileExists() {
 		InputStream stream = null;
 		try {
-			stream = getFileInputStream(fileName);
+			stream = getFileInputStream(file);
 		} catch (Exception ex) {
 			return false;
 		} finally {
@@ -212,64 +211,139 @@ public class ImportWorkflowChange extends AbstractChange {
 		return true;
 	}
 
-	private static int execJavaProcess( String className, String dir, String classpath, List<String> jvmArgs,  List<String> args ) throws IOException,
+	private void execJavaProcess(String className, String dir, String classpath, List<String> jvmArgs, List<String> args) throws IOException,
 					InterruptedException {
-		String javaHome = System.getProperty("java.home");
-		String javaBin = javaHome +
-						File.separator + "bin" +
-						File.separator + "java";
-		if ( classpath == null ) {
+		if (classpath == null) {
 			classpath = System.getProperty("java.class.path");
 		}
-
+		classpath = System.getProperty("user.dir") + "/target/classes/;" + classpath;
 		List<String> builderArgs = new ArrayList<String>();
-		builderArgs.add(javaBin);
+		builderArgs.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
 		builderArgs.add("-cp");
 		builderArgs.add(classpath);
-		if ( jvmArgs != null ) {
+		if (jvmArgs != null) {
 			builderArgs.addAll(jvmArgs);
 		}
 		builderArgs.add(className);
-		if ( args != null ) {
+		if (args != null) {
 			builderArgs.addAll(args);
 		}
 
-		ProcessBuilder builder = new ProcessBuilder( builderArgs );
-		builder.directory( new File( dir ) );
-		builder.inheritIO();
-		System.out.println( "running: " + builder.command() );
+		ProcessBuilder builder = new ProcessBuilder(builderArgs);
+		System.out.println("running: " + builder.command());
+		builder.directory(new File(dir));
+		builder.redirectErrorStream(true);
 		Process process = builder.start();
+
+		InputStream stdout = process.getInputStream();
+		InputStream stderr = process.getErrorStream();
+		Thread threadOut = new Thread(new MyInputStreamSink(stdout, "out"));
+		Thread threadErr = new Thread(new MyInputStreamSink(stderr, "err"));
+
+		threadOut.setDaemon(true);
+		threadErr.setDaemon(true);
+		threadOut.setName(String.format("stdout reader"));
+		threadErr.setName(String.format("stderr reader"));
+
+		threadOut.start();
+		threadErr.start();
+
 		process.waitFor();
-		return process.exitValue();
+
+		if (process.exitValue() != 0) {
+			throw new UnexpectedLiquibaseException(IOUtils.toString(process.getInputStream(), "UTF-8"));
+		}
 	}
 
 
 	@DatabaseChangeProperty(description = "Workflow XML/ZIP File To Load", exampleValue = "workflow/KFS-18130/PA_PurchaseAgreement.xml")
-	public String getFileName() {
-		return fileName;
+	public String getFile() {
+		return file;
 	}
 
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setFile(String file) {
+		this.file = file;
 	}
 
 
 	@DatabaseChangeProperty(description = "Workflow XML Files To Load", exampleValue = "workflow/KFS-18130")
-	public String getDirectoryName() {
-		return directoryName;
+	public String getDirectory() {
+		return directory;
 	}
 
 
-	public void setDirectoryName(String directoryName) {
-		this.directoryName = directoryName;
+	public void setDirectory(String directory) {
+		this.directory = directory;
 	}
+
+	private List<String> listFiles(String directory) throws IOException {
+		if (directory == null) {
+			return Collections.emptyList();
+		}
+		directory = directory.replace('\\', '/');
+		if (!(directory.endsWith("/"))) {
+			directory = directory + '/';
+		}
+
+		File baseDir = new File(System.getProperty("user.dir"), "src/main/resources");
+		File changeLogDir = new File(baseDir, getChangeSet().getChangeLog().getPhysicalFilePath()).getParentFile();
+		File workflowDir = new File(changeLogDir, directory);
+		String baseDirUnix = changeLogDir.getAbsolutePath().replace('\\', '/');
+		if (!workflowDir.exists()) {
+			throw new IOException(String.format("Directory '%s' does not exist! ", workflowDir));
+		}
+
+		List<File> unsortedResources = new ArrayList(FileUtils.listFiles(workflowDir, new String[]{"xml", "zip"}, true));
+		SortedSet<String> resources = new TreeSet<String>();
+		if (unsortedResources != null) {
+			for (File resourcePath : unsortedResources) {
+				String unixFilePath = resourcePath.getAbsolutePath().replace('\\', '/');
+				resources.add(unixFilePath.replaceFirst(baseDirUnix + "/", ""));
+			}
+		}
+		//System.out.println( "Returning: " + resources );
+		return new ArrayList(resources);
+	}
+
+	private static class MyInputStreamSink implements Runnable {
+		private InputStream m_in;
+		private String m_streamName;
+
+		MyInputStreamSink(InputStream in, String streamName) {
+			m_in = in;
+			m_streamName = streamName;
+		}
+
+		@Override
+		public void run() {
+			BufferedReader reader = null;
+			Writer writer = null;
+
+			try {
+				reader = new BufferedReader(new InputStreamReader(m_in));
+				for (String line = null; ((line = reader.readLine()) != null); ) {
+					System.out.println(line);
+				}
+			} catch (IOException e) {
+				System.err.println("Unexpected I/O exception reading from process. " + e.getMessage());
+			} finally {
+				try {
+					if (null != reader) reader.close();
+				} catch (java.io.IOException e) {
+					System.err.println("Unexpected I/O exception closing a stream. " + e.getMessage());
+				}
+			}
+		}
+	}
+
 }
 
-//	protected String getRelativeFilePath(String fileName) {
+
+//	protected String getRelativeFilePath(String file) {
 //		File baseDir = new File(System.getProperty("user.dir"));
 //		File changeLogDir = new File(baseDir, getChangeSet().getChangeLog().getPhysicalFilePath()).getParentFile();
-//		File workflowFile = new File(changeLogDir, fileName);
+//		File workflowFile = new File(changeLogDir, file);
 //
 //		String rootPath = baseDir.getAbsolutePath().replace('\\','/') + "/";
 //
@@ -277,35 +351,4 @@ public class ImportWorkflowChange extends AbstractChange {
 //	}
 
 
-//	private List<String> getDirectoryFileNames() throws IOException {
-//		if (directoryName == null) {
-//			return Collections.emptyList();
-//		}
-//
-//		directoryName = directoryName.replace('\\', '/');
-//
-//		if (!(directoryName.endsWith("/"))) {
-//			directoryName = directoryName + '/';
-//		}
-//
-//		File baseDir = new File(System.getProperty("user.dir"));
-//		File changeLogDir = new File(baseDir, getChangeSet().getChangeLog().getPhysicalFilePath()).getParentFile();
-//		File workflowDir = new File(changeLogDir, directoryName);
-//		String baseDirUnix = baseDir.getAbsolutePath().replace('\\', '/');
-//
-//		File[] unsortedResources = workflowDir.listFiles(new FileFilter() {
-//			@Override
-//			public boolean accept(File pathname) {
-//				return pathname.isFile() && pathname.getName().endsWith(".xml");
-//			}
-//		});
-//		SortedSet<String> resources = new TreeSet<String>();
-//		if (unsortedResources != null) {
-//			for (File resourcePath : unsortedResources) {
-//				String unixFilePath = resourcePath.getAbsolutePath().replace('\\', '/');
-//				resources.add(unixFilePath.replaceFirst(baseDirUnix + "/", ""));
-//			}
-//		}
-//		//System.out.println( "Returning: " + resources );
-//		return new ArrayList(resources);
-//	}
+

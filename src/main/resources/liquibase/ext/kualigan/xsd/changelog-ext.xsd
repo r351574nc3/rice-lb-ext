@@ -188,8 +188,8 @@
 
     <xsd:element name="importWorkflow">
         <xsd:complexType>
-            <xsd:attribute name="fileName" type="xsd:string"/>
-            <!--<xsd:attribute name="directoryName" type="xsd:string"/>-->
+            <xsd:attribute name="file" type="xsd:string"/>
+            <xsd:attribute name="directory" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
 
