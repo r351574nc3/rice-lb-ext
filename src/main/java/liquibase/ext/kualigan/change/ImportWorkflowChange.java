@@ -21,9 +21,9 @@ public class ImportWorkflowChange extends AbstractChange {
 	private String file;
 	private String directory;
 
-	private final String KFS_TARGET_DIR = System.getProperty("user.dir") + "/target";
-	private final String KFS_HOME_DIR = KFS_TARGET_DIR + "/kuali/kfs";
-	private final String KFS_ZIP_DIR = KFS_TARGET_DIR + "/workflow";
+	private final String KFS_HOME_DIR = "target/kuali/kfs";
+	private final String KFS_ZIP_DIR = "target/workflow";
+	private final String KFS_RESOURCES_DIR = "src/main/resources";
 
 	@Override
 	public boolean supports(Database database) {
@@ -89,7 +89,7 @@ public class ImportWorkflowChange extends AbstractChange {
 		while (filesIter.hasNext()) {
 			try {
 				File orgFile = filesIter.next();
-				FileUtils.copyFile(orgFile, new File(KFS_ZIP_DIR, orgFile.getName()));
+				FileUtils.copyFile(orgFile, new File(getBaseDir(), KFS_ZIP_DIR + "/" + orgFile.getName()));
 			} catch (IOException e) {
 				throw new UnexpectedLiquibaseException(e);
 			}
@@ -112,7 +112,7 @@ public class ImportWorkflowChange extends AbstractChange {
 			args.add("-Drice.server.datasource.password=" + getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.database.password"));
 			args.add("-Djava.awt.headless=true");
 			args.add("-Dbuild.environment=wfimport");
-			args.add("-Dkfs.home=" + KFS_HOME_DIR);
+			args.add("-Dkfs.home=" + new File(getBaseDir(),KFS_HOME_DIR).getAbsolutePath());
 
 			execJavaProcess("za.org.kuali.kfs.sys.util.WorkflowImporter", tempDirectory.toString().replace('\\', '/'), (String) getChangeSet().getChangeLog().getChangeLogParameters().getValue
 							("mavenClasspath"), args, Arrays.asList(new String[]{tempDirectory.toString().replace('\\', '/')}));
@@ -132,7 +132,7 @@ public class ImportWorkflowChange extends AbstractChange {
 
 	private File prepareTempWorkingDir() {
 		try {
-			File workFlowDir = new File(KFS_HOME_DIR + "/staging");
+			File workFlowDir = new File(getBaseDir(),KFS_HOME_DIR + "/staging");
 			List<String> files = directory != null ? listFiles(directory) : Arrays.asList(file);
 			for (String fileName : files) {
 				copyFileToTempDir(workFlowDir, fileName);
@@ -218,7 +218,7 @@ public class ImportWorkflowChange extends AbstractChange {
 		if (classpath == null) {
 			classpath = System.getProperty("java.class.path");
 		}
-		classpath = KFS_TARGET_DIR + "/classes;" + classpath;
+		classpath = new File(getBaseDir(),"target/classes;").getAbsolutePath() + classpath;
 		List<String> builderArgs = new ArrayList<String>();
 		builderArgs.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
 		builderArgs.add("-cp");
@@ -288,7 +288,7 @@ public class ImportWorkflowChange extends AbstractChange {
 			directory = directory + '/';
 		}
 
-		File baseDir = new File(System.getProperty("user.dir"), "src/main/resources");
+		File baseDir = new File(getBaseDir(), KFS_RESOURCES_DIR);
 		File changeLogDir = new File(baseDir, getChangeSet().getChangeLog().getPhysicalFilePath()).getParentFile();
 		File workflowDir = new File(changeLogDir, directory);
 		String baseDirUnix = changeLogDir.getAbsolutePath().replace('\\', '/');
@@ -306,6 +306,14 @@ public class ImportWorkflowChange extends AbstractChange {
 		}
 		//System.out.println( "Returning: " + resources );
 		return new ArrayList(resources);
+	}
+
+	private File getBaseDir(){
+		String mavenBaseDir = (String) getChangeSet().getChangeLog().getChangeLogParameters().getValue("mavenBaseDir");
+		if (mavenBaseDir == null){
+			throw new IllegalArgumentException("ExpressionVars 'mavenBaseDir' not set!");
+		}
+		return new File(mavenBaseDir);
 	}
 
 	private static class MyInputStreamSink implements Runnable {
