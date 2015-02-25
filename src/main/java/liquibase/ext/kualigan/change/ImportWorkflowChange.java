@@ -11,6 +11,7 @@ import liquibase.statement.core.RawSqlStatement;
 import liquibase.util.StreamUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -114,8 +115,7 @@ public class ImportWorkflowChange extends AbstractChange {
 			args.add("-Dbuild.environment=wfimport");
 			args.add("-Dkfs.home=" + new File(getBaseDir(),KFS_HOME_DIR).getAbsolutePath());
 
-			execJavaProcess("za.org.kuali.kfs.sys.util.WorkflowImporter", tempDirectory.toString().replace('\\', '/'), (String) getChangeSet().getChangeLog().getChangeLogParameters().getValue
-							("mavenClasspath"), args, Arrays.asList(new String[]{tempDirectory.toString().replace('\\', '/')}));
+			execJavaProcess("za.org.kuali.kfs.sys.util.WorkflowImporter", tempDirectory.toString().replace('\\', '/'), args, Arrays.asList(new String[]{tempDirectory.toString().replace('\\', '/')}));
 
 			// just to speed things up if we have multiple workflow to run
 			Object value = getChangeSet().getChangeLog().getChangeLogParameters().getValue("import.workflow.clean-already-run");
@@ -213,16 +213,12 @@ public class ImportWorkflowChange extends AbstractChange {
 		return true;
 	}
 
-	private void execJavaProcess(String className, String dir, String classpath, List<String> jvmArgs, List<String> args) throws IOException,
+	private void execJavaProcess(String className, String dir, List<String> jvmArgs, List<String> args) throws IOException,
 					InterruptedException {
-		if (classpath == null) {
-			classpath = System.getProperty("java.class.path");
-		}
-		classpath = new File(getBaseDir(),"target/classes;").getAbsolutePath() + classpath;
 		List<String> builderArgs = new ArrayList<String>();
 		builderArgs.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
 		builderArgs.add("-cp");
-		builderArgs.add(classpath);
+		builderArgs.add(configureClasspath());
 		if (jvmArgs != null) {
 			builderArgs.addAll(jvmArgs);
 		}
@@ -255,6 +251,11 @@ public class ImportWorkflowChange extends AbstractChange {
 		if (process.exitValue() != 0) {
 			throw new UnexpectedLiquibaseException(IOUtils.toString(process.getInputStream(), "UTF-8"));
 		}
+	}
+
+	private String configureClasspath() {
+		String classpath = new File(getBaseDir(),"target/classes;").getAbsolutePath() + (String) getChangeSet().getChangeLog().getChangeLogParameters().getValue("mavenClasspath");
+		return StringUtils.replace(classpath, ";", System.getProperty("path.separator"));
 	}
 
 
